@@ -19,9 +19,10 @@ export const AuthContextProvider = ({ children }) => {
                 console.error("Sign-up error: ", error);
                 return {success : false, error}
             }
-
+            //signup success
             return {success: true, data};
         } catch (error) {
+            //error handling (unexpected errors)
             return {success: false, message: "An unexpected error occured, please try again: ", error};
         }
     };
@@ -39,10 +40,11 @@ export const AuthContextProvider = ({ children }) => {
                 console.error("Sign-in error: ", error);
                 return {success: false, error};
             }
-
+            //signup success
             console.log("Sign-in success:", data);
             return {success: true, data};
         } catch (error) {
+            //error handling (unexpected errors)
             console.error("unexpected error during sign-in: ", error.message)
             return {success: false, message: "An unexpected error occured, please try again: ", error};
         };
