@@ -5,6 +5,7 @@ import Dashboard from './components/pages/Dashboard';
 import Login from './components/pages/Login';
 import SignUp from './components/pages/SignUp';
 import PrivateRoute from './components/PrivateRoute';
+import ProfileSetup from './components/pages/ProfileSetup';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -18,6 +19,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'profilesetup',
+        element: (
+          <PrivateRoute>
+            <ProfileSetup />
           </PrivateRoute>
         ),
       },

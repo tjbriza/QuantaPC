@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import Navigation from '../ui/Navigation';
-import { UserAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Dashboard() {
-  const { session } = UserAuth();
+  const { session } = useAuth();
   return (
     <>
       <h1>Dashboard</h1>
