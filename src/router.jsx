@@ -4,7 +4,7 @@ import App from './App';
 import Dashboard from './components/pages/Dashboard';
 import Login from './components/pages/Login';
 import SignUp from './components/pages/SignUp';
-
+// import PrivateRoute from './components/PrivateRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -17,3 +17,12 @@ export const router = createBrowserRouter([
     ],
   },
 ]);
+
+// { path: 'dashboard',
+//   element: (
+//     <PrivateRoute>
+//       <Dashboard />
+//     </PrivateRoute>
+//   ),
+// }
+// private route commented out for now,

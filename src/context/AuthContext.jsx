@@ -79,7 +79,7 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: session }) => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
 
@@ -95,4 +95,8 @@ export const AuthContextProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+export const UserAuth = () => {
+  return useContext(AuthContext);
 };
