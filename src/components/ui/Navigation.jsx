@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
-import { UserAuth } from '../../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 export default function Navigation() {
-  const { session, signOut } = UserAuth();
+  const { session, signOut } = useAuth();
 
   return (
     <nav className='flex gap-4 p-4'>
