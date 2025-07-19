@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { UserAuth } from '../../context/AuthContext.jsx';
 
 export default function Login() {
@@ -67,11 +67,21 @@ export default function Login() {
             />
           </div>
 
-          <button type='submit' disabled={loading}>
+          <button
+            className='border-2 px-8 py-2 rounded-sm hover:bg-gray-300 hover:underline transition-colors duration-200'
+            type='submit'
+            disabled={loading}
+          >
             Submit
           </button>
           {error && <p>error has occured: {error}</p>}
         </form>
+        <p className='text-center mt-4'>
+          Don't have an account yet?{' '}
+          <Link className='hover:underline font-semibold' to='/signup'>
+            Sign up!{' '}
+          </Link>
+        </p>
       </main>
     </>
   );

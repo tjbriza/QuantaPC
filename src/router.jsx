@@ -4,7 +4,7 @@ import App from './App';
 import Dashboard from './components/pages/Dashboard';
 import Login from './components/pages/Login';
 import SignUp from './components/pages/SignUp';
-// import PrivateRoute from './components/PrivateRoute';
+import PrivateRoute from './components/PrivateRoute';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -13,16 +13,14 @@ export const router = createBrowserRouter([
       { index: true, element: <App /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
-      { path: 'dashboard', element: <Dashboard /> },
+      {
+        path: 'dashboard',
+        element: (
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
 ]);
-
-// { path: 'dashboard',
-//   element: (
-//     <PrivateRoute>
-//       <Dashboard />
-//     </PrivateRoute>
-//   ),
-// }
-// private route commented out for now,
