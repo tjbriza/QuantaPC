@@ -5,23 +5,103 @@ export default function Navigation() {
   const { session, signOut } = useAuth();
 
   return (
-    <nav className='flex gap-4 p-4'>
-      <Link to='/'>Home</Link>
-      {session ? (
-        <>
-          <Link to='/dashboard'>Dashboard</Link>
-          <button onClick={signOut} className='cursor-pointer'>
-            Logout
-          </button>
-        </>
-      ) : (
-        <>
-          <Link to='/login'>Login</Link>
-          <Link to='/signup'>Sign Up</Link>
-        </>
-      )}
+    <div className="fixed top-0 left-0 right-0 z-50 p-4">
+      <nav className="max-w-6xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg">
+        <div className="flex items-center justify-between px-8 py-4">
+          
+          {/* Left Navigation */}
+          <div className="flex items-center space-x-8">
+            <Link 
+              to="/shop"
+              className="text-white/90 hover:text-white text-sm font-medium tracking-wide transition-all duration-300 hover:scale-105"
+            >
+              SHOP
+            </Link>
+            <Link 
+              to="/builds"
+              className="text-white/90 hover:text-white text-sm font-medium tracking-wide transition-all duration-300 hover:scale-105"
+            >
+              BUILDS
+            </Link>
+            <Link 
+              to="/about"
+              className="text-white/90 hover:text-white text-sm font-medium tracking-wide transition-all duration-300 hover:scale-105"
+            >
+              ABOUT
+            </Link>
+          </div>
 
-      <p>Status: {session ? 'Logged in' : 'Logged out'}</p>
-    </nav>
+          {/* Center Brand */}
+          <Link 
+            to="/" 
+            className="text-white font-semibold text-xl tracking-wider hover:text-blue-300 transition-colors duration-300"
+          >
+            Quanta PC
+          </Link>
+
+          {/* Right Icons */}
+          <div className="flex items-center space-x-6">
+            
+            {/* Search */}
+            <button className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300 group">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+            </button>
+
+            {/* Delivery */}
+            <button className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300 group">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="1" y="3" width="15" height="13"/>
+                <polygon points="16,8 20,8 23,11 23,16 16,16"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+              </svg>
+            </button>
+
+            {/* Cart */}
+            <button className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300 group relative">
+              <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="m16 10a4 4 0 01-8 0"/>
+              </svg>
+            </button>
+
+            {/* User Profile */}
+            {session ? (
+              <div className="flex items-center space-x-4">
+                <Link 
+                  to="/dashboard"
+                  className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300 group"
+                >
+                  <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                  </svg>
+                </Link>
+                <button 
+                  onClick={signOut}
+                  className="text-white/80 hover:text-white text-xs px-3 py-1 rounded-md hover:bg-white/10 transition-all duration-300"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <Link 
+                to="/login"
+                className="text-white/80 hover:text-white p-2 rounded-lg hover:bg-white/10 transition-all duration-300 group"
+              >
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                  <circle cx="12" cy="7" r="4"/>
+                </svg>
+              </Link>
+            )}
+          </div>
+        </div>
+      </nav>
+    </div>
   );
 }
