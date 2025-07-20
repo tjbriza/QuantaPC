@@ -6,8 +6,7 @@ function App() {
   const [count, setCount] = useState(0);
 
   return (
-    <div className="min-h-screen bg-black">
-      <Navigation />
+    <div className='min-h-screen bg-black'>
       <Hero />
     </div>
   );

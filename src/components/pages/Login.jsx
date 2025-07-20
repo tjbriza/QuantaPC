@@ -34,55 +34,53 @@ export default function Login() {
 
   return (
     <>
-      <main>
-        <form
-          className='flex flex-col items-center justify-center gap-5'
-          onSubmit={handleLogin}
-        >
-          <h2 className='text-4xl font-semibold'>
-            Log in to your QuantaPC account
-          </h2>
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='email'>Email</label>
-            <input
-              id='email'
-              name='email'
-              className='border-2 p-2 rounded-sm'
-              type='text'
-              placeholder='Email'
-              onChange={(e) => setEmail(e.target.value)}
-              required={true}
-            />
-          </div>
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='password'>Password</label>
-            <input
-              id='password'
-              name='password'
-              className='border-2 p-2 rounded-sm'
-              type='password'
-              placeholder='Password'
-              onChange={(e) => setPassword(e.target.value)}
-              required={true}
-            />
-          </div>
+      <form
+        className='flex flex-col items-center justify-center gap-5'
+        onSubmit={handleLogin}
+      >
+        <h2 className='text-4xl font-semibold'>
+          Log in to your QuantaPC account
+        </h2>
+        <div className='flex flex-col items-center justify-center gap-2'>
+          <label htmlFor='email'>Email</label>
+          <input
+            id='email'
+            name='email'
+            className='border-2 p-2 rounded-sm'
+            type='text'
+            placeholder='Email'
+            onChange={(e) => setEmail(e.target.value)}
+            required={true}
+          />
+        </div>
+        <div className='flex flex-col items-center justify-center gap-2'>
+          <label htmlFor='password'>Password</label>
+          <input
+            id='password'
+            name='password'
+            className='border-2 p-2 rounded-sm'
+            type='password'
+            placeholder='Password'
+            onChange={(e) => setPassword(e.target.value)}
+            required={true}
+          />
+        </div>
 
-          <button
-            className='border-2 px-8 py-2 rounded-sm hover:bg-gray-300 hover:underline transition-colors duration-200'
-            type='submit'
-            disabled={loading}
-          >
-            Submit
-          </button>
-          {error && <p>error has occured: {error}</p>}
-        </form>
-        <p className='text-center mt-4'>
-          Don't have an account yet?{' '}
-          <Link className='hover:underline font-semibold' to='/signup'>
-            Sign up!{' '}
-          </Link>
-        </p>
-      </main>
+        <button
+          className='border-2 px-8 py-2 rounded-sm hover:bg-gray-300 hover:underline transition-colors duration-200'
+          type='submit'
+          disabled={loading}
+        >
+          Submit
+        </button>
+        {error && <p>error has occured: {error}</p>}
+      </form>
+      <p className='text-center mt-4'>
+        Don't have an account yet?{' '}
+        <Link className='hover:underline font-semibold' to='/signup'>
+          Sign up!{' '}
+        </Link>
+      </p>
     </>
   );
 }
