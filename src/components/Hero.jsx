@@ -1,123 +1,75 @@
-import { useState, useEffect } from 'react';
-
-import background1 from '../assets/images/background1.png';
-import background2 from '../assets/images/background2.jpg';
-import background3 from '../assets/images/background3.png';
-import carousel1 from '../assets/images/carousel1.png';
-import carousel2 from '../assets/images/carousel2.png';
+import { useState } from 'react';
 
 export default function Hero() {
-  const [activeSlide, setActiveSlide] = useState(0);
-
-  const slides = [
-    {
-      id: 1,
-      background: background1,
-      carousel: carousel1,
-      title: "LOREM IPSUM DOLOR SIT AMET",
-      subtitle: "CONSECTETUR ADIPISCING ELIT.",
-      highlight: "LOREM IPSUM",
-      description: "Lorem ipsum dolor sit amet consectetur adipiscing elit. Nemo sit quam praesentium incidunt dolore, odio quis iure cum soluta voluptatem voluptatem! Laboriosam nihil, a doloresque est repellendus ab aut maxime?",
-      ctaColor: "#272E41",
-      ctaHoverColor: "#3A4458"
-    },
-    {
-      id: 2,
-      background: background2,
-      carousel: carousel2,
-      title: "LOREM IPSUM DOLOR SIT AMET",
-      subtitle: "SED DO EIUSMOD TEMPOR.",
-      highlight: "DOLOR SIT",
-      description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-      ctaColor: "#728FA8",
-      ctaHoverColor: "#8BA5BE"
-    },
-    {
-      id: 3,
-      background: background3,
-      carousel: carousel1, // Using carousel1 as placeholder
-      title: "LOREM IPSUM DOLOR SIT AMET",
-      subtitle: "EXCEPTEUR SINT OCCAECAT.",
-      highlight: "CUPIDATAT NON",
-      description: "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.",
-      ctaColor: "#766E6C",
-      ctaHoverColor: "#8A7F7D"
-    }
-  ];
-
-  // Auto-advance slides every 5 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [slides.length]);
-
-  const goToSlide = (index) => {
-    setActiveSlide(index);
-  };
-
-  const nextSlide = () => {
-    setActiveSlide((prev) => (prev + 1) % slides.length);
-  };
-
-  const prevSlide = () => {
-    setActiveSlide((prev) => (prev - 1 + slides.length) % slides.length);
-  };
-
-  const currentSlide = slides[activeSlide];
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="relative h-screen overflow-hidden">
-      {/* Dynamic Background without blur effect */}
-      <div className="absolute inset-0 transition-all duration-1000 ease-in-out">
-        {slides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              index === activeSlide ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{ backgroundImage: `url(${slide.background})` }}
-            />
-            <div className="absolute inset-0 bg-black/40" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent" />
-            {/* Pure black gradient from middle to bottom - modified to preserve original colors */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-transparent" 
-                 style={{ background: 'linear-gradient(to top, rgb(0,0,0) 0%, rgb(0,0,0) 15%, rgba(0,0,0,0.9) 25%, rgba(0,0,0,0.6) 35%, rgba(0,0,0,0.3) 45%, transparent 60%)' }} />
-          </div>
-        ))}
+    <div className="relative h-screen overflow-hidden bg-gray-900">
+      {/* Modern Blurred Circles Background */}
+      <div className={`absolute inset-0 ${isHovered ? 'animation-paused' : ''}`}>
+        {/* Large circle - top left - floating pattern */}
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-gradient-to-br from-blue-500/50 to-purple-600/40 rounded-full blur-3xl circle-animation" 
+             style={{ animation: 'float 8s ease-in-out infinite' }}></div>
+        
+        {/* Medium circle - top right - orbital pattern */}
+        <div className="absolute -top-16 -right-24 w-80 h-80 bg-gradient-to-bl from-cyan-400/45 to-blue-500/35 rounded-full blur-3xl circle-animation" 
+             style={{ animation: 'orbit 15s linear infinite' }}></div>
+        
+        {/* Large circle - bottom right - wave pattern */}
+        <div className="absolute -bottom-40 -right-40 w-[500px] h-[500px] bg-gradient-to-tl from-purple-500/40 to-pink-500/30 rounded-full blur-3xl circle-animation" 
+             style={{ animation: 'wave 12s ease-in-out infinite' }}></div>
+        
+        {/* Medium circle - bottom left - sway pattern */}
+        <div className="absolute -bottom-20 -left-28 w-72 h-72 bg-gradient-to-tr from-indigo-500/45 to-cyan-400/35 rounded-full blur-3xl circle-animation" 
+             style={{ animation: 'sway 10s ease-in-out infinite' }}></div>
+        
+        {/* Small accent circles - drift pattern */}
+        <div className="absolute top-1/4 left-1/3 w-48 h-48 bg-gradient-to-r from-emerald-400/40 to-teal-500/30 rounded-full blur-2xl circle-animation" 
+             style={{ animation: 'drift 18s linear infinite' }}></div>
+        
+        {/* Floating circle - orbital pattern (delayed) */}
+        <div className="absolute top-3/4 right-1/4 w-40 h-40 bg-gradient-to-l from-violet-400/50 to-purple-500/35 rounded-full blur-2xl circle-animation" 
+             style={{ animation: 'orbit 20s linear infinite', animationDelay: '5s' }}></div>
+        
+        {/* Small floating circles - wave pattern (delayed) */}
+        <div className="absolute top-1/2 left-1/4 w-32 h-32 bg-gradient-to-br from-rose-400/45 to-pink-500/30 rounded-full blur-xl circle-animation" 
+             style={{ animation: 'wave 14s ease-in-out infinite', animationDelay: '3s' }}></div>
+        
+        {/* Tiny accent circle - float pattern (delayed) */}
+        <div className="absolute top-1/3 right-1/3 w-24 h-24 bg-gradient-to-bl from-amber-400/40 to-orange-500/25 rounded-full blur-xl circle-animation" 
+             style={{ animation: 'float 16s ease-in-out infinite', animationDelay: '7s' }}></div>
+        
+        {/* Overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/30"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/15 to-transparent"></div>
       </div>
 
       {/* Main Content Container */}
       <div className="relative z-10 h-full flex items-center">
-        <div className="max-w-7xl mx-auto px-6 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center h-full">
+        <div className="max-w-6xl mx-auto px-8 w-full">
+          <div className="flex items-center justify-between h-full">
             
             {/* Left Side - Content */}
-            <div className="space-y-6 pt-32">
+            <div className="space-y-6 pt-20 w-full max-w-3xl">
               {/* Main Headline */}
               <div className="h-32 flex items-start">
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight antialiased">
-                  {currentSlide.title}
+                  LOREM IPSUM DOLOR SIT AMET
                 </h1>
               </div>
               
               {/* Subheadline with emphasized keywords */}
               <div className="h-20 flex items-start">
                 <h2 className="text-2xl md:text-3xl text-white antialiased">
-                  {currentSlide.subtitle}{' '}
-                  <span className="text-white font-bold text-3xl md:text-4xl antialiased">{currentSlide.highlight}</span>
+                  CONSECTETUR ADIPISCING ELIT.{' '}
+                  <span className="text-white font-bold text-3xl md:text-4xl antialiased">LOREM IPSUM</span>
                 </h2>
               </div>
               
               {/* Paragraph */}
               <div className="h-24 flex items-start">
                 <p className="text-white/70 text-lg leading-relaxed max-w-lg antialiased">
-                  {currentSlide.description}
+                  Lorem ipsum dolor sit amet consectetur adipiscing elit. Nemo sit quam praesentium incidunt dolore, odio quis iure cum soluta voluptatem voluptatem! Laboriosam nihil, a doloresque est repellendus ab aut maxime?
                 </p>
               </div>
               
@@ -126,11 +78,17 @@ export default function Hero() {
                 <button 
                   className="group text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl antialiased"
                   style={{ 
-                    backgroundColor: currentSlide.ctaColor,
+                    backgroundColor: "#272E41",
                     transition: 'all 0.3s ease'
                   }}
-                  onMouseEnter={(e) => e.target.style.backgroundColor = currentSlide.ctaHoverColor}
-                  onMouseLeave={(e) => e.target.style.backgroundColor = currentSlide.ctaColor}
+                  onMouseEnter={(e) => {
+                    e.target.style.backgroundColor = "#3A4458";
+                    setIsHovered(true);
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.backgroundColor = "#272E41";
+                    setIsHovered(false);
+                  }}
                 >
                   <span className="flex items-center space-x-2">
                     <span>Explore now</span>
@@ -147,8 +105,8 @@ export default function Hero() {
               </div>
             </div>
 
-            {/* Right Side - Placeholder */}
-            <div className="flex justify-center items-center pt-32">
+            {/* Right Side - Carousel Placeholder */}
+            <div className="flex justify-center items-center pt-20">
               <div className="text-white text-xl">
                 Carousel Here
               </div>
