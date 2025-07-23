@@ -2,8 +2,10 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseWrite } from '../../hooks/useSupabaseWrite';
+import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 
 export default function ProfileSetup() {
+  const { uploadFile } = useSupabaseStorage('profile-images');
   const { insertData, loading, error } = useSupabaseWrite('profiles');
   const { session, signOut } = useAuth();
 
@@ -28,12 +30,30 @@ export default function ProfileSetup() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formdata.avatar_url) {
+      alert('Please upload a profile picture.');
+      return;
+    }
+    // Upload the avatar image to Supabase Storage
+    const { data: uploadData, error: uploadError } = await uploadFile(
+      `${formdata.id}`,
+      formdata.avatar_url
+    );
+
+    if (uploadError) {
+      console.error('Error uploading profile picture:', uploadError);
+      alert('Failed to upload profile picture. Please try again.');
+      return;
+    }
+    // Get the public URL of the uploaded image
+    const avatarUrl = uploadData.publicUrl;
+
     const newProfile = {
       id: formdata.id,
       name_first: formdata.name_first,
       name_last: formdata.name_last,
       username: formdata.username,
-      avatar_url: formdata.avatar_url,
+      avatar_url: avatarUrl,
     };
 
     const result = await insertData(newProfile);
