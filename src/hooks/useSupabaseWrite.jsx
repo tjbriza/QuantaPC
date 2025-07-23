@@ -15,6 +15,11 @@ export function useSupabaseWrite(tableName) {
     setError(null);
 
     try {
+      //check input data
+      if (!rows || (Array.isArray(rows) && rows.length === 0)) {
+        throw new Error('No data provided for insertion');
+      }
+
       const { data, error: insertError } = await supabase
         .from(tableName)
         .insert(rows)

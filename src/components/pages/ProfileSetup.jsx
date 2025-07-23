@@ -119,7 +119,7 @@ export default function ProfileSetup() {
           >
             Submit
           </button>
-          {error && <p>An error occured, please try again: {error}</p>}
+          {error && <p>An error occured. Please try again: {error}</p>}
         </form>
       </main>
     </>
