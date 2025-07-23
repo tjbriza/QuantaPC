@@ -1,7 +1,7 @@
 //  custom hook for writing data to supabase!!
 //  insert, update, or delete data in a supabase db table :)
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 
 export function useSupabaseWrite(tableName) {
@@ -17,7 +17,8 @@ export function useSupabaseWrite(tableName) {
     try {
       const { data, error: insertError } = await supabase
         .from(tableName)
-        .insert(rows);
+        .insert(rows)
+        .select();
 
       if (insertError) {
         throw insertError;
@@ -41,7 +42,9 @@ export function useSupabaseWrite(tableName) {
       const { data, error: updateError } = await supabase
         .from(tableName)
         .update(updates)
-        .match(filter);
+        .match(filter)
+        .select();
+
       if (updateError) {
         throw updateError;
       }
@@ -53,4 +56,32 @@ export function useSupabaseWrite(tableName) {
       setLoading(false);
     }
   };
+
+  //deletes data from table.
+
+  const deleteData = async (filter) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const { data, error: deleteError } = await supabase
+        .from(tableName)
+        .delete()
+        .match(filter)
+        .select();
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      return { data, error: null };
+    } catch (err) {
+      setError(err);
+      return { data: null, error: err };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { insertData, updateData, deleteData, loading, error };
 }
