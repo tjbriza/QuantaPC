@@ -58,13 +58,13 @@ export default function Navigation() {
           >
             {/* White logo - visible when not scrolled */}
             <img 
-              src="/src/assets/images/logo.png"
+              src="/images/logo.png"
               alt="Quanta PC" 
               className={`h-8 w-auto absolute transition-opacity duration-500 ease-in-out ${isScrolled ? 'opacity-0' : 'opacity-100'}`}
             />
             {/* Black logo - visible when scrolled */}
             <img 
-              src="/src/assets/images/logoblack.png"
+              src="/images/logoblack.png"
               alt="Quanta PC" 
               className={`h-8 w-auto transition-opacity duration-500 ease-in-out ${isScrolled ? 'opacity-100' : 'opacity-0'}`}
             />
