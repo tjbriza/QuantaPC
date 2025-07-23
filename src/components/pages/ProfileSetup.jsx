@@ -3,12 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseWrite } from '../../hooks/useSupabaseWrite';
 import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
+import { useSupabaseRead } from '../../hooks/useSupabaseRead';
+import { Navigate } from 'react-router-dom';
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
   const { insertData, loading, error } = useSupabaseWrite('profiles');
   const { session, signOut } = useAuth();
-
   const [formdata, setFormData] = useState({
     id: session?.user?.id || '',
     name_first: '',
@@ -18,6 +19,19 @@ export default function ProfileSetup() {
   });
 
   const navigate = useNavigate();
+
+  // Check if the user already has a profile
+  const { data: existingProfile, error: readError } = useSupabaseRead(
+    'profiles',
+    {
+      filter: { id: session?.user?.id },
+      single: true,
+    }
+  );
+  if (existingProfile) {
+    // If a profile already exists, redirect to the dashboard
+    return <Navigate to='/dashboard' />;
+  }
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
@@ -59,7 +73,7 @@ export default function ProfileSetup() {
     const result = await insertData(newProfile);
 
     if (result.error) {
-      console.error('Error creating profile:', error);
+      console.error('Error creating profile:', result.error);
     } else {
       alert('Profile created successfully!');
       navigate('/dashboard');
