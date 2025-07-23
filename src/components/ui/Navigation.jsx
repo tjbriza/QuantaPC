@@ -9,7 +9,7 @@ export default function Navigation() {
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 400);
+      setIsScrolled(scrollPosition > 200);
     };
 
     window.addEventListener('scroll', handleScroll);
