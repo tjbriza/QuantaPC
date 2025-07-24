@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'arsenal': ['Arsenal SC', 'sans-serif'],
+        'arsenal': ['Arsenal', 'sans-serif'],
+        'montserrat': ['Montserrat', 'sans-serif'],
       },
     },
   },
