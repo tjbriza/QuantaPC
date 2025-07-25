@@ -71,34 +71,34 @@ export default function Content() {
 
         {/* Company Logos Section */}
         <div className="p-8">
-          <p className="text-center text-black mb-6 text-sm uppercase tracking-wide font-['Montserrat']">
+          <p className="text-center text-black mb-8 text-xl font-semibold uppercase tracking-wider font-['Montserrat']">
             FEATURING THIS COMPANIES
           </p>
-          <div className="flex justify-center items-center space-x-12 flex-wrap gap-y-6">
+          <div className="flex justify-center items-center space-x-16 flex-wrap gap-y-8">
             <img 
-              src="https://via.placeholder.com/120x60/E53E3E/FFFFFF?text=AMD"
+              src="/images/feature1.png"
               alt="AMD"
-              className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300 border rounded"
+              className="h-24 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded"
             />
             <img 
-              src="https://via.placeholder.com/120x60/38A169/FFFFFF?text=Acer"
+              src="/images/feature2.png"
               alt="Acer"
-              className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300 border rounded"
+              className="h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded"
             />
             <img 
-              src="https://via.placeholder.com/120x60/3182CE/FFFFFF?text=Intel"
+              src="/images/feature3.png"
               alt="Intel"
-              className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300 border rounded"
+              className="h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded"
             />
             <img 
-              src="https://via.placeholder.com/120x60/76B900/FFFFFF?text=NVIDIA"
+              src="/images/feature4.png"
               alt="NVIDIA"
-              className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300 border rounded"
+              className="h-24 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded"
             />
             <img 
-              src="https://via.placeholder.com/120x60/0096D6/FFFFFF?text=HP"
+              src="/images/feature5.png"
               alt="HP"
-              className="h-12 object-contain grayscale hover:grayscale-0 transition-all duration-300 border rounded"
+              className="h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded"
             />
           </div>
         </div>
