@@ -59,12 +59,12 @@ export default function SignUp() {
         <div className="flex justify-center space-x-8 mb-6">
           <Link 
             to="/login" 
-            className="text-white/70 text-lg font-medium hover:text-white transition-colors duration-200 relative group"
+            className="text-white/70 text-lg font-medium hover:text-white transition-colors duration-200 relative group font-heading"
           >
             Login
             <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
           </Link>
-          <span className="text-white text-lg font-medium border-b-2 border-transparent pb-1 relative">
+          <span className="text-white text-lg font-medium border-b-2 border-transparent pb-1 relative font-heading">
             Sign Up
             <span className='absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full'></span>
           </span>
@@ -78,18 +78,13 @@ export default function SignUp() {
               boxShadow: '0 0 12px rgba(0, 0, 0, 0.6)' 
             }}
           >
-            <h1 className="text-2xl font-semibold text-white text-center mb-8 flex items-center justify-center gap-2">
-              Sign up to 
-              <img 
-                src="/images/logotext.png" 
-                alt="Quanta PC" 
-                className="h-8 w-auto"
-              />
+            <h1 className="text-2xl font-semibold text-white text-center mb-8 font-heading">
+              Sign up to <span className="text-white">quantapc</span>
             </h1>
 
             <form className="space-y-4" onSubmit={handleSignUp}>
               <div className="mb-5">
-                <label htmlFor="email" className="text-black text-lg block mb-2">
+                <label htmlFor="email" className="text-black text-lg block mb-2 font-heading">
                   Email
                 </label>
                 <div className="relative">
@@ -107,7 +102,7 @@ export default function SignUp() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="password" className="text-black text-lg block mb-2">
+                <label htmlFor="password" className="text-black text-lg block mb-2 font-heading">
                   Password
                 </label>
                 <div className="relative">
@@ -125,7 +120,7 @@ export default function SignUp() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="confirmPassword" className="text-black text-lg block mb-2">
+                <label htmlFor="confirmPassword" className="text-black text-lg block mb-2 font-heading">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -149,7 +144,7 @@ export default function SignUp() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200"
+                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200 font-heading"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -166,7 +161,7 @@ export default function SignUp() {
                 href="https://test.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-full h-12 font-medium transition-colors duration-200 flex items-center justify-center"
+                className="w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-full h-12 font-medium transition-colors duration-200 flex items-center justify-center font-heading"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -196,7 +191,7 @@ export default function SignUp() {
             
             <p className='text-center mt-4 text-black'>
               Already have an account?{' '}
-              <Link className='hover:underline font-semibold relative group' to='/login'>
+              <Link className='hover:underline font-semibold relative group font-heading' to='/login'>
                 Log in!{' '}
                 <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
               </Link>

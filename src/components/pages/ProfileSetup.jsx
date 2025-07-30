@@ -110,13 +110,13 @@ export default function ProfileSetup() {
               boxShadow: '0 0 12px rgba(0, 0, 0, 0.6)' 
             }}
           >
-            <h1 className="text-2xl font-semibold text-white text-center mb-8">
+            <h1 className="text-2xl font-semibold text-white text-center mb-8 font-heading">
               Almost done!
             </h1>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="mb-5">
-                <label htmlFor="name_first" className="text-black text-lg block mb-2">
+                <label htmlFor="name_first" className="text-black text-lg block mb-2 font-heading">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <div>
@@ -133,7 +133,7 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="name_last" className="text-black text-lg block mb-2">
+                <label htmlFor="name_last" className="text-black text-lg block mb-2 font-heading">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <div>
@@ -150,7 +150,7 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="username" className="text-black text-lg block mb-2">
+                <label htmlFor="username" className="text-black text-lg block mb-2 font-heading">
                   Username
                 </label>
                 <div>
@@ -167,13 +167,13 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="avatar_url" className="text-black text-lg block mb-2">
+                <label htmlFor="avatar_url" className="text-black text-lg block mb-2 font-heading">
                   Profile Picture
                 </label>
                 <div className="flex items-center gap-3">
                   <label 
                     htmlFor="avatar_url" 
-                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer"
+                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer font-heading"
                     style={{ 
                       border: '1px solid #6E6E6E', 
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -201,7 +201,7 @@ export default function ProfileSetup() {
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200"
+                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200 font-heading"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 

@@ -13,28 +13,22 @@ export default function Hero() {
             <div className='space-y-4 pt-20 w-full max-w-2xl'>
               {/* Main Headline */}
               <div className='flex items-start'>
-                <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight antialiased'>
-                  LOREM IPSUM DOLOR SIT AMET
+                <h1 className='text-3xl md:text-4xl lg:text-5xl font-bold leading-tight antialiased font-heading'>
+                  <span className="text-[#282E41]">Choose</span> <span className="text-white">your best builds</span>
                 </h1>
               </div>
 
               {/* Subheadline with emphasized keywords */}
               <div className='flex items-start'>
-                <h2 className='text-xl md:text-2xl text-white antialiased'>
-                  CONSECTETUR ADIPISCING ELIT.{' '}
-                  <span className='text-white font-bold text-xl md:text-2xl antialiased'>
-                    LOREM IPSUM
-                  </span>
+                <h2 className='text-xl md:text-2xl text-[#282E41] antialiased font-bold font-heading'>
+                  Where technology meets convenience
                 </h2>
               </div>
 
               {/* Paragraph */}
               <div className='flex items-start pt-2'>
                 <p className='text-black text-base leading-relaxed max-w-lg antialiased'>
-                  Lorem ipsum dolor sit amet consectetur adipiscing elit. Nemo
-                  sit quam praesentium incidunt dolore, odio quis iure cum
-                  soluta voluptatem voluptatem! Laboriosam nihil, a doloresque
-                  est repellendus ab aut maxime?
+                  Looking for power, style, and performance in one setup? Customize your perfect PC with top-grade parts — whether for gaming, content creation, or everyday tasks.
                 </p>
               </div>
 
@@ -55,22 +49,7 @@ export default function Hero() {
                     setIsHovered(false);
                   }}
                 >
-                  <span className='flex items-center space-x-2'>
-                    <span>Explore now</span>
-                    <svg
-                      className='w-5 h-5 group-hover:translate-x-1 transition-transform duration-300'
-                      fill='none'
-                      stroke='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        strokeLinecap='round'
-                        strokeLinejoin='round'
-                        strokeWidth={2}
-                        d='M17 8l4 4m0 0l-4 4m4-4H3'
-                      />
-                    </svg>
-                  </span>
+                  <span className='font-montserrat text-center w-full'>Explore now</span>
                 </button>
               </div>
             </div>
