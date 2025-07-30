@@ -5,6 +5,7 @@ import { useSupabaseWrite } from '../../hooks/useSupabaseWrite';
 import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
+import { FileImage } from 'lucide-react';
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
@@ -17,6 +18,7 @@ export default function ProfileSetup() {
     username: '',
     avatar_url: '',
   });
+  const [fileName, setFileName] = useState('No file chosen');
 
   const navigate = useNavigate();
 
@@ -35,6 +37,11 @@ export default function ProfileSetup() {
 
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
+    
+    if (type === 'file' && files.length > 0) {
+      setFileName(files[0].name);
+    }
+    
     setFormData((prevData) => ({
       ...prevData,
       [name]: type === 'file' ? files[0] : value,
@@ -81,81 +88,131 @@ export default function ProfileSetup() {
   };
 
   return (
-    <>
-      <main>
-        <form
-          className='flex flex-col items-center justify-center gap-5'
-          onSubmit={handleSubmit}
-        >
-          <h2 className='text-4xl font-semibold'>Profile Setup</h2>
+    <div className='relative h-screen overflow-hidden' style={{ backgroundColor: '#EEEEEE', backgroundImage: 'url(/images/background.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
+      {/* Logo in top left */}
+      <Link 
+        to="/" 
+        className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+      >
+        <img 
+          src="/images/logo.png"
+          alt="Quanta PC" 
+          className="h-12 w-auto transition-all duration-300"
+        />
+      </Link>
 
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='name_first'>First Name</label>
-
-            <input
-              id='name_first'
-              name='name_first'
-              className='border-2 p-2 rounded-sm text-center'
-              type='text'
-              placeholder='First Name'
-              required={true}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='name_last'>Last Name</label>
-
-            <input
-              id='name_last'
-              name='name_last'
-              className='border-2 p-2 rounded-sm text-center'
-              type='text'
-              placeholder='Last Name'
-              required={true}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='username'>username</label>
-
-            <input
-              id='username'
-              name='username'
-              className='border-2 p-2 rounded-sm text-center'
-              type='text'
-              placeholder='username'
-              required={true}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className='flex flex-col items-center justify-center gap-2'>
-            <label htmlFor='avatar_url'>Profile Picture</label>
-
-            <input
-              id='avatar_url'
-              name='avatar_url'
-              className='border-2 p-2 rounded-sm text-center'
-              type='file'
-              accept='image/*'
-              placeholder='Profile Picture'
-              required={true}
-              onChange={handleChange}
-            />
-          </div>
-
-          <button
-            className='border-2 px-8 py-2 rounded-sm hover:bg-gray-300 hover:underline transition-colors duration-200'
-            type='submit'
-            disabled={loading}
+      <div className="flex h-full items-center justify-center">
+        <div className="w-full max-w-none" style={{ width: '500px' }}>
+          <div 
+            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8"
+            style={{ 
+              border: '1px solid #6E6E6E', 
+              boxShadow: '0 0 12px rgba(0, 0, 0, 0.6)' 
+            }}
           >
-            Submit
-          </button>
-          {error && <p>An error occured. Please try again: {error}</p>}
-        </form>
-      </main>
-    </>
+            <h1 className="text-2xl font-semibold text-white text-center mb-8">
+              Almost done!
+            </h1>
+
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="mb-5">
+                <label htmlFor="name_first" className="text-black text-lg block mb-2">
+                  First Name <span className="text-red-500">*</span>
+                </label>
+                <div>
+                  <input
+                    id="name_first"
+                    name="name_first"
+                    type="text"
+                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
+                    placeholder=""
+                    required={true}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-5">
+                <label htmlFor="name_last" className="text-black text-lg block mb-2">
+                  Last Name <span className="text-red-500">*</span>
+                </label>
+                <div>
+                  <input
+                    id="name_last"
+                    name="name_last"
+                    type="text"
+                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
+                    placeholder=""
+                    required={true}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-5">
+                <label htmlFor="username" className="text-black text-lg block mb-2">
+                  Username
+                </label>
+                <div>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
+                    placeholder=""
+                    required={true}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+
+              <div className="mb-5">
+                <label htmlFor="avatar_url" className="text-black text-lg block mb-2">
+                  Profile Picture
+                </label>
+                <div className="flex items-center gap-3">
+                  <label 
+                    htmlFor="avatar_url" 
+                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                  >
+                    Choose File
+                    <input
+                      id="avatar_url"
+                      name="avatar_url"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      required={true}
+                      onChange={handleChange}
+                    />
+                  </label>
+                  <span className="text-black">{fileName}</span>
+                </div>
+              </div>
+
+              {error && (
+                <div className="text-red-300 text-sm text-center mb-4">An error occured, please try again: {error}</div>
+              )}
+
+              <button 
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200"
+                style={{ 
+                  border: '1px solid #6E6E6E', 
+                  boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                }}
+              >
+                {loading ? 'Creating Profile...' : 'Complete Setup'}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

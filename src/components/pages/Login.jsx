@@ -50,14 +50,16 @@ export default function Login() {
       <div className="flex-1 flex flex-col items-center justify-center p-6 pt-24">
         {/* Tab Navigation - Outside the card */}
         <div className="flex justify-center space-x-8 mb-6">
-          <span className="text-white text-lg font-medium border-b-2 border-white pb-1">
+          <span className="text-white text-lg font-medium border-b-2 border-transparent pb-1 relative">
             Login
+            <span className='absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full'></span>
           </span>
           <Link 
             to="/signup" 
-            className="text-white/70 text-lg font-medium hover:text-white transition-colors duration-200"
+            className="text-white/70 text-lg font-medium hover:text-white transition-colors duration-200 relative group"
           >
             Sign Up
+            <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
           </Link>
         </div>
         
@@ -73,8 +75,8 @@ export default function Login() {
 
           <form className="space-y-4" onSubmit={handleLogin}>
             <div className="mb-5">
-              <label htmlFor="email" className="text-black text-lg font-semibold block mb-2">
-                EMAIL
+              <label htmlFor="email" className="text-black text-lg block mb-2">
+                Email
               </label>
               <div className="relative">
                 <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
@@ -91,8 +93,8 @@ export default function Login() {
             </div>
 
             <div className="mb-5">
-              <label htmlFor="password" className="text-black text-lg font-semibold block mb-2">
-                PASSWORD
+              <label htmlFor="password" className="text-black text-lg block mb-2">
+                Password
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
@@ -109,8 +111,8 @@ export default function Login() {
             </div>
 
             <div className="text-left mb-6">
-              <Link to="#" className="text-black text-lg font-semibold hover:text-black/80">
-                FORGOT YOUR PASSWORD?
+              <Link to="#" className="text-black text-lg hover:text-black/80">
+                Forgot Your Password?
               </Link>
             </div>
 
@@ -167,8 +169,9 @@ export default function Login() {
           <div className="mt-8 text-center">
             <span className="text-black/80 text-sm">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-black font-bold hover:underline">
+              <Link to="/signup" className="text-black font-bold hover:underline relative group">
                 Sign up!
+                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
               </Link>
             </span>
           </div>
