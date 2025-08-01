@@ -1,20 +1,38 @@
 import { useState } from 'react';
-import Navigation from '../ui/Navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import Background from '../ui/Background.jsx';
-import Content from '../ui/HomeContent.jsx';
+import ProductGrid from '../ui/ProductGrid.jsx';
+import CategorySection from '../ui/CategorySection.jsx';
 export default function Catalog() {
   const { session } = useAuth();
 
-  const { data, error, loading } = useSupabaseRead('profiles', {
-    filter: { id: session?.user.id },
-    single: true,
-  });
+  const {
+    data: categories,
+    error: categoryError,
+    loading: categoryLoading,
+  } = useSupabaseRead('categories');
+
+  const {
+    data: products,
+    error: productError,
+    loading: productLoading,
+  } = useSupabaseRead('products');
+
+  const categorizedProducts = categories.map((category) => ({
+    ...category,
+    products: products.filter((p) => p.category_id === category.id),
+  }));
 
   return (
-    <div className='min-h-screen bg-black'>
-      <Background />
+    <div className='min-h-screen flex item-center mt-16'>
+      {categorizedProducts.map((category) => (
+        <CategorySection
+          key={category.id}
+          title={category.name}
+          products={category.products}
+        />
+      ))}
     </div>
   );
 }
