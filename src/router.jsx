@@ -8,6 +8,8 @@ import Catalog from './components/pages/Catalog';
 import About from './components/pages/About';
 import PrivateRoute from './components/PrivateRoute';
 import ProfileSetup from './components/pages/ProfileSetup';
+import ProductPage from './components/pages/ProductPage';
+import ErrorPage from './components/pages/ErrorPage';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -18,6 +20,7 @@ export const router = createBrowserRouter([
       { path: 'signup', element: <SignUp /> },
       { path: 'catalog', element: <Catalog /> },
       { path: 'about', element: <About /> },
+      { path: 'product/:id', element: <ProductPage /> },
       {
         path: 'dashboard',
         element: (
@@ -33,6 +36,10 @@ export const router = createBrowserRouter([
             <ProfileSetup />
           </PrivateRoute>
         ),
+      },
+      {
+        path: '*',
+        element: <ErrorPage />,
       },
     ],
   },
