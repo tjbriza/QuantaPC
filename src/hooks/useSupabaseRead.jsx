@@ -2,6 +2,16 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
+// to use read hook!! sample usage:
+// const { data, loading, error } = useSupabaseRead('products', {
+//   select: 'id, name, price',
+//   filter: { category: 'electronics', available: true },
+//   order: { column: 'price', ascending: true },
+//   limit: 5,
+//   single: false,
+// });
+// covers most db read features/operations i need.
+
 export function useSupabaseRead(tableName, queryOptions = {}) {
   const [data, setData] = useState(queryOptions.single ? null : []);
   const [loading, setLoading] = useState(true);
