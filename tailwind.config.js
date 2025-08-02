@@ -8,7 +8,7 @@ export default {
     extend: {
       fontFamily: {
         'heading': ['Afacad', 'sans-serif'],
-        'montserrat': ['Montserrat', 'sans-serif'],
+        'dm-sans': ['DM Sans', 'sans-serif'],
       },
     },
   },

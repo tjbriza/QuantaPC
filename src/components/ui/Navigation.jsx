@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 export default function Navigation() {
   const { session, signOut } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,14 +27,14 @@ export default function Navigation() {
   const hoverBg = isScrolled ? 'hover:bg-black/10' : 'hover:bg-white/10';
 
   return (
-    <div className='fixed top-0 left-0 right-0 z-50 p-4'>
+    <div className='fixed top-0 left-0 right-0 z-50 p-2 md:p-4'>
       <nav
-        className='max-w-6xl mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20'
-        style={{ boxShadow: '0 0 25px rgba(0, 0, 0, 0.3)' }}
+        className='mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20'
+        style={{ boxShadow: '0 0 25px rgba(0, 0, 0, 0.3)', maxWidth: '1280px' }}
       >
-        <div className='flex items-center justify-between px-8 py-4'>
-          {/* Left Navigation */}
-          <div className='flex items-center space-x-8'>
+        <div className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4'>
+          {/* Left Navigation - Hidden on mobile */}
+          <div className='hidden lg:flex items-center space-x-6 xl:space-x-8'>
             <Link
               to='/catalog'
               className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105`}
@@ -60,13 +61,13 @@ export default function Navigation() {
           {/* Center Brand */}
           <Link
             to='/'
-            className={`flex items-center p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105 relative`}
+            className={`flex items-center p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105 relative order-1 lg:order-2`}
           >
             {/* White logo - visible when not scrolled */}
             <img
               src='/images/logo.png'
               alt='Quanta PC'
-              className={`h-8 w-auto absolute transition-opacity duration-500 ease-in-out ${
+              className={`h-6 md:h-8 w-auto absolute transition-opacity duration-500 ease-in-out ${
                 isScrolled ? 'opacity-0' : 'opacity-100'
               }`}
             />
@@ -74,20 +75,20 @@ export default function Navigation() {
             <img
               src='/images/logoblack.png'
               alt='Quanta PC'
-              className={`h-8 w-auto transition-opacity duration-500 ease-in-out ${
+              className={`h-6 md:h-8 w-auto transition-opacity duration-500 ease-in-out ${
                 isScrolled ? 'opacity-100' : 'opacity-0'
               }`}
             />
           </Link>
 
           {/* Right Icons */}
-          <div className='flex items-center space-x-6'>
+          <div className='flex items-center space-x-3 md:space-x-6 order-2 lg:order-3'>
             {/* Search */}
             <button
-              className={`${iconColor} p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
+              className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
             >
               <svg
-                className='w-5 h-5 transition-transform duration-300 hover:scale-110'
+                className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
                 fill='none'
                 stroke='currentColor'
                 viewBox='0 0 24 24'
@@ -97,12 +98,12 @@ export default function Navigation() {
               </svg>
             </button>
 
-            {/* Delivery */}
+            {/* Delivery - Hidden on mobile */}
             <button
-              className={`${iconColor} p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
+              className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105 hidden md:block`}
             >
               <svg
-                className='w-5 h-5 transition-transform duration-300 hover:scale-110'
+                className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
                 fill='none'
                 stroke='currentColor'
                 viewBox='0 0 24 24'
@@ -117,10 +118,10 @@ export default function Navigation() {
             {/* Cart */}
             <Link
               to='/cart'
-              className={`${iconColor} p-2 rounded-lg transition-all duration-300 relative ${hoverBg} hover:scale-105`}
+              className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 relative ${hoverBg} hover:scale-105`}
             >
               <svg
-                className='w-5 h-5 transition-transform duration-300 hover:scale-110'
+                className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
                 fill='none'
                 stroke='currentColor'
                 viewBox='0 0 24 24'
@@ -133,13 +134,13 @@ export default function Navigation() {
 
             {/* User Profile */}
             {session ? (
-              <div className='flex items-center space-x-4'>
+              <div className='flex items-center space-x-2 md:space-x-4'>
                 <Link
                   to='/dashboard'
-                  className={`${iconColor} p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
+                  className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
                 >
                   <svg
-                    className='w-5 h-5 transition-transform duration-300 hover:scale-110'
+                    className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
                     fill='none'
                     stroke='currentColor'
                     viewBox='0 0 24 24'
@@ -150,7 +151,7 @@ export default function Navigation() {
                 </Link>
                 <button
                   onClick={signOut}
-                  className={`${iconColor} text-xs px-3 py-1 rounded-md transition-all duration-300 ${hoverBg} hover:scale-105`}
+                  className={`${iconColor} text-xs px-2 md:px-3 py-1 rounded-md transition-all duration-300 ${hoverBg} hover:scale-105 hidden sm:block`}
                 >
                   Logout
                 </button>
@@ -158,10 +159,10 @@ export default function Navigation() {
             ) : (
               <Link
                 to='/login'
-                className={`${iconColor} p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
+                className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105`}
               >
                 <svg
-                  className='w-5 h-5 transition-transform duration-300 hover:scale-110'
+                  className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
@@ -171,8 +172,80 @@ export default function Navigation() {
                 </svg>
               </Link>
             )}
+
+            {/* Mobile Menu Button - Visible only on mobile */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className={`${iconColor} p-1.5 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105 lg:hidden`}
+            >
+              <svg
+                className='w-5 h-5'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                {isMobileMenuOpen ? (
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M6 18L18 6M6 6l12 12'
+                  />
+                ) : (
+                  <path
+                    strokeLinecap='round'
+                    strokeLinejoin='round'
+                    strokeWidth={2}
+                    d='M4 6h16M4 12h16M4 18h16'
+                  />
+                )}
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu - Dropdown */}
+        {isMobileMenuOpen && (
+          <div className='lg:hidden mt-4 p-4 bg-white/10 backdrop-blur-xl rounded-xl border border-white/20'>
+            <div className='flex flex-col space-y-4'>
+              <Link
+                to='/catalog'
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+              >
+                SHOP
+                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              </Link>
+              <Link
+                to='/catalog'
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+              >
+                BUILDS
+                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              </Link>
+              <Link
+                to='/about'
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+              >
+                ABOUT
+                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              </Link>
+              {session && (
+                <button
+                  onClick={() => {
+                    signOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 py-2 text-left`}
+                >
+                  LOGOUT
+                </button>
+              )}
+            </div>
+          </div>
+        )}
       </nav>
     </div>
   );

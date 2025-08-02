@@ -1,13 +1,19 @@
 @import url('https://fonts.googleapis.com/css2?family=Afacad:ital,wght@0,400..700;1,400..700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 @import 'tailwindcss';
 
-/* Use Montserrat for body text, Afacad for headings */
+/* Use DM Sans for body text, Afacad for headings */
 body, html {
-  font-family: 'Montserrat', sans-serif;
+  font-family: 'DM Sans', sans-serif;
 }
 h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: 'Afacad', sans-serif;
+}
+
+/* Force rounded corners for content images */
+.content-image-container {
+  border-radius: 0.5rem !important;
+  overflow: hidden !important;
 }
 
 /* Custom animations for hero circles */
