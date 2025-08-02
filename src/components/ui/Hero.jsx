@@ -9,7 +9,7 @@ export default function Hero() {
       <div className='w-full px-4 md:px-8 lg:px-16 xl:px-[171px]'>
         <div className='flex flex-col lg:flex-row items-center justify-between h-full'>
           {/* Left Side - Content */}
-          <div className='space-y-4 pt-8 md:pt-12 lg:pt-20 w-full max-w-2xl mx-auto lg:mx-0 text-center lg:text-left'>
+          <div className='space-y-4 pt-8 md:pt-12 lg:pt-20 w-full max-w-2xl mx-auto lg:mx-0 lg:ml-8 text-center lg:text-left'>
             {/* Main Headline */}
             <div className='flex items-start justify-center lg:justify-start'>
               <h1 className='font-bold leading-tight antialiased font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl' style={{ fontSize: 'clamp(2.5rem, 5vw, 5rem)' }}>
