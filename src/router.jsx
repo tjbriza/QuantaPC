@@ -9,6 +9,7 @@ import About from './components/pages/About';
 import PrivateRoute from './components/PrivateRoute';
 import ProfileSetup from './components/pages/ProfileSetup';
 import ProductPage from './components/pages/ProductPage';
+import CartPage from './components/pages/CartPage';
 import ErrorPage from './components/pages/ErrorPage';
 export const router = createBrowserRouter([
   {
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
       {
         path: '*',
         element: <ErrorPage />,
+      },
+      {
+        path: 'cart',
+        element: (
+          <PrivateRoute>
+            <CartPage />
+          </PrivateRoute>
+        ),
       },
     ],
   },
