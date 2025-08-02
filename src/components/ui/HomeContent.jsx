@@ -10,7 +10,7 @@ export default function Content() {
         backgroundRepeat: 'no-repeat',
       }}
     >
-      <div className='container mx-auto px-8 py-16'>
+      <div className='w-full py-16 px-4 md:px-8 lg:px-16 xl:px-[171px]'>
         {/* Main Content Grid */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16'>
           {/* Custom PC Builder Section */}
