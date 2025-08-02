@@ -115,7 +115,8 @@ export default function Navigation() {
             </button>
 
             {/* Cart */}
-            <button
+            <Link
+              to='/cart'
               className={`${iconColor} p-2 rounded-lg transition-all duration-300 relative ${hoverBg} hover:scale-105`}
             >
               <svg
@@ -128,7 +129,7 @@ export default function Navigation() {
                 <line x1='3' y1='6' x2='21' y2='6' />
                 <path d='m16 10a4 4 0 01-8 0' />
               </svg>
-            </button>
+            </Link>
 
             {/* User Profile */}
             {session ? (
