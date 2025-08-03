@@ -42,7 +42,7 @@ begin
     from cart_items
     where cart_id = v_cart_id and product_id = p_product_id;
 
-    v_final_quantity := LEAST(v_existing_quantity + p_quantity, v_stock);
+    v_final_quantity := LEAST(COALESCE(v_existing_quantity, 0) + p_quantity, v_stock);
 
     if found then
         update cart_items
