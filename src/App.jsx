@@ -4,6 +4,7 @@ import Hero from './components/ui/Hero.jsx';
 import HomeContent from './components/ui/HomeContent';
 import CompanyLogos from './components/ui/CompanyLogos';
 import BentoBox from './components/ui/BentoBox';
+import Footer from './components/ui/Footer';
 
 function App() {
   const [count, setCount] = useState(0);
@@ -14,6 +15,7 @@ function App() {
       <HomeContent />
       <CompanyLogos />
       <BentoBox />
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useState, useEffect } from 'react';
+import '../../components.css';
 
 export default function Navigation() {
   const { session, signOut } = useAuth();
@@ -34,33 +35,30 @@ export default function Navigation() {
 
   return (
     <div className='fixed top-0 left-0 right-0 z-50 p-2 md:p-4'>
-      <nav
-        className='mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20'
-        style={{ boxShadow: '0 0 25px rgba(0, 0, 0, 0.3)', maxWidth: '1280px' }}
-      >
+      <nav className='nav-container mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20 max-w-screen-xl'>
         <div className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4'>
           {/* Left Navigation - Hidden on mobile */}
           <div className='hidden lg:flex items-center space-x-6 xl:space-x-8'>
             <Link
               to='/catalog'
-              className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
             >
               SHOP
-              <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
             </Link>
             <Link
               to='/catalog'
-              className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
             >
               BUILDS
-              <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
             </Link>
             <Link
               to='/about'
-              className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
             >
               ABOUT
-              <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
             </Link>
           </div>
 
@@ -228,26 +226,26 @@ export default function Navigation() {
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
               >
                 SHOP
-                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
               </Link>
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
               >
                 BUILDS
-                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
               </Link>
               <Link
                 to='/about'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`${textColor} text-sm font-medium tracking-wide transition-all duration-300 relative group hover:scale-105 py-2`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
               >
                 ABOUT
-                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
+                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
               </Link>
               {session && (
                 <button

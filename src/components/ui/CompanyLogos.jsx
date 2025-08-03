@@ -1,3 +1,5 @@
+import '../../components.css';
+
 export default function CompanyLogos() {
 
     {/*Images on marquee*/}
@@ -10,7 +12,7 @@ export default function CompanyLogos() {
   ];
 
   return (
-    <div className="py-8 sm:py-12 lg:py-16 px-4" style={{ backgroundColor: '#EEEEEE' }}>
+    <div className="bg-[#EEEEEE] py-8 sm:py-12 lg:py-16 px-4">
       <p className="text-center text-black mb-6 sm:mb-8 lg:mb-12 text-sm sm:text-base lg:text-lg font-semibold uppercase tracking-wider font-heading">
         FEATURING THESE COMPANIES
       </p>
@@ -29,35 +31,6 @@ export default function CompanyLogos() {
           </div>
         </div>
       </div>
-
-
-        {/*Change speed here at "marquee"*/}
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee 10s linear infinite;
-        }
-
-        .animate-marquee:hover {
-          animation-play-state: paused;
-        }
-
-        @media (max-width: 640px) {
-          .animate-marquee {
-          
-            animation: marquee 10s linear infinite;
-          }
-        }
-      `}</style>
     </div>
   );
 }
