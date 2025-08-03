@@ -1,6 +1,7 @@
 current custom hooks: FullProductDetails, SupabaseCart, SupabaseRead, SupabaseStorage, SupabaseWrite
 
 included in this readme: purpose, feature, parameter/returns, example/usage pattern for the hooks
+
 basahin nyo na lang :)
 
 ////
