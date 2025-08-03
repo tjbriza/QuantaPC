@@ -42,13 +42,15 @@ begin
     from cart_items
     where cart_id = v_cart_id and product_id = p_product_id;
 
+    v_final_quantity := LEAST(v_existing_quantity + p_quantity, v_stock);
+
     if found then
         update cart_items
-        set quantity = v_existing_quantity + p_quantity
+        set quantity = v_final_quantity
         where cart_id = v_cart_id and product_id = p_product_id;
     else --insert if not found
-        insert into cart_items (cart_id, product_id, quantity)
-        values (v_cart_id, p_product_id, p_quantity, now());
+        insert into cart_items (cart_id, product_id, quantity, added_at)
+        values (v_cart_id, p_product_id, v_final_quantity, now());
     end if;
 
     return json_build_object('success', true, 'error', null, 'final_quantity', v_final_quantity);
