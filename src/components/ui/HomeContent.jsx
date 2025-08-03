@@ -82,40 +82,6 @@ export default function Content() {
             </div>
           </div>
         </div>
-
-        {/* Company Logos Section */}
-        <div className='p-4'>
-          <p className='text-center text-black mb-6 text-lg font-semibold uppercase tracking-wider font-heading'>
-            FEATURING THESE COMPANIES
-          </p>
-          <div className='flex justify-center items-center space-x-12 flex-wrap gap-y-6'>
-            <img
-              src='/images/feature1.png'
-              alt='AMD'
-              className='h-24 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded'
-            />
-            <img
-              src='/images/feature2.png'
-              alt='Acer'
-              className='h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded'
-            />
-            <img
-              src='/images/feature3.png'
-              alt='Intel'
-              className='h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded'
-            />
-            <img
-              src='/images/feature4.png'
-              alt='NVIDIA'
-              className='h-24 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded'
-            />
-            <img
-              src='/images/feature5.png'
-              alt='HP'
-              className='h-20 object-contain grayscale hover:grayscale-0 transition-all duration-300 rounded'
-            />
-          </div>
-        </div>
       </div>
     </div>
   );
