@@ -31,11 +31,11 @@ export default function BentoBox() {
               </div>
               
               <div className='flex justify-center pt-8'>
-                <div className='w-80 h-80 bg-gray-300 rounded-2xl flex items-center justify-center'>
+                <div className='w-80 h-80 rounded-2xl flex items-center justify-center'>
                   <img
-                    src='https://images.pexels.com/photos/2582937/pexels-photo-2582937.jpeg?auto=compress&cs=tinysrgb&w=400'
+                    src='/images/bentoimage.png'
                     alt='Gaming PC Setup'
-                    className='w-full h-full object-cover rounded-2xl'
+                    className='w-full h-full object-contain rounded-2xl'
                   />
                 </div>
               </div>
@@ -43,25 +43,29 @@ export default function BentoBox() {
           </Link>
 
           {/* Right column with two stacked cards */}
-          <div className='space-y-8'>
+          <div className='flex flex-col h-full'>
             {/* BUILDS - Top right card */}
             <Link
               to='/catalog'
-              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50'
+              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
             >
               <h2 className='text-4xl font-bold text-gray-800 mb-4 font-heading'>
                 BUILDS
               </h2>
               <p className='text-gray-600 text-lg leading-relaxed'>
                 Check out our latest Prebuilt PCs. Get inspiration or request a similar
-                setup tailored for gaming, editing, or work.
+                setup tailored for gaming, editing, or work. Each build is carefully
+                optimized for performance and reliability.
               </p>
             </Link>
+
+            {/* Spacing between cards */}
+            <div className='h-8'></div>
 
             {/* CUSTOM PC BUILDER - Bottom right card */}
             <Link
               to='/catalog'
-              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50'
+              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
             >
               <h2 className='text-4xl font-bold text-gray-800 mb-4 font-heading'>
                 CUSTOM PC BUILDER
@@ -69,7 +73,7 @@ export default function BentoBox() {
               <p className='text-gray-600 text-lg leading-relaxed'>
                 Build your dream rig from the ground up. Choose the perfect
                 components for gaming, content creation, or everyday use—tailored to
-                your budget and performance needs.
+                your budget and performance needs. Every build is custom-crafted.
               </p>
             </Link>
           </div>
