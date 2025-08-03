@@ -29,6 +29,7 @@ begin
         return json_build_object('success', false, 'message', 'Product not found');
     end if;
 
+    --clamp quantity to available stock (to prevent overordering)
     v_final_quantity := LEAST(p_quantity, v_stock);
     v_quantity_adjusted := (p_quantity > v_stock);
 
