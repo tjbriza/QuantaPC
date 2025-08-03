@@ -6,6 +6,7 @@ declare
     v_cart_id uuid;
     v_stock int;
     v_final_quantity int;
+    v_quantity_adjusted boolean;
 begin
     if p_quantity <= 0 then
         return json_build_object('success', false, 'message', 'Quantity must be greater than zero');
