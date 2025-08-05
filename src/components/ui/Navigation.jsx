@@ -41,24 +41,24 @@ export default function Navigation() {
           <div className='hidden lg:flex items-center space-x-6 xl:space-x-8'>
             <Link
               to='/catalog'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
             >
               SHOP
-              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+              <span className='nav-underline'></span>
             </Link>
             <Link
               to='/catalog'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
             >
               BUILDS
-              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+              <span className='nav-underline'></span>
             </Link>
             <Link
               to='/about'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide relative transition-all duration-300 hover:scale-105`}
+              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
             >
               ABOUT
-              <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+              <span className='nav-underline'></span>
             </Link>
           </div>
 
@@ -226,26 +226,26 @@ export default function Navigation() {
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
               >
                 SHOP
-                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+                <span className='nav-underline'></span>
               </Link>
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
               >
                 BUILDS
-                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+                <span className='nav-underline'></span>
               </Link>
               <Link
                 to='/about'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2 relative transition-all duration-300 hover:scale-105`}
+                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
               >
                 ABOUT
-                <span className='nav-underline absolute bottom-0 left-0 w-0 h-0.5 transition-all duration-300 rounded-full group-hover:w-full'></span>
+                <span className='nav-underline'></span>
               </Link>
               {session && (
                 <button

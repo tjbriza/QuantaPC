@@ -16,8 +16,29 @@
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
 }
 
+/* Navigation link styling */
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  transform: scale(1.05);
+}
+
 .nav-link .nav-underline {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 0.125rem;
   background: linear-gradient(to right, #60a5fa, #22d3ee);
+  transition: all 0.3s ease;
+  border-radius: 9999px;
+}
+
+.nav-link:hover .nav-underline {
+  width: 100%;
 }
 
 /* Company Logos Animation */
