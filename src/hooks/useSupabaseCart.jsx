@@ -5,9 +5,11 @@ import { useAuth } from '../context/AuthContext';
 
 export function useSupabaseCart() {
   const { session } = useAuth();
-  const [loadingCart, setLoadingCart] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [removingCartItem, setRemovingCartItem] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [updatingQuantity, setupdatingQuantity] = useState(false);
   const [error, setError] = useState(null);
 
   //fetch cart items for the authenticated user
@@ -52,6 +54,48 @@ export function useSupabaseCart() {
     return data;
   };
 
+  //remove item from cart
+  const removeCartItem = async (p_product_id) => {
+    setRemovingCartItem(true);
+    const { data, error } = await supabase.rpc('removeCartItem', {
+      p_user_id: session.user?.id,
+      p_product_id: p_product_id,
+    });
+
+    if (error) {
+      setRemovingCartItem(false);
+      setError(error);
+      console.error('Error removing item from cart:', error);
+      return;
+    }
+
+    await fetchCartItems();
+    setRemovingCartItem(false);
+    return data;
+  };
+
+  //update cart item quantity
+  const updateCartItemQuantity = async (p_product_id, p_quantity) => {
+    setupdatingQuantity(true);
+
+    const { data, error } = await supabase.rpc('updateCartItemQuantity', {
+      p_user_id: session.user?.id,
+      p_product_id: p_product_id,
+      p_quantity: p_quantity,
+    });
+
+    if (error) {
+      setupdatingQuantity(false);
+      setError(error);
+      console.error('Error updating cart item quantity:', error);
+      return;
+    }
+
+    await fetchCartItems();
+    setupdatingQuantity(false);
+    return data;
+  };
+
   useEffect(() => {
     fetchCartItems();
   }, [session]);
@@ -60,8 +104,12 @@ export function useSupabaseCart() {
     cartItems,
     addToCart,
     fetchCartItems,
+    updateCartItemQuantity,
+    removeCartItem,
+    updatingQuantity,
     loadingCart,
     addingToCart,
+    removingCartItem,
     error,
   };
 }
