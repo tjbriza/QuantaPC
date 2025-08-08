@@ -5,25 +5,35 @@ import { useAuth } from '../context/AuthContext';
 
 export function useSupabaseCart() {
   const { session } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const [loadingCart, setLoadingCart] = useState(true);
+  const [addingToCart, setAddingToCart] = useState(false);
   const [cartItems, setCartItems] = useState([]);
+  const [error, setError] = useState(null);
 
   //fetch cart items for the authenticated user
   const fetchCartItems = async () => {
-    setLoading(true);
+    setLoadingCart(true);
     const { data, error } = await supabase.rpc('getUserCart', {
       p_user_id: session.user?.id,
     });
     if (error) {
-      console.error('Error fetching cart items:', error);
-      setLoading(false);
+      setError(error);
+      setLoadingCart(false);
       return;
     }
     setCartItems(data);
-    setLoading(false);
+    setLoadingCart(false);
   };
 
+  //add item to cart
   const addToCart = async (p_product_id, p_quantity = 1) => {
+    if (!session) {
+      console.error('User not authenticated');
+      setError('User not authenticated');
+      return;
+    }
+
+    setAddingToCart(true);
     const { data, error } = await supabase.rpc('addToCart', {
       p_user_id: session.user?.id,
       p_product_id,
@@ -31,11 +41,14 @@ export function useSupabaseCart() {
     });
 
     if (error) {
-      return error;
+      setAddingToCart(false);
+      setError(error);
+      console.error('Error adding to cart:', error);
+      return;
     }
 
     await fetchCartItems();
-
+    setAddingToCart(false);
     return data;
   };
 
@@ -46,7 +59,9 @@ export function useSupabaseCart() {
   return {
     cartItems,
     addToCart,
-    loading,
     fetchCartItems,
+    loadingCart,
+    addingToCart,
+    error,
   };
 }
