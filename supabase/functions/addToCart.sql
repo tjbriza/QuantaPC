@@ -14,7 +14,7 @@ begin
     end if;
     
     --get product stock
-    select stock into v_stock
+    select stock_quantity into v_stock
     from products
     where id = p_product_id;
 
