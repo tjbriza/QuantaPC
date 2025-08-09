@@ -35,30 +35,27 @@ export default function Navigation() {
 
   return (
     <div className='fixed top-0 left-0 right-0 z-50 p-2 md:p-4'>
-      <nav className='nav-container mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20 max-w-screen-xl'>
+      <nav className='mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20 max-w-[90rem] shadow-[0_0_25px_rgba(0,0,0,0.3)]'>
         <div className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4'>
           {/* Left Navigation - Hidden on mobile */}
           <div className='hidden lg:flex items-center space-x-6 xl:space-x-8'>
             <Link
               to='/catalog'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
+              className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               SHOP
-              <span className='nav-underline'></span>
             </Link>
             <Link
               to='/catalog'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
+              className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               BUILDS
-              <span className='nav-underline'></span>
             </Link>
             <Link
               to='/about'
-              className={`nav-link ${textColor} text-sm font-medium tracking-wide`}
+              className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               ABOUT
-              <span className='nav-underline'></span>
             </Link>
           </div>
 
@@ -226,26 +223,23 @@ export default function Navigation() {
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
+                className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 SHOP
-                <span className='nav-underline'></span>
               </Link>
               <Link
                 to='/catalog'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
+                className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 BUILDS
-                <span className='nav-underline'></span>
               </Link>
               <Link
                 to='/about'
                 onClick={() => setIsMobileMenuOpen(false)}
-                className={`nav-link ${textColor} text-sm font-medium tracking-wide py-2`}
+                className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 ABOUT
-                <span className='nav-underline'></span>
               </Link>
               {session && (
                 <button

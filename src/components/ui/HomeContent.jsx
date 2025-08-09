@@ -1,14 +1,5 @@
-import '../../components.css';
-
 export default function Content() {
   return (
-    <div 
-      className='w-full min-h-screen bg-[#EEEEEE] bg-cover bg-center bg-no-repeat'
-      style={{
-        backgroundImage: 'url(/images/background1.png)',
-        backgroundPosition: '50% 75%'
-      }}
-    >
       <div className='w-full py-24 px-4 md:px-8 lg:px-16 xl:px-[171px]'>
         {/* Main Content Grid */}
         <div className='grid grid-cols-1 lg:grid-cols-3 gap-16 mb-32'>
@@ -80,6 +71,5 @@ export default function Content() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

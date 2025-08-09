@@ -6,6 +6,7 @@ import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
 import { FileImage } from 'lucide-react';
+import Background from '../ui/Background.jsx';
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
@@ -88,12 +89,13 @@ export default function ProfileSetup() {
   };
 
   return (
-    <div className='relative h-screen overflow-hidden' style={{ backgroundColor: '#EEEEEE', backgroundImage: 'url(/images/background.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
-      {/* Logo in top left */}
-      <Link 
-        to="/" 
-        className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
-      >
+    <Background>
+      <div className='relative h-screen overflow-hidden'>
+        {/* Logo in top left */}
+        <Link 
+          to="/" 
+          className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+        >
         <img 
           src="/images/logo.png"
           alt="Quanta PC" 
@@ -110,13 +112,13 @@ export default function ProfileSetup() {
               boxShadow: '0 0 12px rgba(0, 0, 0, 0.6)' 
             }}
           >
-            <h1 className="text-2xl font-semibold text-white text-center mb-8 font-heading">
+            <h1 className="text-3xl font-semibold text-white text-center mb-8 font-afacad">
               Almost done!
             </h1>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="mb-5">
-                <label htmlFor="name_first" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="name_first" className="text-black text-xl block mb-2 font-afacad font-medium">
                   First Name <span className="text-red-500">*</span>
                 </label>
                 <div>
@@ -124,8 +126,12 @@ export default function ProfileSetup() {
                     id="name_first"
                     name="name_first"
                     type="text"
-                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Enter your first name"
                     required={true}
                     onChange={handleChange}
                   />
@@ -133,7 +139,7 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="name_last" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="name_last" className="text-black text-xl block mb-2 font-afacad font-medium">
                   Last Name <span className="text-red-500">*</span>
                 </label>
                 <div>
@@ -141,8 +147,12 @@ export default function ProfileSetup() {
                     id="name_last"
                     name="name_last"
                     type="text"
-                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Enter your last name"
                     required={true}
                     onChange={handleChange}
                   />
@@ -150,7 +160,7 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="username" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="username" className="text-black text-xl block mb-2 font-afacad font-medium">
                   Username
                 </label>
                 <div>
@@ -158,8 +168,12 @@ export default function ProfileSetup() {
                     id="username"
                     name="username"
                     type="text"
-                    className="bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Choose a username"
                     required={true}
                     onChange={handleChange}
                   />
@@ -167,13 +181,13 @@ export default function ProfileSetup() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="avatar_url" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="avatar_url" className="text-black text-xl block mb-2 font-afacad font-medium">
                   Profile Picture
                 </label>
                 <div className="flex items-center gap-3">
                   <label 
                     htmlFor="avatar_url" 
-                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer font-heading"
+                    className="bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer font-afacad text-lg"
                     style={{ 
                       border: '1px solid #6E6E6E', 
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -190,18 +204,18 @@ export default function ProfileSetup() {
                       onChange={handleChange}
                     />
                   </label>
-                  <span className="text-black">{fileName}</span>
+                  <span className="text-black font-afacad text-lg">{fileName}</span>
                 </div>
               </div>
 
               {error && (
-                <div className="text-red-300 text-sm text-center mb-4">An error occured, please try again: {error}</div>
+                <div className="text-red-300 text-lg text-center mb-4 font-afacad">An error occured, please try again: {error}</div>
               )}
 
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200 font-heading"
+                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -214,5 +228,6 @@ export default function ProfileSetup() {
         </div>
       </div>
     </div>
+    </Background>
   );
 }

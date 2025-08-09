@@ -3,19 +3,18 @@ import '../../components.css';
 
 export default function BentoBox() {
   return (
-    <div 
-      className='w-full min-h-screen bg-[#EEEEEE] bg-center bg-no-repeat'
-      style={{
-        backgroundImage: 'url(/images/background1.png)',
-        backgroundSize: '100% 100%'
-      }}
-    >
-      <div className='w-full py-24 px-4 md:px-8 lg:px-16 xl:px-[171px]'>
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto'>
+
+      <div className='w-full py-24 px-4 md:px-8 lg:px-16 xl:px-[215px]'>
+        <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-none w-full'>
           {/* SHOP - Large card on the left */}
           <Link
             to='/catalog'
-            className='group bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50'
+            className='group rounded-3xl p-10 transition-all duration-300 hover:scale-[1.02] border border-gray-200/50'
+            style={{ 
+              height: '46.375rem', 
+              backgroundColor: '#EEEEEE',
+              boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+            }}
           >
             <div className='space-y-6'>
               <div>
@@ -31,8 +30,8 @@ export default function BentoBox() {
               <div className='flex justify-center pt-8'>
                 <div className='w-80 h-80 rounded-2xl flex items-center justify-center ml-35'>
                   <img
-                    src='/images/bentoimage.png'
-                    alt='Gaming PC Setup'
+                    src='/images/bento1.png'
+                    alt='PC Image'
                     className='w-full h-full object-contain rounded-2xl scale-125 mb-8  '
                   />
                 </div>
@@ -46,7 +45,12 @@ export default function BentoBox() {
             {/* BUILDS - Top right card */}
             <Link
               to='/catalog'
-              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
+              className='group block rounded-3xl p-10 transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
+              style={{ 
+                height: '46.375rem', 
+                backgroundColor: '#EEEEEE',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+              }}
             >
               <h2 className='text-[#282E41] text-4xl font-bold mb-4 font-heading'>
                 BUILDS
@@ -64,7 +68,12 @@ export default function BentoBox() {
             {/* CUSTOM PC BUILDER - Bottom right card */}
             <Link
               to='/catalog'
-              className='group block bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
+              className='group block rounded-3xl p-10 transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
+              style={{ 
+                height: '46.375rem', 
+                backgroundColor: '#EEEEEE',
+                boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0, 0, 0, 0.05)'
+              }}
             >
               <h2 className='text-[#282E41] text-4xl font-bold mb-4 font-heading'>
                 CUSTOM PC BUILDER
@@ -78,6 +87,5 @@ export default function BentoBox() {
           </div>
         </div>
       </div>
-    </div>
   );
 }

@@ -1,23 +1,31 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import '../../components.css';
 
 export default function Footer() {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   return (
-    <div className="bg-[#EEEEEE] py-12">
-      <div className="px-5">
-        <div className="footer-card w-full min-h-[327px] h-auto rounded-3xl overflow-hidden relative font-dm-sans">
-          <div className="absolute inset-0 flex items-center justify-between px-[171px] 
-                          max-md:flex-col max-md:px-5 max-md:py-10 max-md:gap-8 max-md:text-center
-                          md:max-lg:px-15 md:max-lg:gap-5
-                          lg:gap-20">
+    <div className="py-12 relative hidden md:block">
+      {/* Local backdrop for pages without UnifiedBackground to improve blending */}
+      {!isHomePage && (
+        <div className="pointer-events-none absolute inset-0 z-0">
+          <div className="mx-auto max-w-[90rem] px-4 h-full rounded-2xl bg-gradient-to-b from-[rgba(65,105,148,0.10)] via-[rgba(65,105,148,0.06)] to-transparent"></div>
+        </div>
+      )}
+      <div className="px-2 md:px-4 relative z-10">
+        <div className="mx-auto max-w-[90rem] min-h-[327px] rounded-2xl overflow-hidden relative font-dm-sans bg-white/20 backdrop-blur-xl border border-white/20 shadow-[0_0_25px_rgba(0,0,0,0.3)] flex items-center">
+          <div className="flex items-center justify-between w-full px-8 lg:px-16 py-10 lg:py-12
+                          max-md:flex-col max-md:px-5 max-md:py-8 max-md:gap-8 max-md:text-center
+                          md:max-lg:px-10 md:max-lg:gap-10
+                          gap-12 lg:gap-20">
             {/* Logo and Copyright */}
             <div className="flex flex-col gap-4 max-md:items-center">
               <img
                 src='/images/footerlogo.png'
                 alt='Footer Logo'
-                className="w-[506px] h-[180px] object-contain
-                          max-md:w-[300px] max-md:h-[108px]
-                          md:max-lg:w-[380px] md:max-lg:h-[135px]"
+                className="w-[420px] h-[150px] object-contain
+                          max-md:w-[280px] max-md:h-[100px]
+                          md:max-lg:w-[360px] md:max-lg:h-[130px]"
               />
               <p className="text-black text-[15px] m-0">
                 © 2025. All rights reserved.
@@ -25,7 +33,7 @@ export default function Footer() {
             </div>
 
             {/* Links Grid */}
-            <div className="flex gap-20 
+            <div className="flex gap-12 lg:gap-20 
                            max-md:flex-col max-md:gap-6 max-md:w-full
                            md:max-lg:gap-10">
               {/* Quick Links */}
@@ -33,34 +41,40 @@ export default function Footer() {
                 <h3 className="text-black text-xl font-bold m-0">
                   Quick Links
                 </h3>
-                <div className="flex flex-col gap-2">
-                  <a href='/catalog' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
+              <div className="flex flex-col gap-2">
+                  <a href='/catalog' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     Products
                   </a>
-                  <a href='/about' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
+                  <a href='/about' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     About Us
                   </a>
-                  <a href='/services' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
+                  <a href='/services' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     Services
                   </a>
-                  <a href='/builder' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
+                  <a href='/builder' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     Custom PC Builder
                   </a>
                 </div>
               </div>
 
               {/* Additional Links */}
-              <div className="flex flex-col gap-2 max-md:items-center max-md:text-center">
-                <a href='/team' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
-                  Our Team
-                </a>
-                <a href='/custom-builds' className="footer-link text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit">
-                  Custom builds
-                </a>
+              <div className="flex flex-col gap-4 max-md:items-center max-md:text-center">
+                {/* Invisible spacer to align with Products */}
+                <div className="text-xl font-bold opacity-0 pointer-events-none">
+                  Spacer
+                </div>
+                <div className="flex flex-col gap-2">
+                  <a href='/team' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
+                    Our Team
+                  </a>
+                  <a href='/custom-builds' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
+                    Custom builds
+                  </a>
+                </div>
               </div>
 
               {/* Sign Up */}
-              <div className="flex flex-col gap-4 max-md:items-center max-md:text-center">
+            <div className="flex flex-col gap-4 max-md:items-center max-md:text-center">
                 <h3 className="text-black text-xl font-semibold m-0">
                   Remain Updated
                 </h3>

@@ -1,6 +1,7 @@
-/* ==============================================
-   SIMPLIFIED COMPONENT STYLES - TAILWIND V4
-   ============================================== */
+.bento-grid-lg {
+  grid-template-columns: minmax(0, 1fr) 47.25rem;
+  grid-auto-rows: 1fr;
+}
 
 /* Hero Component */
 .hero-main-title {
@@ -12,11 +13,8 @@
 }
 
 /* Navigation Component */
-.nav-container {
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
-}
+/* Box shadow handled in JSX now */
 
-/* Navigation link styling */
 .nav-link {
   position: relative;
   transition: all 0.3s ease;
@@ -41,14 +39,14 @@
   width: 100%;
 }
 
-/* Company Logos Animation */
+/* Company Logos Marquee Animation */
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
 .animate-marquee {
-  animation: marquee 10s linear infinite reverse; /* change speed on marquee 10s reverse goes to right*/
+  animation: marquee 10s linear infinite reverse;
 }
 
 .animate-marquee:hover {
@@ -70,18 +68,202 @@
   box-shadow: 0 0 25px rgba(0, 0, 0, 0.3);
 }
 
-.footer-link::after {
-  content: '';
+/* Footer link animations now handled inline */
+
+/* Background Styles */
+
+/* Main page background */
+.unified-home-background {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  /* Blue tints in corners to prevent white edges */
+  background:
+    radial-gradient(120vw 80vh at -10vw -10vh, rgba(32, 64, 99, 0.35) 0%, rgba(32, 64, 99, 0.18) 30%, transparent 70%),
+    radial-gradient(120vw 80vh at 110vw -10vh, rgba(32, 64, 99, 0.35) 0%, rgba(32, 64, 99, 0.18) 30%, transparent 70%),
+    #EEEEEE;
+}
+
+/* Blue glow effect at the top */
+.unified-top-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 65vh;
+  background:
+    /* Fix white corners at the top */
+    radial-gradient(circle at -8% -8%, rgba(32, 64, 99, 0.28) 0%, rgba(32, 64, 99, 0.16) 22%, transparent 62%),
+    radial-gradient(circle at 108% -8%, rgba(32, 64, 99, 0.28) 0%, rgba(32, 64, 99, 0.16) 22%, transparent 62%),
+    /* Boost left side to match right */
+    radial-gradient(circle at 8% 8%, rgba(103, 152, 205, 0.58) 0%, rgba(103, 152, 205, 0.34) 22%, transparent 58%),
+    radial-gradient(circle at 20% 10%, rgba(103, 152, 205, 0.40) 0%, rgba(103, 152, 205, 0.22) 18%, transparent 55%),
+    radial-gradient(circle at 50% 0%, rgba(32, 64, 99, 0.18) 0%, rgba(32, 64, 99, 0.08) 18%, transparent 55%),
+    radial-gradient(circle at 75% 12%, rgba(32, 64, 99, 0.40) 0%, rgba(32, 64, 99, 0.22) 22%, transparent 58%),
+    radial-gradient(circle at 15% 6%, rgba(32, 64, 99, 0.32) 0%, rgba(32, 64, 99, 0.18) 20%, transparent 50%),
+    radial-gradient(circle at 90% 8%, rgba(32, 64, 99, 0.28) 0%, rgba(32, 64, 99, 0.14) 22%, transparent 55%),
+    radial-gradient(circle at 50% 5%, rgba(103, 152, 205, 0.28) 0%, transparent 45%);
+  filter: blur(40px);
+  will-change: transform;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Blue effect behind hero section */
+.unified-hero-boost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 58vh;
+  background:
+    /* More hero blue on the left */
+    radial-gradient(circle at 18% 12%, rgba(32, 64, 99, 0.38) 0%, rgba(32, 64, 99, 0.22) 22%, transparent 62%),
+    /* Main blue around center */
+    radial-gradient(circle at 50% 44%, rgba(103, 152, 205, 0.62) 0%, rgba(103, 152, 205, 0.34) 34%, transparent 70%),
+    /* Softer blue to spread the effect */
+    radial-gradient(circle at 50% 50%, rgba(103, 152, 205, 0.28) 0%, rgba(103, 152, 205, 0.18) 36%, transparent 72%),
+    radial-gradient(circle at 35% 18%, rgba(103, 152, 205, 0.55) 0%, rgba(103, 152, 205, 0.28) 24%, transparent 60%),
+    radial-gradient(circle at 70% 16%, rgba(32, 64, 99, 0.38) 0%, rgba(32, 64, 99, 0.22) 22%, transparent 62%),
+    radial-gradient(circle at 50% 10%, rgba(65, 105, 148, 0.35) 0%, rgba(65, 105, 148, 0.18) 24%, transparent 60%);
+  filter: blur(24px);
+  animation: heroBreath 8s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+@keyframes heroBreath {
+  0%, 100% { opacity: 0.85; transform: translate3d(0,0,0); }
+  50% { opacity: 1; transform: translate3d(0,-4px,0); }
+}
+
+/* Fade from blue to gray background */
+.unified-fade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  /* Smooth transition from hero blues to gray */
+  background: linear-gradient(
+    to bottom,
+    rgba(238, 238, 238, 0) 0%,
+    rgba(238, 238, 238, 0) 40%,
+    rgba(238, 238, 238, 0.18) 58%,
+    rgba(238, 238, 238, 0.45) 78%,
+    #EEEEEE 95%,
+    #EEEEEE 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Blue glow at bottom near footer */
+.unified-bottom-accent {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(to right, #60a5fa, #22d3ee);
-  transition: width 0.3s ease;
-  border-radius: 9999px;
+  width: 100%;
+  height: 45vh;
+  background:
+    radial-gradient(circle at 25% 92%, rgba(103, 152, 205, 0.16) 0%, rgba(103, 152, 205, 0.08) 18%, transparent 55%),
+    radial-gradient(circle at 78% 90%, rgba(32, 64, 99, 0.14) 0%, rgba(32, 64, 99, 0.06) 20%, transparent 58%);
+  filter: blur(28px);
+  pointer-events: none;
+  z-index: 1;
 }
 
-.footer-link:hover::after {
+/* More blue behind footer area */
+.unified-footer-boost {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   width: 100%;
+  height: 30vh;
+  background:
+    radial-gradient(circle at 35% 86%, rgba(103, 152, 205, 0.24) 0%, rgba(103, 152, 205, 0.12) 24%, transparent 60%),
+    radial-gradient(circle at 70% 84%, rgba(32, 64, 99, 0.18) 0%, rgba(32, 64, 99, 0.10) 22%, transparent 62%);
+  filter: blur(22px);
+  animation: heroBreath 10s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Moving lines effect */
+.unified-marquee {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(103, 152, 205, 0.08) 0%,
+    rgba(103, 152, 205, 0.08) 2px,
+    transparent 2px,
+    transparent 100px
+  );
+  animation: unifiedMarqueeMove 30s linear infinite;
+  pointer-events: none;
+  will-change: transform;
+  z-index: 2;
+}
+
+@keyframes unifiedMarqueeMove {
+  0% { transform: translate3d(0,0,0); }
+  100% { transform: translate3d(-50%,0,0); }
+}
+
+/* Floating circles for depth */
+.unified-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(32px);
+  opacity: 0.22;
+  pointer-events: none;
+  animation: slowFloat 12s ease-in-out infinite;
+  will-change: transform;
+  z-index: 2;
+  transform: translateZ(0);
+}
+
+.unified-circle.blue { background-color: #6798CD; }
+.unified-circle.darkblue { background-color: #204063; }
+.unified-circle.midblue { background-color: #416994; }
+
+.unified-circle.c1 { width: 280px; height: 280px; top: 8%; left: 8%; }
+.unified-circle.c2 { width: 230px; height: 230px; top: 12%; right: 12%; }
+.unified-circle.c3 { width: 160px; height: 160px; bottom: 20%; left: 18%; opacity: 0.15; }
+.unified-circle.c4 { width: 140px; height: 140px; bottom: 25%; right: 8%; opacity: 0.15; }
+/* More circles */
+.unified-circle.c5 { width: 200px; height: 200px; top: 6%; left: 40%; opacity: 0.18; }
+.unified-circle.c6 { width: 180px; height: 180px; bottom: 12%; right: 35%; opacity: 0.14; }
+.unified-circle.c7 { width: 240px; height: 240px; bottom: 30%; left: 5%; opacity: 0.12; }
+.unified-circle.c8 { width: 120px; height: 120px; top: 20%; right: 30%; opacity: 0.2; }
+/* Bottom circles */
+.unified-circle.c9 { width: 210px; height: 210px; bottom: 8%; left: 20%; opacity: 0.12; }
+.unified-circle.c10 { width: 150px; height: 150px; bottom: 3%; right: 18%; opacity: 0.1; }
+/* Content area circles */
+.unified-circle.c11 { width: 260px; height: 260px; top: 42%; left: 24%; opacity: 0.16; }
+.unified-circle.c12 { width: 220px; height: 220px; top: 48%; right: 22%; opacity: 0.16; }
+.unified-circle.c13 { width: 180px; height: 180px; top: 55%; left: 50%; opacity: 0.14; }
+.unified-circle.c14 { width: 140px; height: 140px; top: 38%; right: 45%; opacity: 0.14; }
+.unified-circle.c15 { width: 200px; height: 200px; top: 60%; left: 8%; opacity: 0.12; }
+/* Top area circles */
+.unified-circle.c16 { width: 220px; height: 220px; top: 6%; left: 16%; opacity: 0.2; }
+.unified-circle.c17 { width: 180px; height: 180px; top: 10%; right: 22%; opacity: 0.22; }
+.unified-circle.c18 { width: 140px; height: 140px; top: 4%; left: 46%; opacity: 0.18; }
+.unified-circle.c19 { width: 260px; height: 260px; top: 14%; right: 6%; opacity: 0.18; }
+.unified-circle.c20 { width: 160px; height: 160px; top: 12%; left: 70%; opacity: 0.2; }
+
+@keyframes slowFloat {
+  0%, 100% { transform: translate3d(0,0,0); }
+  50% { transform: translate3d(15px,-28px,0); }
+}
+
+
+/* Foreground content */
+.unified-content {
+  position: relative;
+  z-index: 10;
 }

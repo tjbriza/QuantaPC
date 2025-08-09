@@ -1,5 +1,3 @@
-import '../../components.css';
-
 export default function CompanyLogos() {
 
     {/*Images on marquee*/}
@@ -12,7 +10,7 @@ export default function CompanyLogos() {
   ];
 
   return (
-    <div className="bg-[#EEEEEE] py-8 sm:py-12 lg:py-16 px-4">
+    <div className="py-8 sm:py-12 lg:py-16 px-4">
       <p className="text-center text-black mb-6 sm:mb-8 lg:mb-12 text-sm sm:text-base lg:text-lg font-semibold uppercase tracking-wider font-heading">
         FEATURING THESE COMPANIES
       </p>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AtSign, Lock } from 'lucide-react';
+import Background from '../ui/Background.jsx';
 
 export default function SignUp() {
   const [email, setEmail] = useState('');
@@ -41,12 +42,13 @@ export default function SignUp() {
   };
 
   return (
-    <div className='relative h-screen overflow-hidden' style={{ backgroundColor: '#EEEEEE', backgroundImage: 'url(/images/background.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat' }}>
-      {/* Logo in top left */}
-      <Link 
-        to="/" 
-        className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
-      >
+    <Background>
+      <div className='relative h-screen overflow-hidden'>
+        {/* Logo in top left */}
+        <Link 
+          to="/" 
+          className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+        >
         <img 
           src="/images/logo.png"
           alt="Quanta PC" 
@@ -59,12 +61,12 @@ export default function SignUp() {
         <div className="flex justify-center space-x-8 mb-6">
           <Link 
             to="/login" 
-            className="text-white/70 text-lg font-medium hover:text-white transition-colors duration-200 relative group font-heading"
+            className="text-white/70 text-xl font-medium hover:text-white transition-colors duration-200 relative group font-afacad"
           >
             Login
             <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
           </Link>
-          <span className="text-white text-lg font-medium border-b-2 border-transparent pb-1 relative font-heading">
+          <span className="text-white text-xl font-medium border-b-2 border-transparent pb-1 relative font-afacad">
             Sign Up
             <span className='absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 rounded-full'></span>
           </span>
@@ -78,22 +80,26 @@ export default function SignUp() {
               boxShadow: '0 0 12px rgba(0, 0, 0, 0.6)' 
             }}
           >
-            <h1 className="text-2xl font-semibold text-white text-center mb-8 font-heading">
+            <h1 className="text-3xl font-semibold text-white text-center mb-8 font-afacad">
               Sign up to <span className="text-white">quantapc</span>
             </h1>
 
             <form className="space-y-4" onSubmit={handleSignUp}>
               <div className="mb-5">
-                <label htmlFor="email" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="email" className="text-black text-xl block mb-2 font-afacad font-medium">
                   Email
                 </label>
                 <div className="relative">
-                  <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
+                  <AtSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
                   <input
                     id="email"
                     type="email"
-                    className="pl-10 bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="pl-10 bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required={true}
@@ -102,16 +108,20 @@ export default function SignUp() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="password" className="text-black text-lg block mb-2 font-heading">
+                <label htmlFor="password" className="text-black text-xl block mb-2 font-afacad font-medium">
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
+                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-black w-5 h-5" />
                   <input
                     id="password"
                     type="password"
-                    className="pl-10 bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="pl-10 bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Create a password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required={true}
@@ -120,16 +130,19 @@ export default function SignUp() {
               </div>
 
               <div className="mb-5">
-                <label htmlFor="confirmPassword" className="text-black text-lg block mb-2 font-heading">
-                  Confirm Password
+                <label htmlFor="confirmPassword" className="text-black text-xl block mb-2 font-afacad font-medium">
+                  Confirm Password <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-5 h-5" />
                   <input
                     id="confirmPassword"
                     type="password"
-                    className="pl-10 bg-black/40 border border-white/20 text-white placeholder:text-white/50 rounded-full h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-white/50 focus:bg-black/50"
-                    placeholder=""
+                    className="bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    style={{ 
+                      border: '1px solid #6E6E6E', 
+                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
+                    }}
+                    placeholder="Confirm your password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
                     required={true}
@@ -138,13 +151,13 @@ export default function SignUp() {
               </div>
 
               {error && (
-                <div className="text-red-300 text-sm text-center mb-4">An error occured, please try again: {error}</div>
+                <div className="text-red-300 text-lg text-center mb-4 font-afacad">An error occured, please try again: {error}</div>
               )}
 
               <button 
                 type="submit"
                 disabled={loading}
-                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-full h-12 font-medium transition-colors duration-200 font-heading"
+                className="w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -154,14 +167,14 @@ export default function SignUp() {
               </button>
 
               <div className="text-center">
-                <span className="text-black/80 text-sm">Or</span>
+                <span className="text-black/80 text-xl font-afacad">Or</span>
               </div>
 
               <a
                 href="https://test.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-full h-12 font-medium transition-colors duration-200 flex items-center justify-center font-heading"
+                className="w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-2xl h-12 font-medium transition-colors duration-200 flex items-center justify-center font-afacad text-lg"
                 style={{ 
                   border: '1px solid #6E6E6E', 
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)' 
@@ -189,16 +202,16 @@ export default function SignUp() {
               </a>
             </form>
             
-            <p className='text-center mt-4 text-black'>
+            <p className='text-center mt-4 text-black text-lg font-afacad'>
               Already have an account?{' '}
-              <Link className='hover:underline font-semibold relative group font-heading' to='/login'>
+              <Link className='hover:underline font-semibold font-afacad text-lg' to='/login'>
                 Log in!{' '}
-                <span className='absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-cyan-400 transition-all duration-300 group-hover:w-full rounded-full'></span>
               </Link>
             </p>
           </div>
         </div>
       </div>
     </div>
+    </Background>
   );
 }
