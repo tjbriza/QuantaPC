@@ -1,4 +1,4 @@
-import ProductGrid from './ProductGrid.jsx';
+import ProductGrid from './ProductCatalog/ProductGrid.jsx';
 
 export default function CategorySection({ title, products }) {
   if (products.length === 0) return null;

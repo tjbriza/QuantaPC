@@ -1,5 +1,5 @@
 import { useSupabaseCart } from '../../hooks/useSupabaseCart.jsx';
-import CardContainer from '../ui/CartContainer.jsx';
+import CardContainer from '../ui/Cart/CartContainer.jsx';
 export default function CartPage() {
   const { cartItems } = useSupabaseCart();
 

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import Background from '../ui/Background.jsx';
-import ProductGrid from '../ui/ProductGrid.jsx';
+import ProductGrid from '../ui/ProductCatalog/ProductGrid.jsx';
 import CategorySection from '../ui/CategorySection.jsx';
 export default function Catalog() {
   const { session } = useAuth();
