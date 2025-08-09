@@ -30,16 +30,11 @@ export function useFullProductDetails(productId) {
     data: spec,
     loading: specLoading,
     error: specError,
-  } = useSupabaseRead(
-    specTable,
-    {
-      filter: { product_id: productId },
-      single: true,
-    },
-    {
-      enabled: specEnabled,
-    }
-  );
+  } = useSupabaseRead(specTable, {
+    filter: { product_id: productId },
+    single: true,
+    enabled: specEnabled,
+  });
 
   return {
     product,
