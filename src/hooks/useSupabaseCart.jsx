@@ -10,7 +10,7 @@ export function useSupabaseCart() {
   const [removingCartItem, setRemovingCartItem] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [updatingQuantity, setupdatingQuantity] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({});
 
   //fetch cart items for the authenticated user
   const fetchCartItems = async () => {
