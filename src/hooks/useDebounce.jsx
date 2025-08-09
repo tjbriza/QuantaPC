@@ -1,6 +1,7 @@
+//hook for adding debounce
 import { useCallback, useRef } from 'react';
 
-function useDebounce(callback, delay) {
+export function useDebounce(callback, delay) {
   const timeoutRef = useRef(null);
 
   const debouncedCallback = useCallback(
