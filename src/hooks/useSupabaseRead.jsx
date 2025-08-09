@@ -17,7 +17,15 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const enabled =
+    queryOptions.enabled !== undefined ? queryOptions.enabled : true;
+
   useEffect(() => {
+    if (!enabled) {
+      setLoading(false);
+      return;
+    }
+
     async function fetchData() {
       setLoading(true);
       setError(null);
@@ -59,6 +67,6 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
       }
     }
     fetchData();
-  }, [tableName, JSON.stringify(queryOptions)]);
+  }, [tableName, JSON.stringify(queryOptions), enabled]);
   return { data, loading, error };
 }
