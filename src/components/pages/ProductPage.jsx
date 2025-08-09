@@ -1,23 +1,29 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { useFullProductDetails } from '../../hooks/useFullProductDetails';
 export default function ProductPage() {
   const { id } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  const productFromState = location.state?.product;
+  const shouldFetch = !productFromState;
   const {
-    product,
+    product: fetchedProduct,
     productLoading,
     productError,
     spec,
     specLoading,
     specError,
-  } = useFullProductDetails(id);
+  } = useFullProductDetails(id, { enabled: shouldFetch });
+
+  const product = productFromState || fetchedProduct;
 
   if (productError) {
     navigate('/404', { replace: true });
   }
 
-  while (productLoading) {
+  while (shouldFetch && productLoading) {
     return <div className='flex justify-center mt-[15vh]'>Loading...</div>;
   }
 

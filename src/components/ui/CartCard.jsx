@@ -3,9 +3,8 @@ import { useNavigate } from 'react-router-dom';
 export default function CartCard({ item }) {
   const navigate = useNavigate();
 
-  console.log('CartCard item:', item);
   function handleClick() {
-    navigate(`/product/${item.id}`);
+    navigate(`/product/${item.product_id}`);
   }
 
   return (
