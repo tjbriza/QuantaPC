@@ -1,4 +1,4 @@
-create function remove_cart_item(p_user_id uuid, p_product_id uuid)
+create function removeCartItem(p_user_id uuid, p_product_id uuid)
 returns json
 language plpgsql
 as $$

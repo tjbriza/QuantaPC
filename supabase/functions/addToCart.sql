@@ -1,4 +1,4 @@
-create function add_to_cart (p_user_id uuid, p_product_id uuid, p_quantity int)
+create function addToCart (p_user_id uuid, p_product_id uuid, p_quantity int)
 returns json
 language plpgsql
 as $$

@@ -1,4 +1,4 @@
-create function update_cart_item_quantity(p_user_id uuid, p_product_id uuid, p_quantity int)
+create function updateCartItemQuantity(p_user_id uuid, p_product_id uuid, p_quantity int)
 returns json
 language plpgsql
 as $$

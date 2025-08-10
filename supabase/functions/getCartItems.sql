@@ -1,4 +1,4 @@
-create function get_cart_items(p_user_id uuid)
+create function getCartItems(p_user_id uuid)
 returns table (
   cart_item_id uuid,
   product_id uuid,
