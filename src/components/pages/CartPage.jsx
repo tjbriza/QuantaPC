@@ -1,14 +1,15 @@
 import { useSupabaseCart } from '../../hooks/useSupabaseCart.jsx';
 import CartContainer from '../ui/Cart/CartContainer.jsx';
 export default function CartPage() {
-  const { cartItems } = useSupabaseCart();
+  const { cartItems, loadingCart } = useSupabaseCart();
 
-  const userCart = cartItems;
+  if (loadingCart !== true) {
+    console.log(cartItems);
+  }
 
-  console.log(userCart);
   return (
     <div className='min-h-screen flex items-center justify-center mt-16'>
-      <CartContainer userCart={userCart} />
+      <CartContainer userCart={cartItems} />
     </div>
   );
 }

@@ -7,7 +7,12 @@ import EmptyCart from './EmptyCart';
 
 export default function CartContainer({ userCart }) {
   const [selectedItems, setSelectedItems] = useState([]);
-  const { updateCartItemQuantity, removeCartItem } = useSupabaseCart();
+  const {
+    updateCartItemQuantity,
+    removeCartItem,
+    updatingQuantity,
+    removingCartItem,
+  } = useSupabaseCart();
 
   const selectAll =
     userCart.length > 0 && selectedItems.length === userCart.length;
@@ -60,7 +65,7 @@ export default function CartContainer({ userCart }) {
 
   return (
     <div className='w-full flex justify-center px-4'>
-      <div className='w-full max-w-[45rem]'>
+      <div className='w-full max-w-[90rem]'>
         <h2 className='text-3xl font-bold mb-8 text-center text-gray-800'>
           Your Cart
         </h2>
@@ -76,9 +81,9 @@ export default function CartContainer({ userCart }) {
             <div className='divide-y divide-gray-200'>
               {userCart.map((item) => (
                 <CartItem
-                  key={item.id}
+                  key={item.cart_item_id}
                   item={item}
-                  selected={selectedItems.includes(item.id)}
+                  selected={selectedItems.includes(item.cart_item_id)}
                   onSelectChange={handleSelectItem}
                   onQuantityChange={handleQuantityChange}
                 />
