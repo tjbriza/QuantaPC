@@ -1,6 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
-import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { useFullProductDetails } from '../../hooks/useFullProductDetails';
 import { useSupabaseCart } from '../../hooks/useSupabaseCart';
 export default function ProductPage() {
@@ -46,7 +45,7 @@ export default function ProductPage() {
         />
         <div className='flex flex-col gap-4 w-full md:w-1/2'>
           <h1 className='text-3xl font-bold'>{product.name}</h1>
-          <p className='text-xl text-gray-700'>${product.price.toFixed(2)}</p>
+          <p className='text-xl text-gray-700'>₱{product.price.toFixed(2)}</p>
           <p className='text-gray-600'>Stocks Left: {product.stock_quantity}</p>
           <p className='text-gray-600'>{product.description}</p>
           <button
@@ -55,7 +54,6 @@ export default function ProductPage() {
           >
             Add to Cart
           </button>
-          quantity selector
           <div>
             <label className='text-gray-600'>Quantity:</label>
             <input

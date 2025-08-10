@@ -18,9 +18,11 @@ export function useSupabaseCart() {
     removeCartItem: false,
   });
 
+  const userId = session?.user?.id;
+
   //fetch cart items for the authenticated user
   const fetchCartItems = useCallback(async () => {
-    if (!session) {
+    if (!userId) {
       setErrors((prev) => ({
         ...prev,
         general: new Error('User not authenticated'),
@@ -33,7 +35,7 @@ export function useSupabaseCart() {
 
     try {
       const { data, error } = await supabase.rpc('getUserCart', {
-        p_user_id: session.user?.id,
+        p_user_id: userId,
       });
 
       if (error) {
@@ -47,7 +49,7 @@ export function useSupabaseCart() {
     } finally {
       setLoadingCart(false);
     }
-  }, [session?.user?.id]);
+  }, [userId]);
 
   const clearError = useCallback((errorType) => {
     setErrors((prev) => ({ ...prev, [errorType]: null }));
@@ -56,7 +58,10 @@ export function useSupabaseCart() {
   //add item to cart
   const addToCart = useCallback(
     async (p_product_id, p_quantity = 1) => {
-      if (!session) {
+      console.log('Product ID:', p_product_id, 'Type:', typeof p_product_id);
+      console.log('Quantity:', p_quantity, 'Type:', typeof p_quantity);
+      console.log('User ID:', userId, 'Type:', typeof userId);
+      if (!userId) {
         setErrors((prev) => ({
           ...prev,
           general: new Error('User not authenticated'),
@@ -145,13 +150,13 @@ export function useSupabaseCart() {
 
       const previousItems = cartItems;
       setCartItems((prev) =>
-        prev.filter((item) => item.product.id !== p_product_id)
+        prev.filter((item) => item.product_id !== p_product_id)
       );
 
       try {
         const { data, error } = await supabase.rpc('removeCartItem', {
-          p_user_id: session.user?.id,
           p_product_id: p_product_id,
+          p_user_id: session.user?.id,
         });
         if (error) {
           throw error;
