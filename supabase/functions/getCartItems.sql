@@ -5,6 +5,7 @@ returns table (
   product_name text,
   product_price int,
   quantity int,
+  stock_quantity int
   total_per_item int
 )
 language sql
@@ -15,6 +16,7 @@ select
   p.name as product_name,
   p.price as product_price,
   ci.quantity,
+  p.stock_quantity,
   p.price * ci.quantity as total_per_item
 from carts c
 join cart_items ci on ci.cart_id = c.id
