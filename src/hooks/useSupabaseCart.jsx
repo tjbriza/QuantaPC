@@ -34,7 +34,7 @@ export function useSupabaseCart() {
     setErrors((prev) => ({ ...prev, fetchCart: null }));
 
     try {
-      const { data, error } = await supabase.rpc('getUserCart', {
+      const { data, error } = await supabase.rpc('getCartItems', {
         p_user_id: userId,
       });
 
@@ -180,6 +180,7 @@ export function useSupabaseCart() {
   const updateQuantityOnDatabase = useCallback(
     async (p_product_id, p_quantity) => {
       if (operationRef.current.updateQuantity) {
+        console.log('Operation already in progress');
         return { success: false, error: 'Operation in progress' };
       }
       operationRef.current.updateQuantity = true;
@@ -194,6 +195,7 @@ export function useSupabaseCart() {
         });
 
         if (error) {
+          console.log(error);
           throw error;
         }
 
