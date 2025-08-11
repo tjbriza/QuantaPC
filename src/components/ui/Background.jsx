@@ -29,6 +29,15 @@ export default function Background({ children }) {
       <div className="unified-circle midblue c18"></div>
       <div className="unified-circle darkblue c19"></div>
       <div className="unified-circle blue c20"></div>
+      {/* Additional circles for bento box area */}
+      <div className="unified-circle blue c21"></div>
+      <div className="unified-circle darkblue c22"></div>
+      <div className="unified-circle midblue c23"></div>
+      <div className="unified-circle blue c24"></div>
+      <div className="unified-circle darkblue c25"></div>
+      <div className="unified-circle midblue c26"></div>
+      <div className="unified-circle blue c27"></div>
+      <div className="unified-circle darkblue c28"></div>
 
       
       {/* Content */}
