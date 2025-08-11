@@ -127,7 +127,7 @@ export default function BentoBox() {
                   CUSTOM PC BUILDER
                 </h2>
                 <p className='text-black font-dm-sans text-[1.25rem] leading-relaxed'>
-                  Build your dream rig from the ground up.<br />
+                  Build your dream rig from the ground up.
                   Choose the perfect components<br />
                   for gaming, content creation, or<br />
                   everyday use.
