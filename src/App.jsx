@@ -1,8 +1,8 @@
  
-import Hero from './components/ui/Hero.jsx';
-import HomeContent from './components/ui/HomeContent';
-import CompanyLogos from './components/ui/CompanyLogos';
-import BentoBox from './components/ui/BentoBox';
+import Hero from './components/ui/Home/Hero.jsx';
+import HomeContent from './components/ui/Home/HomeContent';
+import CompanyLogos from './components/ui/Home/CompanyLogos';
+import BentoBox from './components/ui/Home/BentoBox';
 import Background from './components/ui/Background';
 import Footer from './components/ui/Footer';
 

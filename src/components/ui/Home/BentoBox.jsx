@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import '../../components.css';
+import '../../../components.css';
 
 export default function BentoBox() {
   return (
