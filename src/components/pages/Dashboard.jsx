@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Navigation from '../ui/Navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
+import { Navigate } from 'react-router-dom';
 
 export default function Dashboard() {
   const { session } = useAuth();
@@ -12,6 +13,12 @@ export default function Dashboard() {
   });
 
   const userProfile = data || {};
+  //check if user doesn't have a  (temporary check)
+  if (!loading) {
+    if (userProfile.name_first === undefined) {
+      return <Navigate to='/profilesetup' replace />;
+    }
+  }
 
   return (
     <>
