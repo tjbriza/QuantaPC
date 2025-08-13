@@ -1,253 +1,229 @@
-//supabase cart hook, for managing user cart, view, update, delete add!!!!!!
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '../supabaseClient';
 import { useAuth } from '../context/AuthContext';
 import { useDebounce } from './useDebounce';
+
 export function useSupabaseCart() {
   const { session } = useAuth();
+  const userId = session?.user?.id;
+
+  // State
+  const [cartItems, setCartItems] = useState([]);
   const [loadingCart, setLoadingCart] = useState(false);
   const [addingToCart, setAddingToCart] = useState(false);
   const [removingCartItem, setRemovingCartItem] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
-  const [updatingQuantity, setupdatingQuantity] = useState(false);
+  const [updatingQuantity, setUpdatingQuantity] = useState(false);
   const [errors, setErrors] = useState({});
 
-  const operationRef = useRef({
-    addToCart: false,
-    updateQuantity: false,
-    removeCartItem: false,
-  });
+  // Prevent concurrent operations per product
+  const pendingOps = useRef(new Set());
 
-  const userId = session?.user?.id;
+  // Helpers
+  const setOpError = (type, error) =>
+    setErrors((prev) => ({ ...prev, [type]: error || null }));
 
-  //fetch cart items for the authenticated user
-  const fetchCartItems = useCallback(async () => {
+  const requireAuth = (opType) => {
     if (!userId) {
-      setErrors((prev) => ({
-        ...prev,
-        general: new Error('User not authenticated'),
-      }));
-      return;
+      setOpError(opType, new Error('User not authenticated'));
+      return false;
     }
+    return true;
+  };
 
+  const runRPC = async (fnName, params) => {
+    const { data, error } = await supabase.rpc(fnName, params);
+    if (error) throw error;
+    return data;
+  };
+
+  // Fetch cart items
+  const fetchCartItems = useCallback(async () => {
+    if (!requireAuth('general')) return;
     setLoadingCart(true);
-    setErrors((prev) => ({ ...prev, fetchCart: null }));
+    setOpError('fetchCart', null);
 
     try {
-      const { data, error } = await supabase.rpc('getCartItems', {
-        p_user_id: userId,
-      });
-
-      if (error) {
-        throw error;
-      }
-
+      const data = await runRPC('getCartItems', { p_user_id: userId });
       setCartItems(data || []);
-    } catch (error) {
-      setErrors((prev) => ({ ...prev, fetch: error }));
-      console.error('Error fetching cart items:', error);
+    } catch (err) {
+      setOpError('fetchCart', err);
+      console.error('Fetch error:', err);
     } finally {
       setLoadingCart(false);
     }
   }, [userId]);
 
-  const clearError = useCallback((errorType) => {
-    setErrors((prev) => ({ ...prev, [errorType]: null }));
-  }, []);
-
-  //add item to cart
+  // Add to cart (optimistic)
   const addToCart = useCallback(
     async (p_product_id, p_quantity = 1) => {
-      console.log('Product ID:', p_product_id, 'Type:', typeof p_product_id);
-      console.log('Quantity:', p_quantity, 'Type:', typeof p_quantity);
-      console.log('User ID:', userId, 'Type:', typeof userId);
-      if (!userId) {
-        setErrors((prev) => ({
-          ...prev,
-          general: new Error('User not authenticated'),
-        }));
-
-        return;
-      }
-
-      if (operationRef.current.addToCart) {
-        return { success: false, error: 'Operation in progress' };
-      }
-
-      operationRef.current.addToCart = true;
+      if (!requireAuth('general')) return { success: false };
+      const opKey = `add-${p_product_id}`;
+      if (pendingOps.current.has(opKey))
+        return { success: false, error: 'In progress' };
+      pendingOps.current.add(opKey);
       setAddingToCart(true);
-      clearError('addToCart');
-
-      const tempId = `temp-${Date.now()}`;
-      const optimisticItem = {
-        id: tempId,
-        product_id: p_product_id,
-        quantity: p_quantity,
-        isOptimistic: true,
-      };
+      setOpError('addToCart', null);
 
       setCartItems((prev) => {
-        const existingIndex = prev.findIndex(
-          (item) => item.product_id === p_product_id
-        );
-        if (existingIndex >= 0) {
-          const updated = [...prev];
-          updated[existingIndex] = {
-            ...updated[existingIndex],
-            quantity: updated[existingIndex].quantity + p_quantity,
-            isOptimistic: true,
-          };
-          return updated;
-        } else {
-          return [...prev, optimisticItem];
+        const idx = prev.findIndex((i) => i.product_id === p_product_id);
+        if (idx >= 0) {
+          return prev.map((i, k) =>
+            k === idx
+              ? { ...i, quantity: i.quantity + p_quantity, isOptimistic: true }
+              : i
+          );
         }
+        return [
+          ...prev,
+          {
+            cart_item_id: `temp-${opKey}-${Date.now()}`,
+            product_id: p_product_id,
+            quantity: p_quantity,
+            product_name: 'Loading...',
+            product_price: 0,
+            image: null,
+            stock_quantity: 999,
+            isOptimistic: true,
+          },
+        ];
       });
 
       try {
-        const { data, error } = await supabase.rpc('addToCart', {
-          p_user_id: session.user?.id,
+        const data = await runRPC('addToCart', {
+          p_user_id: userId,
           p_product_id,
           p_quantity,
         });
-
-        if (error) {
-          throw error;
-        }
-
         await fetchCartItems();
         return { success: true, data };
-      } catch (error) {
-        setCartItems((prev) => prev.filter((item) => item.id !== tempId));
-        setErrors((prev) => ({ ...prev, addToCart: error }));
-        console.error('Error adding item to cart:', error);
-        return { success: false, error: error.message };
+      } catch (err) {
+        setCartItems((prev) =>
+          prev.some((i) => i.cart_item_id?.startsWith('temp-'))
+            ? prev.filter((i) => i.product_id !== p_product_id)
+            : prev.map((i) =>
+                i.product_id === p_product_id
+                  ? {
+                      ...i,
+                      quantity: i.quantity - p_quantity,
+                      isOptimistic: false,
+                    }
+                  : i
+              )
+        );
+        setOpError('addToCart', err);
+        return { success: false, error: err.message };
       } finally {
         setAddingToCart(false);
+        pendingOps.current.delete(opKey);
       }
     },
-    [session?.user?.id, fetchCartItems, clearError]
+    [userId, fetchCartItems]
   );
 
-  //remove item from cart
+  // Remove from cart (optimistic)
   const removeCartItem = useCallback(
     async (p_product_id) => {
-      if (!session) {
-        setErrors((prev) => ({
-          ...prev,
-          removeCartItem: 'User not authenticated',
-        }));
-        console.error('User not authenticated');
-        return;
-      }
-
-      if (operationRef.current.removeCartItem) {
-        return { success: false, error: 'Operation in progress' };
-      }
-
-      operationRef.current.removeCartItem = true;
+      if (!requireAuth('removeCartItem')) return { success: false };
+      const opKey = `remove-${p_product_id}`;
+      if (pendingOps.current.has(opKey))
+        return { success: false, error: 'In progress' };
+      pendingOps.current.add(opKey);
       setRemovingCartItem(true);
-      clearError('removeCartItem');
+      setOpError('removeCartItem', null);
 
-      const previousItems = cartItems;
-      setCartItems((prev) =>
-        prev.filter((item) => item.product_id !== p_product_id)
+      const itemToRestore = cartItems.find(
+        (i) => i.product_id === p_product_id
       );
+      setCartItems((prev) => prev.filter((i) => i.product_id !== p_product_id));
 
       try {
-        const { data, error } = await supabase.rpc('removeCartItem', {
-          p_product_id: p_product_id,
-          p_user_id: session.user?.id,
+        const data = await runRPC('removeCartItem', {
+          p_user_id: userId,
+          p_product_id,
         });
-        if (error) {
-          throw error;
-        }
-
         return { success: true, data };
-      } catch (error) {
-        setCartItems(previousItems);
-        setErrors((prev) => ({ ...prev, removeCartItem: error }));
-        console.error('Error removing cart item:', error);
-        return { success: false, error: error.message };
+      } catch (err) {
+        if (itemToRestore) setCartItems((prev) => [...prev, itemToRestore]);
+        setOpError('removeCartItem', err);
+        return { success: false, error: err.message };
       } finally {
-        operationRef.current.removeCartItem = false;
         setRemovingCartItem(false);
+        pendingOps.current.delete(opKey);
       }
     },
-    [session?.user?.id, cartItems, clearError]
+    [userId, cartItems]
   );
 
-  //actual server cart update
+  // Quantity update
   const updateQuantityOnDatabase = useCallback(
     async (p_product_id, p_quantity) => {
-      if (operationRef.current.updateQuantity) {
-        console.log('Operation already in progress');
-        return { success: false, error: 'Operation in progress' };
-      }
-      operationRef.current.updateQuantity = true;
-      setupdatingQuantity(true);
-      clearError('updateQuantity');
+      const opKey = `update-${p_product_id}`;
+      if (pendingOps.current.has(opKey))
+        return { success: false, error: 'In progress' };
+      pendingOps.current.add(opKey);
+      setUpdatingQuantity(true);
+      setOpError('updateQuantity', null);
 
       try {
-        const { data, error } = await supabase.rpc('updateCartItemQuantity', {
-          p_user_id: session.user?.id,
-          p_product_id: p_product_id,
-          p_quantity: p_quantity,
+        await runRPC('updateCartItemQuantity', {
+          p_user_id: userId,
+          p_product_id,
+          p_quantity,
         });
-
-        if (error) {
-          console.log(error);
-          throw error;
-        }
-
+        setCartItems((prev) =>
+          prev.map((i) =>
+            i.product_id === p_product_id
+              ? { ...i, quantity: p_quantity, isOptimistic: false }
+              : i
+          )
+        );
+        return { success: true };
+      } catch (err) {
+        setOpError('updateQuantity', err);
         await fetchCartItems();
-        return { success: true, data };
-      } catch (error) {
-        setErrors((prev) => ({ ...prev, updateQuantity: error }));
-        return { success: false, error: error.message };
+        return { success: false, error: err.message };
       } finally {
-        setupdatingQuantity(false);
-        operationRef.current.updateQuantity = false;
+        setUpdatingQuantity(false);
+        pendingOps.current.delete(opKey);
       }
     },
-    [session?.user?.id, fetchCartItems, clearError]
+    [userId, fetchCartItems]
   );
 
-  const [debouncedUpdateQuantity] = useDebounce(updateQuantityOnDatabase, 800); // #ms
+  const [debouncedUpdateQuantity] = useDebounce(updateQuantityOnDatabase, 500);
 
-  //client side update cart item quantity
   const updateCartItemQuantity = useCallback(
-    async (p_product_id, p_quantity) => {
+    (p_product_id, p_quantity) => {
       setCartItems((prev) =>
-        prev.map((item) =>
-          item.product_id === p_product_id
-            ? { ...item, quantity: p_quantity, isOptimistic: true }
-            : item
+        prev.map((i) =>
+          i.product_id === p_product_id
+            ? { ...i, quantity: p_quantity, isOptimistic: true }
+            : i
         )
       );
-
-      const result = await debouncedUpdateQuantity(p_product_id, p_quantity);
+      debouncedUpdateQuantity(p_product_id, p_quantity);
     },
     [debouncedUpdateQuantity]
   );
 
+  const refreshCart = useCallback(() => {
+    if (userId) fetchCartItems();
+  }, [userId, fetchCartItems]);
+
+  // Effects
   useEffect(() => {
     fetchCartItems();
   }, [fetchCartItems]);
-
+  useEffect(() => () => pendingOps.current.clear(), []);
   useEffect(() => {
-    return () => {
-      operationRef.current = {
-        addToCart: false,
-        updateQuantity: false,
-        removeCartItem: false,
-      };
-    };
-  }, []);
+    userId ? fetchCartItems() : setCartItems([]);
+  }, [userId, fetchCartItems]);
 
   return {
     cartItems,
     addToCart,
     fetchCartItems,
+    refreshCart,
     updateCartItemQuantity,
     removeCartItem,
     updatingQuantity,
@@ -255,6 +231,6 @@ export function useSupabaseCart() {
     addingToCart,
     removingCartItem,
     errors,
-    clearError,
+    clearError: (type) => setOpError(type, null),
   };
 }
