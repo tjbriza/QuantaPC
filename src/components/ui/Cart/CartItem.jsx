@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { Minus, Plus } from 'lucide-react';
+import { Minus, Plus, Trash2 } from 'lucide-react';
 
 export default function CartItem({
   item,
   selected,
   onSelectChange,
   onQuantityChange,
+  onDeleteItem,
+  isDeleting = false,
 }) {
   const maxQty = item.stock_quantity ?? 1;
   const [quantity, setQuantity] = useState(item.quantity);
@@ -16,6 +18,12 @@ export default function CartItem({
     onQuantityChange(item.product_id, clamped);
   };
 
+  const handleDelete = () => {
+    if (onDeleteItem && !isDeleting) {
+      onDeleteItem(item.product_id);
+    }
+  };
+
   return (
     <div className='px-6 py-6 hover:bg-gray-50 transition-colors flex items-center space-x-6'>
       <input
@@ -23,6 +31,7 @@ export default function CartItem({
         checked={selected}
         onChange={(e) => onSelectChange(item.cart_item_id, e.target.checked)}
         className='w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500'
+        disabled={isDeleting}
       />
 
       <img
@@ -49,7 +58,7 @@ export default function CartItem({
           <button
             type='button'
             onClick={() => updateQuantity(quantity - 1)}
-            disabled={quantity <= 1}
+            disabled={quantity <= 1 || isDeleting}
             className='px-3 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
           >
             <Minus size={16} />
@@ -62,13 +71,14 @@ export default function CartItem({
             value={quantity}
             onChange={(e) => updateQuantity(parseInt(e.target.value) || 1)}
             onBlur={() => updateQuantity(quantity)}
-            className='w-16 px-2 py-2 text-center border-0 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'
+            disabled={isDeleting}
+            className='w-16 px-2 py-2 text-center border-0 focus:outline-none focus:ring-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none disabled:bg-gray-100'
           />
 
           <button
             type='button'
             onClick={() => updateQuantity(quantity + 1)}
-            disabled={quantity >= maxQty}
+            disabled={quantity >= maxQty || isDeleting}
             className='px-3 py-2 bg-gray-100 hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors'
           >
             <Plus size={16} />
@@ -76,13 +86,26 @@ export default function CartItem({
         </div>
       </div>
 
-      <div className='text-right'>
+      <div className='text-right flex items-center space-x-4'>
         <p className='text-lg font-bold text-gray-900'>
           {(item.product_price * quantity).toLocaleString('en-PH', {
             style: 'currency',
             currency: 'PHP',
           })}
         </p>
+
+        <button
+          onClick={handleDelete}
+          disabled={isDeleting}
+          className={`p-2 rounded-lg transition-colors ${
+            isDeleting
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'text-red-600 hover:bg-red-50 hover:text-red-800'
+          }`}
+          title='Remove item'
+        >
+          <Trash2 size={18} />
+        </button>
       </div>
     </div>
   );

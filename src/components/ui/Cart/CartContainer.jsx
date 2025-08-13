@@ -42,17 +42,58 @@ export default function CartContainer({ userCart }) {
     }
   };
 
-  const handleDeleteSelected = () => {
-    selectedItems.forEach((itemId) => {
-      const item = userCart.find(
-        (cartItem) => cartItem.cart_item_id === itemId
-      );
-      if (item) {
-        removeCartItem(item.product_id);
-      }
-    });
-    setSelectedItems([]);
+  // Fixed delete selected function
+  const handleDeleteSelected = async () => {
+    if (selectedItems.length === 0) return;
+
+    // Get the product IDs for the selected items
+    const selectedProductIds = userCart
+      .filter((item) => selectedItems.includes(item.cart_item_id))
+      .map((item) => item.product_id);
+
+    // Remove each selected item
+    const deletePromises = selectedProductIds.map((productId) =>
+      removeCartItem(productId)
+    );
+
+    try {
+      await Promise.all(deletePromises);
+      // Clear selections after successful deletion
+      setSelectedItems([]);
+    } catch (error) {
+      console.error('Error deleting selected items:', error);
+      // Optionally show an error message to the user
+    }
   };
+
+  // Fixed individual item delete function
+  const handleDeleteItem = async (productId) => {
+    try {
+      await removeCartItem(productId);
+      // Remove from selected items if it was selected
+      setSelectedItems((prev) => {
+        const itemToRemove = userCart.find(
+          (item) => item.product_id === productId
+        );
+        if (itemToRemove) {
+          return prev.filter((id) => id !== itemToRemove.cart_item_id);
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      // Optionally show an error message to the user
+    }
+  };
+
+  // Clear selections when cart items change (e.g., after deletion)
+  useEffect(() => {
+    setSelectedItems((prev) =>
+      prev.filter((selectedId) =>
+        userCart.some((item) => item.cart_item_id === selectedId)
+      )
+    );
+  }, [userCart]);
 
   const totalPrice =
     userCart?.reduce(
@@ -77,6 +118,7 @@ export default function CartContainer({ userCart }) {
               onSelectAll={handleSelectAll}
               selectedCount={selectedItems.length}
               onDeleteSelected={handleDeleteSelected}
+              isDeleting={removingCartItem}
             />
             <div className='divide-y divide-gray-200'>
               {userCart.map((item) => (
@@ -86,6 +128,8 @@ export default function CartContainer({ userCart }) {
                   selected={selectedItems.includes(item.cart_item_id)}
                   onSelectChange={handleSelectItem}
                   onQuantityChange={handleQuantityChange}
+                  onDeleteItem={handleDeleteItem}
+                  isDeleting={removingCartItem}
                 />
               ))}
             </div>

@@ -3,6 +3,7 @@ export default function CartHeader({
   onSelectAll,
   selectedCount,
   onDeleteSelected,
+  isDeleting = false,
 }) {
   return (
     <div className='bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center'>
@@ -12,15 +13,21 @@ export default function CartHeader({
           checked={selectAll}
           onChange={(e) => onSelectAll(e.target.checked)}
           className='w-5 h-5 text-blue-600 rounded focus:ring-2 focus:ring-blue-500'
+          disabled={isDeleting}
         />
         <span className='font-semibold text-gray-700'>Select All</span>
       </label>
       {selectedCount > 0 && (
         <button
           onClick={onDeleteSelected}
-          className='bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium'
+          disabled={isDeleting}
+          className={`px-4 py-2 rounded-lg transition-colors font-medium ${
+            isDeleting
+              ? 'bg-gray-400 text-gray-600 cursor-not-allowed'
+              : 'bg-red-600 text-white hover:bg-red-700'
+          }`}
         >
-          Delete Selected ({selectedCount})
+          {isDeleting ? 'Deleting...' : `Delete Selected (${selectedCount})`}
         </button>
       )}
     </div>
