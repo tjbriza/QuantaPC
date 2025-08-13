@@ -78,12 +78,19 @@ export default function ProductPage() {
           <h2 className='text-2xl font-semibold mb-4'>Specifications</h2>
           <table className='min-w-full bg-white border border-gray-200'>
             <tbody>
-              {Object.entries(spec).map(([key, value]) => (
-                <tr key={key} className='border-b border-gray-200'>
-                  <td className='px-6 py-4 font-medium'>{key}</td>
-                  <td className='px-6 py-4'>{value}</td>
-                </tr>
-              ))}
+              {Object.entries(spec)
+                .filter(([key]) => key !== 'product_id' && key !== 'created_at') // exclude keys
+                .map(([key, value]) => {
+                  const formattedKey = key
+                    .replace(/_/g, ' ') // underscores → spaces
+                    .replace(/\b\w/g, (char) => char.toUpperCase()); // capitalize each word
+                  return (
+                    <tr key={key} className='border-b border-gray-200'>
+                      <td className='px-6 py-4 font-medium'>{formattedKey}</td>
+                      <td className='px-6 py-4'>{value}</td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
