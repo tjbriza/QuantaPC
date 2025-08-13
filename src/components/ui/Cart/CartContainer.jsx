@@ -56,10 +56,10 @@ export default function CartContainer({ userCart, refreshCart }) {
     try {
       await Promise.all(deletePromises);
       setSelectedItems([]);
-      refreshCart(); // Refresh the cart after deletion
     } catch (error) {
       console.error('Error deleting selected items:', error);
-      refreshCart(); // Ensure cart is refreshed even on error
+    } finally {
+      refreshCart();
     }
   };
 
@@ -75,10 +75,10 @@ export default function CartContainer({ userCart, refreshCart }) {
         }
         return prev;
       });
-      refreshCart(); // Refresh the cart after deletion
     } catch (error) {
       console.error('Error deleting item:', error);
-      refreshCart(); // Ensure cart is refreshed even on error
+    } finally {
+      refreshCart();
     }
   };
 
