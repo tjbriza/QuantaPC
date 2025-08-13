@@ -1,4 +1,4 @@
-//custom hook for reading data from supabase!!!!
+// custom hook for reading data from supabase!!!!
 import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 
@@ -8,9 +8,9 @@ import { supabase } from '../supabaseClient';
 //   filter: { category: 'electronics', available: true },
 //   order: { column: 'price', ascending: true },
 //   limit: 5,
+//   random: false, // set to true for random ordering
 //   single: false,
 // });
-// covers most db read features/operations i need.
 
 export function useSupabaseRead(tableName, queryOptions = {}) {
   const [data, setData] = useState(queryOptions.single ? null : []);
@@ -32,19 +32,28 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
       try {
         let query = supabase.from(tableName).select(queryOptions.select || '*');
 
+        // Apply filters (still basic eq for now)
         if (queryOptions.filter) {
           for (const key in queryOptions.filter) {
             query = query.eq(key, queryOptions.filter[key]);
           }
         }
-        if (queryOptions.order) {
+
+        // Apply random ordering OR normal ordering
+        if (queryOptions.random) {
+          query = query.order('random()');
+        } else if (queryOptions.order) {
           query = query.order(queryOptions.order.column, {
             ascending: queryOptions.order.ascending,
           });
         }
+
+        // Apply limit
         if (queryOptions.limit) {
           query = query.limit(queryOptions.limit);
         }
+
+        // Single row option
         if (queryOptions.single) {
           query = query.single();
         }
@@ -68,5 +77,6 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
     }
     fetchData();
   }, [tableName, JSON.stringify(queryOptions), enabled]);
+
   return { data, loading, error };
 }
