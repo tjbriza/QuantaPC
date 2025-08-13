@@ -7,7 +7,11 @@ export default function CartSummary({ totalItems, totalPrice }) {
         </div>
         <div className='text-right'>
           <p className='text-2xl font-bold text-gray-900'>
-            Total: ${totalPrice.toFixed(2)}
+            Total:{' '}
+            {totalPrice.toLocaleString('en-PH', {
+              style: 'currency',
+              currency: 'PHP',
+            })}
           </p>
         </div>
       </div>

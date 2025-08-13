@@ -22,7 +22,12 @@ export default function ProductCard({ product }) {
       />
       <h3 className='text-lg font-semibold'>{product.name}</h3>
       <div className='flex justify-between items-center mt-2'>
-        <p className='text-gray-600'>₱{product.price.toFixed(2)}</p>
+        <p className='text-gray-600'>
+          {product.price.toLocaleString('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+          })}
+        </p>
         <p>⭐({product.rating.toFixed(1)})</p>
       </div>
     </a>

@@ -36,7 +36,10 @@ export default function CartItem({
           {item.product_name}
         </h3>
         <p className='text-xl font-bold text-blue-600 mt-1'>
-          ${item.product_price.toFixed(2)}
+          {item.product_price.toLocaleString('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+          })}
         </p>
       </div>
 
@@ -75,7 +78,10 @@ export default function CartItem({
 
       <div className='text-right'>
         <p className='text-lg font-bold text-gray-900'>
-          ${(item.product_price * quantity).toFixed(2)}
+          {(item.product_price * quantity).toLocaleString('en-PH', {
+            style: 'currency',
+            currency: 'PHP',
+          })}
         </p>
       </div>
     </div>
