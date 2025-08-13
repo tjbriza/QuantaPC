@@ -32,24 +32,27 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
       try {
         let query = supabase.from(tableName).select(queryOptions.select || '*');
 
-        // Apply filters (still basic eq for now)
+        // Apply filters (supports eq and neq)
         if (queryOptions.filter) {
           for (const key in queryOptions.filter) {
-            query = query.eq(key, queryOptions.filter[key]);
+            const value = queryOptions.filter[key];
+            if (typeof value === 'object' && value.neq !== undefined) {
+              query = query.neq(key, value.neq);
+            } else {
+              query = query.eq(key, value);
+            }
           }
         }
 
-        // Apply random ordering OR normal ordering
-        if (queryOptions.random) {
-          query = query.order('random()');
-        } else if (queryOptions.order) {
+        // Apply normal ordering only (random will be done client-side)
+        if (!queryOptions.random && queryOptions.order) {
           query = query.order(queryOptions.order.column, {
             ascending: queryOptions.order.ascending,
           });
         }
 
-        // Apply limit
-        if (queryOptions.limit) {
+        // Don't apply limit here if random is true (limit after shuffle)
+        if (!queryOptions.random && queryOptions.limit) {
           query = query.limit(queryOptions.limit);
         }
 
@@ -67,7 +70,17 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
             throw fetchError;
           }
         } else {
-          setData(fetchedData);
+          let finalData = fetchedData;
+
+          // Shuffle client-side if random
+          if (queryOptions.random && Array.isArray(finalData)) {
+            finalData = [...finalData].sort(() => 0.5 - Math.random());
+            if (queryOptions.limit) {
+              finalData = finalData.slice(0, queryOptions.limit);
+            }
+          }
+
+          setData(finalData);
         }
       } catch (err) {
         setError(err);
@@ -75,6 +88,7 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
         setLoading(false);
       }
     }
+
     fetchData();
   }, [tableName, JSON.stringify(queryOptions), enabled]);
 
