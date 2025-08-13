@@ -20,7 +20,7 @@ export default function CartPage() {
 
   return (
     <div className='min-h-screen flex items-center justify-center mt-16'>
-      <CartContainer userCart={cartItems} />
+      <CartContainer userCart={cartItems} refreshCart={refreshCart} />
     </div>
   );
 }
