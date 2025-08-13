@@ -9,7 +9,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const { signInUser } = useAuth();
+  const { signInUser, signInWithGoogle } = useAuth();
 
   const navigate = useNavigate();
 
@@ -159,10 +159,10 @@ export default function Login() {
               </div>
 
               <a
-                href='https://test.com'
+                onClick={signInWithGoogle}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-2xl h-12 font-medium transition-colors duration-200 flex items-center justify-center font-afacad text-lg'
+                className='cursor-pointer w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-2xl h-12 font-medium transition-colors duration-200 flex items-center justify-center font-afacad text-lg'
                 style={{
                   border: '1px solid #6E6E6E',
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',

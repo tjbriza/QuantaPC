@@ -10,9 +10,8 @@ export default function SignUp() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
-  const { signUpNewUser } = useAuth();
+  const { signUpNewUser, signInWithGoogle } = useAuth();
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -181,7 +180,7 @@ export default function SignUp() {
               </div>
 
               <a
-                href='https://test.com'
+                onClick={signInWithGoogle}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='w-full bg-white/90 text-gray-900 border border-white/30 hover:bg-white rounded-2xl h-12 font-medium transition-colors duration-200 flex items-center justify-center font-afacad text-lg'
