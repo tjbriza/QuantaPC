@@ -5,7 +5,7 @@ import CartItem from './CartItem';
 import CartSummary from './CartSummary';
 import EmptyCart from './EmptyCart';
 
-export default function CartContainer({ userCart }) {
+export default function CartContainer({ userCart, refreshCart }) {
   const [selectedItems, setSelectedItems] = useState([]);
   const {
     updateCartItemQuantity,
@@ -42,35 +42,30 @@ export default function CartContainer({ userCart }) {
     }
   };
 
-  // Fixed delete selected function
   const handleDeleteSelected = async () => {
     if (selectedItems.length === 0) return;
 
-    // Get the product IDs for the selected items
     const selectedProductIds = userCart
       .filter((item) => selectedItems.includes(item.cart_item_id))
       .map((item) => item.product_id);
 
-    // Remove each selected item
     const deletePromises = selectedProductIds.map((productId) =>
       removeCartItem(productId)
     );
 
     try {
       await Promise.all(deletePromises);
-      // Clear selections after successful deletion
       setSelectedItems([]);
+      refreshCart(); // Refresh the cart after deletion
     } catch (error) {
       console.error('Error deleting selected items:', error);
-      // Optionally show an error message to the user
+      refreshCart(); // Ensure cart is refreshed even on error
     }
   };
 
-  // Fixed individual item delete function
   const handleDeleteItem = async (productId) => {
     try {
       await removeCartItem(productId);
-      // Remove from selected items if it was selected
       setSelectedItems((prev) => {
         const itemToRemove = userCart.find(
           (item) => item.product_id === productId
@@ -80,13 +75,13 @@ export default function CartContainer({ userCart }) {
         }
         return prev;
       });
+      refreshCart(); // Refresh the cart after deletion
     } catch (error) {
       console.error('Error deleting item:', error);
-      // Optionally show an error message to the user
+      refreshCart(); // Ensure cart is refreshed even on error
     }
   };
 
-  // Clear selections when cart items change (e.g., after deletion)
   useEffect(() => {
     setSelectedItems((prev) =>
       prev.filter((selectedId) =>
