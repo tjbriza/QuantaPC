@@ -255,6 +255,15 @@
 .unified-circle.c18 { width: 140px; height: 140px; top: 4%; left: 46%; opacity: 0.18; }
 .unified-circle.c19 { width: 260px; height: 260px; top: 14%; right: 6%; opacity: 0.18; }
 .unified-circle.c20 { width: 160px; height: 160px; top: 12%; left: 70%; opacity: 0.2; }
+/* Bento box area circles for enhanced background */
+.unified-circle.c21 { width: 300px; height: 300px; top: 65%; left: 10%; opacity: 0.15; }
+.unified-circle.c22 { width: 240px; height: 240px; top: 70%; right: 15%; opacity: 0.18; }
+.unified-circle.c23 { width: 200px; height: 200px; top: 75%; left: 45%; opacity: 0.16; }
+.unified-circle.c24 { width: 180px; height: 180px; top: 68%; right: 40%; opacity: 0.14; }
+.unified-circle.c25 { width: 220px; height: 220px; top: 78%; left: 20%; opacity: 0.16; }
+.unified-circle.c26 { width: 160px; height: 160px; top: 72%; right: 8%; opacity: 0.15; }
+.unified-circle.c27 { width: 280px; height: 280px; top: 80%; left: 60%; opacity: 0.14; }
+.unified-circle.c28 { width: 140px; height: 140px; top: 76%; right: 55%; opacity: 0.17; }
 
 @keyframes slowFloat {
   0%, 100% { transform: translate3d(0,0,0); }
