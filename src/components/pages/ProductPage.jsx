@@ -2,6 +2,8 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { useState } from 'react';
 import { useFullProductDetails } from '../../hooks/useFullProductDetails';
 import { useSupabaseCart } from '../../hooks/useSupabaseCart';
+import { useSupabaseRead } from '../../hooks/useSupabaseRead';
+import ProductCard from '../ui/ProductCatalog/ProductCard.jsx';
 export default function ProductPage() {
   const { id } = useParams();
   const location = useLocation();
@@ -17,6 +19,16 @@ export default function ProductPage() {
     specLoading,
     specError,
   } = useFullProductDetails(id, { enabled: shouldFetch });
+
+  const {
+    data: productRecommendations,
+    error: RecommendationError,
+    loading: RecommendationLoading,
+  } = useSupabaseRead('products', {
+    limit: 4,
+    random: true,
+    filter: { id: { neq: id } },
+  });
 
   const product = productFromState || fetchedProduct;
   const [productQuantity, setProductQuantity] = useState(1);
@@ -74,7 +86,7 @@ export default function ProductPage() {
       </div>
 
       {spec && (
-        <div className='mt-8'>
+        <div className='mt-8 mb-8'>
           <h2 className='text-2xl font-semibold mb-4'>Specifications</h2>
           <table className='min-w-full bg-white border border-gray-200'>
             <tbody>
@@ -82,7 +94,7 @@ export default function ProductPage() {
                 .filter(([key]) => key !== 'product_id' && key !== 'created_at') // exclude keys
                 .map(([key, value]) => {
                   const formattedKey = key
-                    .replace(/_/g, ' ') // underscores → spaces
+                    .replace(/_/g, ' ') // replace underscores with spaces
                     .replace(/\b\w/g, (char) => char.toUpperCase()); // capitalize each word
                   return (
                     <tr key={key} className='border-b border-gray-200'>
@@ -95,6 +107,24 @@ export default function ProductPage() {
           </table>
         </div>
       )}
+      <h2 className='text-2xl font-semibold text-center mb-4'>
+        You may also like
+      </h2>
+      <div>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8'>
+          {productRecommendations?.map((recommendation) => (
+            <ProductCard
+              key={recommendation.id}
+              product={recommendation}
+              img={recommendation.image_url || 'https://placehold.co/150'}
+              name={recommendation.name}
+              price={recommendation.price}
+              alt={recommendation.name || 'Product Image'}
+              rating={recommendation.rating || 0}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
