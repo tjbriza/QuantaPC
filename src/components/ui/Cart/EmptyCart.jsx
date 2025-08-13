@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+
 export default function EmptyCart() {
   return (
     <div className='bg-white rounded-lg shadow-lg border-t-4 border-b-4 border-gray-300 p-12 text-center'>
@@ -21,12 +23,12 @@ export default function EmptyCart() {
         <p className='text-gray-500 mb-6'>
           Looks like you haven't added any items to your cart yet.
         </p>
-        <a
-          href='/catalog'
+        <Link
+          to='/catalog'
           className='inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium'
         >
           Start Shopping
-        </a>
+        </Link>
       </div>
     </div>
   );
