@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { MonitorCog, Store, PcCase, Check } from 'lucide-react';
+import { motion } from 'framer-motion';
 import '../../../components.css';
 
 export default function BentoBox() {
@@ -18,7 +19,13 @@ export default function BentoBox() {
               '0 0 25px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05)',
           }}
         >
-          <div className='flex flex-col h-full relative'>
+          <motion.div
+            className='flex flex-col h-full relative'
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
             <div className='flex flex-col items-start mb-4'>
               <div className='bg-[#282E41] p-3 rounded-lg mb-4'>
                 <Store size={38} className='text-white' />
@@ -36,10 +43,12 @@ export default function BentoBox() {
 
               {/* Fixed positioned image on the right - hidden on mobile */}
               <div className='hidden lg:block absolute -top-8 right-0 -mr-10.5 w-[25rem] h-[44rem] overflow-hidden'>
-                <img
+                <motion.img
                   src='/images/bento1.png'
                   alt='PC Image'
                   className='w-full h-full object-contain rounded-2xl'
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
 
@@ -60,7 +69,7 @@ export default function BentoBox() {
                 </li>
               </ul>
             </div>
-          </div>
+          </motion.div>
         </Link>
 
         {/* Right column with two stacked cards */}
@@ -77,7 +86,13 @@ export default function BentoBox() {
                 '0 0 25px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05)',
             }}
           >
-            <div className='relative h-full'>
+            <motion.div
+              className='relative h-full'
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
               <div className='flex flex-col items-start mb-4 relative z-10 max-w-full lg:max-w-[60%]'>
                 <div className='bg-[#282E41] p-3 rounded-lg mb-4'>
                   <PcCase size={38} className='text-white' />
@@ -94,13 +109,15 @@ export default function BentoBox() {
               
               {/* Fixed positioned image on the right */}
               <div className='absolute -top-8 -right-10 -mr-8 w-80 h-80 hidden lg:block'>
-                <img
+                <motion.img
                   src='/images/bento2.png'
                   alt='Build PC Image'
                   className='w-full h-full object-contain'
+                  animate={{ rotate: [0, -2, 2, 0] }}
+                  transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
-            </div>
+            </motion.div>
           </Link>
 
           {/* Spacing between cards */}
@@ -118,7 +135,13 @@ export default function BentoBox() {
                 '0 0 25px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(0, 0, 0, 0.05)',
             }}
           >
-            <div className='relative h-full'>
+            <motion.div
+              className='relative h-full'
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            >
               <div className='flex flex-col items-start mb-4 max-w-full lg:max-w-[60%]'>
                 <div className='bg-[#282E41] p-3 rounded-lg mb-4'>
                   <MonitorCog size={38} className='text-white' />
@@ -136,13 +159,15 @@ export default function BentoBox() {
               
               {/* bento3.png image on the right */}
               <div className='absolute top-0 -right-6 w-64 h-64 hidden lg:block'>
-                <img
+                <motion.img
                   src='/images/bento3.png'
                   alt='Custom PC Builder'
                   className='w-full h-full object-contain'
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
-            </div>
+            </motion.div>
           </Link>
         </div>
       </div>
