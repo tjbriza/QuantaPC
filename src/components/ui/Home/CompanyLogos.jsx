@@ -19,7 +19,7 @@ export default function CompanyLogos() {
       transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
       className="py-8 sm:py-12 lg:py-16 px-4"
     >
-      <p className="text-center text-black mb-6 sm:mb-8 lg:mb-12 text-sm sm:text-base lg:text-lg font-semibold uppercase tracking-wider font-heading">
+  <p className="text-center text-black mb-6 sm:mb-8 lg:mb-12 text-base sm:text-xl lg:text-4xl font-semibold uppercase tracking-wider font-heading">
         FEATURING THESE COMPANIES
       </p>
 
