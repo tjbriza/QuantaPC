@@ -43,12 +43,10 @@ export default function BentoBox() {
 
               {/* Fixed positioned image on the right - hidden on mobile */}
               <div className='hidden lg:block absolute -top-8 right-0 -mr-10.5 w-[25rem] h-[44rem] overflow-hidden'>
-                <motion.img
+                <img
                   src='/images/bento1.png'
                   alt='PC Image'
                   className='w-full h-full object-contain rounded-2xl'
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
 
@@ -109,12 +107,10 @@ export default function BentoBox() {
               
               {/* Fixed positioned image on the right */}
               <div className='absolute -top-8 -right-10 -mr-8 w-80 h-80 hidden lg:block'>
-                <motion.img
+                <img
                   src='/images/bento2.png'
                   alt='Build PC Image'
                   className='w-full h-full object-contain'
-                  animate={{ rotate: [0, -2, 2, 0] }}
-                  transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
             </motion.div>
@@ -159,12 +155,10 @@ export default function BentoBox() {
               
               {/* bento3.png image on the right */}
               <div className='absolute top-0 -right-6 w-64 h-64 hidden lg:block'>
-                <motion.img
+                <img
                   src='/images/bento3.png'
                   alt='Custom PC Builder'
                   className='w-full h-full object-contain'
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
                 />
               </div>
             </motion.div>
