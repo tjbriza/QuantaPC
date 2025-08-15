@@ -13,7 +13,7 @@ export default function ProductCard({ product }) {
     <a
       key={product.id}
       className='bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer'
-      style={{ width: '22rem', height: '22rem' }}
+      style={{ width: '21.5rem', height: '22.5rem' }}
       onClick={handleClick}
     >
       <img
