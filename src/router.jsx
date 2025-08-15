@@ -2,6 +2,11 @@ import { createBrowserRouter } from 'react-router-dom';
 import Layout from './components/Layout';
 import App from './App';
 import Dashboard from './components/pages/Dashboard';
+import Profile from './components/pages/Profile';
+import Orders from './components/pages/Orders';
+import Addresses from './components/pages/Addresses';
+import Tracking from './components/pages/Tracking';
+import Wishlist from './components/pages/Wishlist';
 import Login from './components/pages/Login';
 import SignUp from './components/pages/SignUp';
 import Catalog from './components/pages/Catalog';
@@ -29,6 +34,14 @@ export const router = createBrowserRouter([
             <Dashboard />
           </PrivateRoute>
         ),
+        children: [
+          { index: true, element: <Profile /> },
+          { path: 'profile', element: <Profile /> },
+          { path: 'orders', element: <Orders /> },
+          { path: 'addresses', element: <Addresses /> },
+          { path: 'tracking', element: <Tracking /> },
+          { path: 'wishlist', element: <Wishlist /> },
+        ],
       },
       {
         path: 'profilesetup',
