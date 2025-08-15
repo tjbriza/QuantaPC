@@ -1,19 +1,11 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import '../../components.css';
 
 export default function Footer() {
-  const location = useLocation();
-  const isHomePage = location.pathname === '/';
   return (
     <div className="py-12 relative hidden md:block">
-      {/* Local backdrop for pages without UnifiedBackground to improve blending */}
-      {!isHomePage && (
-        <div className="pointer-events-none absolute inset-0 z-0">
-          <div className="mx-auto max-w-[90rem] px-4 h-full rounded-2xl bg-gradient-to-b from-[rgba(65,105,148,0.10)] via-[rgba(65,105,148,0.06)] to-transparent"></div>
-        </div>
-      )}
       <div className="px-2 md:px-4 relative z-10">
-        <div className="mx-auto max-w-[90rem] min-h-[327px] rounded-2xl overflow-hidden relative font-dm-sans bg-white/20 backdrop-blur-xl border border-white/20 shadow-[0_0_25px_rgba(0,0,0,0.3)] flex items-center">
+        <div className="mx-auto max-w-[90rem] min-h-[327px] rounded-2xl overflow-hidden relative font-dm-sans bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_0_25px_rgba(0,0,0,0.3)] flex items-center">
           <div className="flex items-center justify-between w-full px-8 lg:px-16 py-10 lg:py-12
                           max-md:flex-col max-md:px-5 max-md:py-8 max-md:gap-8 max-md:text-center
                           md:max-lg:px-10 md:max-lg:gap-10

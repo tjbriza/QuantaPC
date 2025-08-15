@@ -9,8 +9,7 @@ export default function Navigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
-  // Check if we're on the home page
-  const isHomePage = location.pathname === '/';
+
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,15 +22,9 @@ export default function Navigation() {
   }, []);
 
   // Dynamic classes based on scroll position and page
-  const textColor = isHomePage 
-    ? (isScrolled ? 'text-black/90 hover:text-black' : 'text-white/90 hover:text-white')
-    : 'text-black/90 hover:text-black';
-  const iconColor = isHomePage
-    ? (isScrolled ? 'text-black/80 hover:text-black' : 'text-white/80 hover:text-white')
-    : 'text-black/80 hover:text-black';
-  const hoverBg = isHomePage
-    ? (isScrolled ? 'hover:bg-black/10' : 'hover:bg-white/10')
-    : 'hover:bg-black/10';
+  const textColor = isScrolled ? 'text-black/90 hover:text-black' : 'text-white/90 hover:text-white';
+  const iconColor = isScrolled ? 'text-black/80 hover:text-black' : 'text-white/80 hover:text-white';
+  const hoverBg = isScrolled ? 'hover:bg-black/10' : 'hover:bg-white/10';
 
   return (
     <div className='fixed top-0 left-0 right-0 z-50 p-2 md:p-4'>
@@ -64,33 +57,22 @@ export default function Navigation() {
             to='/'
             className={`flex items-center p-2 rounded-lg transition-all duration-300 ${hoverBg} hover:scale-105 relative order-1 lg:order-2`}
           >
-            {isHomePage ? (
-              <>
-                {/* White logo - visible when not scrolled on home page */}
-                <img
-                  src='/images/logo.png'
-                  alt='Quanta PC'
-                  className={`h-6 md:h-8 w-auto absolute transition-opacity duration-500 ease-in-out ${
-                    isScrolled ? 'opacity-0' : 'opacity-100'
-                  }`}
-                />
-                {/* Black logo - visible when scrolled on home page */}
-                <img
-                  src='/images/logoblack.png'
-                  alt='Quanta PC'
-                  className={`h-6 md:h-8 w-auto transition-opacity duration-500 ease-in-out ${
-                    isScrolled ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
-              </>
-            ) : (
-              /* Black logo - always visible on other pages */
-              <img
-                src='/images/logoblack.png'
-                alt='Quanta PC'
-                className='h-6 md:h-8 w-auto'
-              />
-            )}
+            {/* White logo - visible when not scrolled */}
+            <img
+              src='/images/logo.png'
+              alt='Quanta PC'
+              className={`h-6 md:h-8 w-auto absolute transition-opacity duration-500 ease-in-out ${
+                isScrolled ? 'opacity-0' : 'opacity-100'
+              }`}
+            />
+            {/* Black logo - visible when scrolled */}
+            <img
+              src='/images/logoblack.png'
+              alt='Quanta PC'
+              className={`h-6 md:h-8 w-auto transition-opacity duration-500 ease-in-out ${
+                isScrolled ? 'opacity-100' : 'opacity-0'
+              }`}
+            />
           </Link>
 
           {/* Right Icons */}

@@ -28,7 +28,7 @@ export default function Catalog() {
     <div className='min-h-screen flex item-center mt-16'>
       {categorizedProducts.map((category) => (
         <CategorySection
-          key={category.id}
+          key={category.id} 
           title={category.name}
           products={category.products}
         />
