@@ -7,7 +7,7 @@ export default function CompanyLogos() {
     { src: '/images/feature1.png', alt: 'AMD', h: 'h-16 sm:h-20 lg:h-24' },
     { src: '/images/feature2.png', alt: 'Acer', h: 'h-14 sm:h-16 lg:h-20' },
     { src: '/images/feature3.png', alt: 'Intel', h: 'h-14 sm:h-16 lg:h-20' },
-    { src: '/images/feature4.png', alt: 'NVIDIA', h: 'h-16 sm:h-20 lg:h-24' },
+    { src: '/images/feature4.png', alt:  'NVIDIA', h: 'h-16 sm:h-20 lg:h-24' },
     { src: '/images/feature5.png', alt: 'HP', h: 'h-14 sm:h-16 lg:h-20' },
   ];
 

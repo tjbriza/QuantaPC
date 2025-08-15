@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import Carousel from "./Carousel";
 
 export default function Hero() {
   const fadeUp = (delay = 0) => ({
@@ -68,12 +69,11 @@ export default function Hero() {
           transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
           className="flex justify-center items-start w-full lg:w-1/2"
         >
-          <motion.div
-            className="border-2 border-white/30 rounded-lg w-80 md:w-96 lg:w-[500px] xl:w-[550px] h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] flex items-center justify-center"
-            animate={{ y: [0, -6, 0] }}
-            transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-          >
-            <div className="text-white text-lg md:text-xl">Carousel Here</div>
+                     <motion.div
+             className="w-80 md:w-96 lg:w-[500px] xl:w-[550px] h-[400px] md:h-[450px] lg:h-[500px] xl:h-[550px] flex items-center justify-center"
+           >
+            <Carousel />
+            
           </motion.div>
         </motion.div>
         </div>
