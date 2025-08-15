@@ -32,6 +32,7 @@ create table shipping_address (
   updated_at timestamp with time zone default now()
 );
 
+
 create table categories (
   id uuid primary key default uuid_generate_v4(),
   name text unique not null,          
