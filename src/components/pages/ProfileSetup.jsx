@@ -6,7 +6,6 @@ import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
 import { FileImage } from 'lucide-react';
-import Background from '../ui/Background.jsx';
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
@@ -89,21 +88,20 @@ export default function ProfileSetup() {
   };
 
   return (
-    <Background>
-      <div className='relative h-screen overflow-hidden'>
-        {/* Logo in top left */}
-        <Link 
-          to="/" 
-          className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
-        >
-        <img 
-          src="/images/logo.png"
-          alt="Quanta PC" 
-          className="h-12 w-auto transition-all duration-300"
-        />
-      </Link>
+    <div className='relative h-screen overflow-hidden'>
+      {/* Logo in top left */}
+      <Link 
+        to="/" 
+        className="absolute top-8 left-32 p-2 rounded-lg transition-all duration-300 hover:bg-white/10 hover:scale-105"
+      >
+      <img 
+        src="/images/logo.png"
+        alt="Quanta PC" 
+        className="h-12 w-auto transition-all duration-300"
+      />
+    </Link>
 
-      <div className="flex h-full items-center justify-center">
+    <div className="flex h-full items-center justify-center">
         <div className="w-full max-w-none" style={{ width: '500px' }}>
           <div 
             className="bg-white/10 backdrop-blur-sm rounded-2xl p-8"
@@ -228,6 +226,5 @@ export default function ProfileSetup() {
         </div>
       </div>
     </div>
-    </Background>
   );
 }

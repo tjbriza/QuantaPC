@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { AtSign, Lock } from 'lucide-react';
-import Background from '../ui/Background.jsx';
 
 export default function Login() {
   const [email, setEmail] = useState('');

@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <div className="py-12 relative hidden md:block">
       <div className="px-2 md:px-4 relative z-10">
-        <div className="mx-auto max-w-[90rem] min-h-[327px] rounded-2xl overflow-hidden relative font-dm-sans bg-white/80 backdrop-blur-xl border border-white/40 shadow-[0_0_25px_rgba(0,0,0,0.3)] flex items-center">
+        <div className="mx-auto max-w-[90rem] min-h-[327px] rounded-2xl overflow-hidden relative font-dm-sans bg-white/20 backdrop-blur-xl border border-white/20 shadow-[0_0_25px_rgba(0,0,0,0.3)] flex items-center">
           <div className="flex items-center justify-between w-full px-8 lg:px-16 py-10 lg:py-12
                           max-md:flex-col max-md:px-5 max-md:py-8 max-md:gap-8 max-md:text-center
                           md:max-lg:px-10 md:max-lg:gap-10

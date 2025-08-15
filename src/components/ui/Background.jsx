@@ -1,6 +1,6 @@
 export default function Background({ children }) {
   return (
-    <div className="min-h-screen w-full relative overflow-hidden">
+    <div className="w-full relative overflow-hidden" style={{ minHeight: '100vh' }}>
       {/* Radial Gradient Backgrounds: separate layers to allow blending */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         {/* Top gradient */}

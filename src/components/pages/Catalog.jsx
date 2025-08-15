@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
-import Background from '../ui/Background.jsx';
 import ProductGrid from '../ui/ProductCatalog/ProductGrid.jsx';
 import CategorySection from '../ui/CategorySection.jsx';
 import ProductFilter from '../ui/ProductCatalog/ProductFilter.jsx';
@@ -36,21 +35,24 @@ export default function Catalog() {
 
   return (
     <div className='min-h-screen'>
-      {/* Product Filter - Fixed position, hidden on mobile */}
-      <div className="hidden lg:block">
-        <ProductFilter />
-      </div>
-      
-      {/* Main content centered */}
-      <div className='flex justify-center mt-32'>
-        <div className='w-full max-w-6xl px-4'>
-          {categorizedProducts.map((category) => (
-            <CategorySection
-              key={category.id} 
-              title={category.name}
-              products={category.products}
-            />
-          ))}
+      {/* Responsive layout container */}
+      <div className='flex mt-32'>
+        {/* Product Filter - Responsive sidebar */}
+        <div className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 lg:flex-shrink-0 lg:pl-4 xl:pl-8">
+          <ProductFilter />
+        </div>
+        
+        {/* Main content with proper spacing */}
+        <div className='flex-1 lg:pl-8 xl:pl-12'>
+          <div className='w-full max-w-6xl px-4 lg:px-0'>
+            {categorizedProducts.map((category) => (
+              <CategorySection
+                key={category.id} 
+                title={category.name}
+                products={category.products}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>
