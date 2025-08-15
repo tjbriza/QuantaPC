@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useFullProductDetails } from '../../hooks/useFullProductDetails';
 import { useSupabaseCart } from '../../hooks/useSupabaseCart';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
@@ -32,6 +32,20 @@ export default function ProductPage() {
 
   const product = productFromState || fetchedProduct;
   const [productQuantity, setProductQuantity] = useState(1);
+  const scrollRef = useRef(null);
+
+  const scrollLeft = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ left: 400, behavior: 'smooth' });
+    }
+  };
+
   function handleAddToCart(quantity = 1) {
     if (product) {
       addToCart(product.id, quantity);
@@ -110,8 +124,24 @@ export default function ProductPage() {
       <h2 className='text-2xl font-semibold text-center mb-4'>
         You may also like
       </h2>
-      <div>
-        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8'>
+      <div className='relative flex items-center justify-center w-full'>
+        {/* Left Arrow */}
+        <button
+          onClick={scrollLeft}
+          className='absolute -left-16 z-10 p-2 transition-opacity hover:opacity-70'
+          aria-label='Scroll left'
+        >
+          <svg className='w-8 h-8 text-black' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+          </svg>
+        </button>
+        
+        {/* Cards Container */}
+        <div 
+          ref={scrollRef}
+          className='flex flex-nowrap gap-4 mb-20 overflow-x-hidden scroll-smooth px-16'
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+        >
           {productRecommendations?.map((recommendation) => (
             <ProductCard
               key={recommendation.id}
@@ -124,6 +154,17 @@ export default function ProductPage() {
             />
           ))}
         </div>
+        
+        {/* Right Arrow */}
+        <button
+          onClick={scrollRight}
+          className='absolute -right-16 z-10 p-2 transition-opacity hover:opacity-70'
+          aria-label='Scroll right'
+        >
+          <svg className='w-8 h-8 text-black' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+          </svg>
+        </button>
       </div>
     </div>
   );

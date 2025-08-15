@@ -113,3 +113,32 @@
     rgba(65, 105, 148, 0) 100%
   );
 }
+
+/* Range Slider Styles */
+.range-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: #000;
+  outline: none;
+}
+
+.range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #282E41;
+  cursor: pointer;
+  border: none;
+}
+
+.range-slider::-moz-range-thumb {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: #282E41;
+  cursor: pointer;
+  border: none;
+}
