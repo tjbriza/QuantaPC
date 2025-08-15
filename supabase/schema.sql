@@ -7,6 +7,31 @@ create table profiles (
   created_at timestamp with time zone default now() 
 ); 
 
+create table shipping_address (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  
+  full_name varchar(100) not null,
+  phone_number varchar(20) not null,
+
+  country varchar(50) not null,
+  region varchar(50) not null,
+  province varchar(50) not null,
+  city varchar(50) not null,
+  barangay varchar(50) not null,
+  postal_code varchar(10) not null,
+
+  street_name varchar(100) not null,
+  building_name varchar(100),
+  house_number varchar(20) not null,
+
+  address_label varchar(20) default 'Home',
+  is_default boolean default false,
+
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
 create table categories (
   id uuid primary key default uuid_generate_v4(),
   name text unique not null,          
