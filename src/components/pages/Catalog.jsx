@@ -43,7 +43,9 @@ export default function Catalog() {
         </div>
         
         {/* Main content with proper spacing */}
-        <div className='flex-1 lg:pl-8 xl:pl-12'>
+        {/* To move products: increase paddingLeft value to move right, decrease to move left */}
+        {/* Current: 2rem = reduced gap between filter and products */}
+        <div className='flex-1' style={{ paddingLeft: '4.2rem' }}>
           <div className='w-full max-w-6xl px-4 lg:px-0'>
             {categorizedProducts.map((category) => (
               <CategorySection
