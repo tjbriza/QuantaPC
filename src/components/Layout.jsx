@@ -13,6 +13,12 @@ export default function Layout() {
     location.pathname === '/signup' ||
     location.pathname === '/profilesetup';
 
+  // Hide footer on login, signup, and profilesetup pages
+  const hideFooter =
+    location.pathname === '/login' ||
+    location.pathname === '/signup' ||
+    location.pathname === '/profilesetup';
+
   // Show special background on homepage, signup, login, and profilesetup pages
   const showBackground = location.pathname === '/' || 
                         location.pathname === '/signup' ||
@@ -30,7 +36,7 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      <Footer />
+      {!hideFooter && <Footer />}
     </>
   );
 

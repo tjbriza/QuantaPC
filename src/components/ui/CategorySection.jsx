@@ -10,13 +10,9 @@ export default function CategorySection({ title, products }) {
   } : {};
 
   return (
+    
     <section className='mb-16'>
-      <h2 
-        className='text-2xl font-semibold text-black mb-6 text-center'
-        style={title === 'CPU' ? titleStyle : {}}
-      >
-        {title}
-      </h2>
+      
       <ProductGrid products={products} />
     </section>
   );
