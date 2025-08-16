@@ -1,7 +1,8 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
 import { 
   House, 
   Wallet, 
@@ -13,16 +14,23 @@ import {
 
 export default function ProfileWindow({ isOpen, onClose }) {
   const { session, signOut } = useAuth();
+  const navigate = useNavigate();
   const { data: profileData } = useSupabaseRead('profiles', {
     filter: { id: session?.user.id },
     single: true,
   });
+  const [showLogoutNotification, setShowLogoutNotification] = useState(false);
 
   if (!isOpen || !session) return null;
 
   const handleLogout = () => {
-    signOut();
-    onClose();
+    setShowLogoutNotification(true);
+    setTimeout(() => {
+      signOut();
+      onClose();
+      setShowLogoutNotification(false);
+      navigate('/login');
+    }, 1000);
   };
 
   const handleModalClick = (e) => {
@@ -43,19 +51,20 @@ export default function ProfileWindow({ isOpen, onClose }) {
     `https://ui-avatars.com/api/?name=${firstName}+${lastName}&background=0ea5e9&color=fff`;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -10, scale: 0.95 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: -10, scale: 0.95 }}
-          transition={{ 
-            duration: 0.2, 
-            ease: "easeOut" 
-          }}
-          className="bg-[#EEEEEE] rounded-b-lg shadow-lg min-w-[240px] p-0 overflow-hidden border-t-[4px] border-[#282E41]"
-          onClick={handleModalClick}
-        >
+    <>
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.95 }}
+            transition={{ 
+              duration: 0.2, 
+              ease: "easeOut" 
+            }}
+            className="bg-[#EEEEEE] rounded-b-lg shadow-lg min-w-[240px] p-0 overflow-hidden border-t-[4px] border-[#282E41]"
+            onClick={handleModalClick}
+          >
       {/* User Profile Section */}
       <div className="p-3 border-b border-gray-300 bg-white">
         <div className="flex items-center space-x-2">
@@ -131,8 +140,24 @@ export default function ProfileWindow({ isOpen, onClose }) {
           </button>
         </div>
       </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Logout Notification */}
+      <AnimatePresence>
+        {showLogoutNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="fixed top-4 left-1/2 transform -translate-x-1/2 z-[100] bg-[#EEEEEE] text-black px-4 py-2 rounded-lg shadow-lg font-['DM_Sans'] text-sm border border-gray-300"
+          >
+            Logged out successfully!
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }
