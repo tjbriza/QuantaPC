@@ -4,6 +4,8 @@ import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import ProductGrid from '../ui/ProductCatalog/ProductGrid.jsx';
 import CategorySection from '../ui/CategorySection.jsx';
 import ProductFilter from '../ui/ProductCatalog/ProductFilter.jsx';
+import ProductSearch from '../ui/ProductCatalog/ProductSearch.jsx';
+import ProductSort from '../ui/ProductCatalog/ProductSort.jsx';
 
 export default function Catalog() {
   const { session } = useAuth();
@@ -43,26 +45,37 @@ export default function Catalog() {
   return (
     <div className='min-h-screen'>
       <div className='pt-32 pb-8 w-full flex justify-center items-center'>
-        <h2 
-          className='text-2xl font-semibold text-black mb-6 text-center w-full'
+        <h2
+          className='text-xl md:text-2xl lg:text-5xl font-semibold text-black mb-6 text-center w-full'
           style={title === 'ALL BUILDS' ? titleStyle : {}}
         >
           {title}
         </h2>
       </div>
-      
-      <div className='p-2 md:p-4'>
-        <div className='mx-auto max-w-[90rem]'>
-          <div className='flex px-4 md:px-8'>
+
+      <div className="p-2 md:p-4">
+        <div className="mx-auto max-w-[90rem]">
+          <div className="px-4 md:px-8 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 sm:gap-0 lg:ml-81">
+            <ProductSearch />
+            <ProductSort />
+          </div>
+
+
+          <div className="flex px-4 md:px-8">
+            {/* Sidebar filter */}
             <div className="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 lg:flex-shrink-0">
               <ProductFilter />
             </div>
-            
-            <div className='flex-1 flex justify-center'>
-              <div className='w-full overflow-y-auto pr-4 pb-8' style={{ height: '70vh' }}>
+
+            {/* Product list */}
+            <div className="flex-1 flex justify-center">
+              <div
+                className="w-full overflow-y-auto pr-4 pb-8"
+                style={{ height: "70vh" }}
+              >
                 {categorizedProducts.map((category) => (
                   <CategorySection
-                    key={category.id} 
+                    key={category.id}
                     title={category.name}
                     products={category.products}
                   />
@@ -72,6 +85,7 @@ export default function Catalog() {
           </div>
         </div>
       </div>
+
     </div>
   );
 }

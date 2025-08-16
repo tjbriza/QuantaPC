@@ -12,24 +12,24 @@ export default function ProductCard({ product }) {
   return (
     <a
       key={product.id}
-      className='bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer'
-      style={{ width: '21.5rem', height: '22.5rem' }}
+      className='bg-white p-3 sm:p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer w-full max-w-xs sm:max-w-sm'
+      style={{ height: 'auto', minHeight: '20rem' }}
       onClick={handleClick}
     >
       <img
         src={product.image_url || 'https://placehold.co/150'}
         alt={product.name}
-        className='w-full h-40 object-cover rounded-md mb-3'
+        className='w-full h-32 sm:h-40 object-cover rounded-md mb-3'
       />
-      <h3 className='text-lg font-semibold text-gray-800 mb-2'>{product.name}</h3>
+      <h3 className='text-base sm:text-lg font-semibold text-gray-800 mb-2 line-clamp-2'>{product.name}</h3>
       <div className='flex justify-between items-center mt-2'>
-        <p className='text-gray-600 font-medium'>
+        <p className='text-sm sm:text-base text-gray-600 font-medium'>
           {product.price.toLocaleString('en-PH', {
             style: 'currency',
             currency: 'PHP',
           })}
         </p>
-        <p className='text-yellow-500'>⭐({product.rating.toFixed(1)})</p>
+        <p className='text-sm sm:text-base text-yellow-500'>⭐({product.rating.toFixed(1)})</p>
       </div>
     </a>
   );
