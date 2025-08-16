@@ -1,42 +1,70 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { useSupabaseRead } from './useSupabaseRead';
 import { useSupabaseWrite } from './useSupabaseWrite';
+import { supabase } from '../supabaseClient';
 
 export function useWishlist() {
   const { session } = useAuth();
   const userId = session?.user?.id;
+  const [wishlistItems, setWishlistItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Get all wishlist items for this user with product details
-  const {
-    data: wishlistItems,
-    loading: fetchLoading,
-    refetch,
-  } = useSupabaseRead('wishlist', {
-    filter: { user_id: userId },
-    select: `
-      id,
-      product_id,
-      added_at,
-      products (
-        id,
-        name,
-        price,
-        image_url,
-        brand,
-        stock_quantity,
-        description
-      )
-    `,
-    enabled: !!userId,
-  });
+  const [fetchLoading, setFetchLoading] = useState(false);
+  const [fetchError, setFetchError] = useState(null);
 
   // Write operations
   const { insertData: addWishlistItem } = useSupabaseWrite('wishlist');
   const { deleteData: removeWishlistItem } = useSupabaseWrite('wishlist');
 
-  console.log(wishlistItems);
+  // Fetch wishlist items manually
+  const fetchWishlistItems = useCallback(async () => {
+    if (!userId) {
+      setWishlistItems([]);
+      return;
+    }
+
+    setFetchLoading(true);
+    setFetchError(null);
+
+    try {
+      const { data, error } = await supabase
+        .from('wishlist')
+        .select(
+          `
+          id,
+          product_id,
+          added_at,
+          products (
+            id,
+            name,
+            price,
+            image_url,
+            brand,
+            stock_quantity,
+            description
+          )
+        `
+        )
+        .eq('user_id', userId);
+
+      if (error) throw error;
+      setWishlistItems(data || []);
+    } catch (err) {
+      setFetchError(err);
+      console.error('Error fetching wishlist:', err);
+    } finally {
+      setFetchLoading(false);
+    }
+  }, [userId]);
+
+  // Initial fetch
+  useEffect(() => {
+    fetchWishlistItems();
+  }, [fetchWishlistItems]);
+
+  // Manual refetch function
+  const refetch = useCallback(() => {
+    fetchWishlistItems();
+  }, [fetchWishlistItems]);
 
   // Check if product is in wishlist
   const isInWishlist = useCallback(
@@ -71,7 +99,7 @@ export function useWishlist() {
       ]);
 
       if (!error) {
-        await refetch(); // Refresh the wishlist
+        refetch(); // Refresh the wishlist
       }
 
       setIsLoading(false);
@@ -97,7 +125,7 @@ export function useWishlist() {
       });
 
       if (!error) {
-        await refetch(); // Refresh the wishlist
+        refetch(); // Refresh the wishlist
       }
 
       setIsLoading(false);
@@ -129,6 +157,7 @@ export function useWishlist() {
     removeFromWishlist,
     toggleWishlist,
     loading: fetchLoading || isLoading,
+    error: fetchError,
     refetch,
   };
 }

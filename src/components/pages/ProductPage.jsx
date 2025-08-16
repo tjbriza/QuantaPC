@@ -86,12 +86,12 @@ export default function ProductPage() {
           <div className='flex gap-4'>
             <button
               onClick={() => handleAddToCart(productQuantity)}
-              className='mt-4 w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
+              className=' w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
             >
               Add to Cart
             </button>
 
-            <HeartButton isInWishlist={product.id} />
+            <HeartButton productId={product.id} />
           </div>
           <div>
             <label className='text-gray-600'>Quantity:</label>
