@@ -1,3 +1,4 @@
+import { Mail, User } from 'lucide-react';
 export default function ProfileAvatar({
   avatarUrl,
   username,
@@ -20,9 +21,15 @@ export default function ProfileAvatar({
           className='text-sm'
         />
       )} */}
-      <div>
-        <p>{username}</p>
-        <p>{email}</p>
+      <div className='flex flex-col gap-2'>
+        <p className='flex gap-2'>
+          <User />
+          {username}
+        </p>
+        <p className='flex gap-2'>
+          <Mail />
+          {email}
+        </p>
       </div>
     </div>
   );

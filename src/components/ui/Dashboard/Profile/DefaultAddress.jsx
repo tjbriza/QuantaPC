@@ -45,16 +45,16 @@ export default function DefaultAddress({
 
   return (
     <div className='w-full'>
-      <div className='flex gap-8 items-center'>
+      <div className='flex gap-4 items-end-safe mb-2 pb-4'>
         <h2 className='text-3xl font-bold'>Default Shipping Address</h2>
 
         {!isEditing ? (
           <button
-            className='px-4 py-2 text-black rounded flex gap-2 hover:underline'
+            className='px-4 text-black text-xl rounded flex gap-2 hover:underline'
             onClick={() => setIsEditing(true)}
           >
-            {localAddress ? 'Edit' : 'Add'}{' '}
-            <Brush className='w-6 h-6 text-gray-500' />
+            {localAddress ? 'Edit Address' : 'Add'}{' '}
+            <Brush className='w-6 h-6' />
           </button>
         ) : (
           <div className='flex gap-2'>
@@ -79,7 +79,7 @@ export default function DefaultAddress({
       <div className='flex flex-row flex-wrap mt-4 gap-8'>
         {addressFields.map(({ key, label }) => (
           <div key={key} className='flex flex-col gap-2 min-w-[200px]'>
-            <p className='text-lg font-medium'>{label}:</p>
+            <p className='text-lg font-bold'>{label}:</p>
             {isEditing ? (
               <div>
                 <input

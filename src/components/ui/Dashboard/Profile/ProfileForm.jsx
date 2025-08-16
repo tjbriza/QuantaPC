@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema } from '../../../../schema/ProfileSchemas';
-import { Brush } from 'lucide-react';
+import { Brush, User } from 'lucide-react';
 
 export default function ProfileForm({
   localProfile,
@@ -30,14 +30,15 @@ export default function ProfileForm({
 
   return (
     <div className='w-full'>
-      <div className='flex gap-8 items-center'>
+      <div className='flex gap-4 items-end-safe mb-2 pb-4'>
         <h2 className='text-3xl font-bold'>Profile</h2>
         {!isEditing ? (
           <button
-            className='px-4 py-2 text-black rounded flex gap-2 hover:underline'
+            className='px-4 text-black text-xl rounded flex gap-2 hover:underline'
             onClick={() => setIsEditing(true)}
           >
-            Edit <Brush className='w-6 h-6 text-gray-500' />
+            Edit Profile
+            <Brush className='w-6 h-6' />
           </button>
         ) : (
           <div className='flex gap-2'>
@@ -65,7 +66,7 @@ export default function ProfileForm({
           { key: 'name_last', label: 'Last Name:' },
         ].map(({ key, label }) => (
           <div key={key} className='flex flex-col gap-2'>
-            <p className='text-lg font-medium pr-20'>{label}</p>
+            <p className='text-lg font-bold pr-20'>{label}</p>
             {isEditing ? (
               <div>
                 <input
