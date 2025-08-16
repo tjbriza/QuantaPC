@@ -8,7 +8,7 @@ export default function CartPage() {
   // Refresh cart when page loads to ensure we have the latest data
   useEffect(() => {
     refreshCart();
-  }, [refreshCart]);
+  }, []);
 
   if (loadingCart) {
     return (
