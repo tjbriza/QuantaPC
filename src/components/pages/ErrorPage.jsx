@@ -15,11 +15,11 @@ export default function ErrorPage() {
 
   return (
     <div className='max-w-6xl mx-auto px-8 h-screen flex flex-col items-center justify-center'>
-      <h1 className='text-2xl font-semibold text-red-600 mb-4 flex justify-center'>
+      <h1 className='text-4xl font-semibold text-red-600 mb-4 flex justify-center'>
         Oops! Something went wrong.
       </h1>
-      <p className='text-center'>
-        The page you're looking for doesn't exist.
+      <p className='text-center text-l'>
+        The page you're looking for doesn't exist (yet).
       </p>
       <a
         onClick={handleGoHome}
