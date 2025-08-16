@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Carousel() {
   const images = [
@@ -15,15 +15,23 @@ export default function Carousel() {
 
   const next = () => {
     const newPositions = [...positions];
-    newPositions.unshift(newPositions.pop()); // rotate right
+    newPositions.unshift(newPositions.pop());
     update(newPositions);
   };
 
   const prev = () => {
     const newPositions = [...positions];
-    newPositions.push(newPositions.shift()); // rotate left
+    newPositions.push(newPositions.shift());
     update(newPositions);
   };
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      next();
+    }, 3000);
+
+    return () => clearInterval(interval); 
+  }, [positions]);
 
   const positionClasses = {
     center: "translate-x-0 scale-125 opacity-100 z-30",
@@ -35,30 +43,14 @@ export default function Carousel() {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="relative w-[600px] h-[400px] flex items-center justify-center perspective-[1000px]">
-                 {images.map((src, i) => (
-           <img
-             key={i}
-             src={src}
-             className={`absolute w-[400px] h-[300px] rounded-2xl object-contain transition-all duration-700 ease-in-out ${positionClasses[positions[i]]}`}
-             alt={`slide-${i}`}
-           />
-         ))}
-
-        {/* Controls */}
-        <div className="absolute -bottom-14 flex gap-4">
-                     <button
-             onClick={prev}
-             className="px-4 py-2 rounded-xl bg-[#282E41] text-white hover:bg-[#3A4458] transition"
-           >
-             Prev
-           </button>
-           <button
-             onClick={next}
-             className="px-4 py-2 rounded-xl bg-[#282E41] text-white hover:bg-[#3A4458] transition"
-           >
-             Next
-           </button>
-        </div>
+        {images.map((src, i) => (
+          <img
+            key={i}
+            src={src}
+            className={`absolute w-[400px] h-[300px] rounded-2xl object-contain transition-all duration-700 ease-in-out ${positionClasses[positions[i]]}`}
+            alt={`slide-${i}`}
+          />
+        ))}
       </div>
     </div>
   );
