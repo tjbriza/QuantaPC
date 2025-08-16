@@ -7,7 +7,7 @@ export function useSupabaseStorage(bucketName) {
   const [error, setError] = useState(null);
 
   //upload to bucket and return url
-  const uploadFile = async (filePath, file) => {
+  const uploadFile = async (filePath, file, upsert = false) => {
     setLoading(true);
     setError(null);
 
@@ -21,7 +21,10 @@ export function useSupabaseStorage(bucketName) {
       //upload to bucket
       const { data, error: uploadError } = await supabase.storage
         .from(bucketName)
-        .upload(fileName, file);
+        .upload(fileName, file, {
+          cacheControl: '3600',
+          upsert: upsert,
+        });
 
       if (uploadError) {
         console.log('Upload error:', uploadError);
