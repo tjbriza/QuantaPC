@@ -1,14 +1,48 @@
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { addressSchema } from '../../../schema/ProfileSchemas';
 import { Brush } from 'lucide-react';
 
-export default function AddressForm({
-  register,
+export default function DefaultAddress({
   localAddress,
-  isEditing,
-  setIsEditing,
-  handleSubmit,
   onSubmit,
-  reset,
+  isLoading = false,
 }) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  const form = useForm({
+    resolver: zodResolver(addressSchema),
+    mode: 'onChange',
+    defaultValues: localAddress || {},
+    values: localAddress,
+  });
+
+  const handleSave = async (formData) => {
+    await onSubmit(formData);
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    form.reset(localAddress || {});
+    setIsEditing(false);
+  };
+
+  const addressFields = [
+    { key: 'full_name', label: 'Full Name' },
+    { key: 'phone_number', label: 'Phone Number' },
+    { key: 'country', label: 'Country' },
+    { key: 'region', label: 'Region' },
+    { key: 'province', label: 'Province' },
+    { key: 'city', label: 'City' },
+    { key: 'barangay', label: 'Barangay' },
+    { key: 'postal_code', label: 'Postal Code' },
+    { key: 'street_name', label: 'Street Name' },
+    { key: 'building_name', label: 'Building Name' },
+    { key: 'house_number', label: 'House Number' },
+    { key: 'address_label', label: 'Address Label' },
+  ];
+
   return (
     <div className='w-full'>
       <div className='flex gap-8 items-center'>
@@ -25,17 +59,15 @@ export default function AddressForm({
         ) : (
           <div className='flex gap-2'>
             <button
-              className='px-4 py-2 bg-green-500 text-white rounded'
-              onClick={handleSubmit(onSubmit)}
+              className='px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50'
+              onClick={form.handleSubmit(handleSave)}
+              disabled={isLoading || !form.formState.isValid}
             >
-              Save
+              {isLoading ? 'Saving...' : 'Save'}
             </button>
             <button
               className='px-4 py-2 bg-gray-300 rounded'
-              onClick={() => {
-                reset(localAddress || {}); // reset to existing address or empty
-                setIsEditing(false);
-              }}
+              onClick={handleCancel}
             >
               Cancel
             </button>
@@ -45,31 +77,27 @@ export default function AddressForm({
 
       {/* Fields */}
       <div className='flex flex-row flex-wrap mt-4 gap-8'>
-        {[
-          'full_name',
-          'phone_number',
-          'country',
-          'region',
-          'province',
-          'city',
-          'barangay',
-          'postal_code',
-          'street_name',
-          'building_name',
-          'house_number',
-          'address_label',
-        ].map((field) => (
-          <div key={field} className='flex flex-col gap-2 min-w-[200px]'>
-            <p className='text-lg font-medium'>
-              {field
-                .replace(/_/g, ' ')
-                .replace(/\b\w/g, (l) => l.toUpperCase())}
-              :
-            </p>
+        {addressFields.map(({ key, label }) => (
+          <div key={key} className='flex flex-col gap-2 min-w-[200px]'>
+            <p className='text-lg font-medium'>{label}:</p>
             {isEditing ? (
-              <input {...register(field)} className='border p-1 rounded' />
+              <div>
+                <input
+                  {...form.register(key)}
+                  className={`border p-1 rounded w-full ${
+                    form.formState.errors[key]
+                      ? 'border-red-500'
+                      : 'border-gray-300'
+                  }`}
+                />
+                {form.formState.errors?.[key]?.message && (
+                  <p className='text-red-500 text-sm mt-1'>
+                    {form.formState.errors[key].message}
+                  </p>
+                )}
+              </div>
             ) : (
-              <p>{localAddress?.[field] || '-'}</p>
+              <p className='p-1'>{localAddress?.[key] || '-'}</p>
             )}
           </div>
         ))}

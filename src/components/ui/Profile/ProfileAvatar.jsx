@@ -3,7 +3,7 @@ export default function ProfileAvatar({
   username,
   email,
   isEditing,
-  setSelectedFile,
+  onFileChange,
 }) {
   return (
     <div className='flex flex-col items-start gap-4'>
@@ -16,7 +16,8 @@ export default function ProfileAvatar({
         <input
           type='file'
           accept='image/*'
-          onChange={(e) => setSelectedFile(e.target.files[0])}
+          onChange={(e) => onFileChange?.(e.target.files[0])}
+          className='text-sm'
         />
       )} */}
       <div>
