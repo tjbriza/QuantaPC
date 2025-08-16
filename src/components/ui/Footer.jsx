@@ -71,10 +71,10 @@ export default function Footer() {
                   Remain Updated
                 </h3>
                 <Link
-                  to='/signup'
-                  className="bg-[#282E41] hover:bg-gray-800 hover:scale-105 text-white px-6 py-2 rounded-full font-bold text-xl transition-all duration-300 no-underline inline-block text-center"
+                  to='/about'
+                  className="bg-[#282E41] hover:bg-gray-800 hover:scale-105 text-white px-4 py-2 rounded-full font-bold text-xl transition-all duration-300 no-underline inline-block text-center"
                 >
-                  Sign Up
+                  Subscribe
                 </Link>
               </div>
             </div>
