@@ -4,7 +4,11 @@ import { useFullProductDetails } from '../../hooks/useFullProductDetails';
 import { useSupabaseCart } from '../../hooks/useSupabaseCart';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import ProductCard from '../ui/ProductCatalog/ProductCard.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import HeartButton from '../ui/ProductPage/HeartButton.jsx';
+
 export default function ProductPage() {
+  const { session } = useAuth();
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
@@ -79,12 +83,16 @@ export default function ProductPage() {
           </p>
           <p className='text-gray-600'>Stocks Left: {product.stock_quantity}</p>
           <p className='text-gray-600'>{product.description}</p>
-          <button
-            onClick={() => handleAddToCart(productQuantity)}
-            className='mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors'
-          >
-            Add to Cart
-          </button>
+          <div className='flex gap-4'>
+            <button
+              onClick={() => handleAddToCart(productQuantity)}
+              className='mt-4 w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
+            >
+              Add to Cart
+            </button>
+
+            <HeartButton isInWishlist={product.id} />
+          </div>
           <div>
             <label className='text-gray-600'>Quantity:</label>
             <input
@@ -131,13 +139,23 @@ export default function ProductPage() {
           className='absolute -left-16 z-10 p-2 transition-opacity hover:opacity-70'
           aria-label='Scroll left'
         >
-          <svg className='w-8 h-8 text-black' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+          <svg
+            className='w-8 h-8 text-black'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth={2}
+              d='M15 19l-7-7 7-7'
+            />
           </svg>
         </button>
-        
+
         {/* Cards Container */}
-        <div 
+        <div
           ref={scrollRef}
           className='flex flex-nowrap gap-4 mb-20 overflow-x-hidden scroll-smooth px-16'
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
@@ -154,15 +172,25 @@ export default function ProductPage() {
             />
           ))}
         </div>
-        
+
         {/* Right Arrow */}
         <button
           onClick={scrollRight}
           className='absolute -right-16 z-10 p-2 transition-opacity hover:opacity-70'
           aria-label='Scroll right'
         >
-          <svg className='w-8 h-8 text-black' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
+          <svg
+            className='w-8 h-8 text-black'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
+          >
+            <path
+              strokeLinecap='round'
+              strokeLinejoin='round'
+              strokeWidth={2}
+              d='M9 5l7 7-7 7'
+            />
           </svg>
         </button>
       </div>
