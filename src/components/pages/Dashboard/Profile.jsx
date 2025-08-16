@@ -4,9 +4,9 @@ import { useSupabaseStorage } from '../../../hooks/useSupabaseStorage';
 import { useAuth } from '../../../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import ProfileAvatar from '../../ui/Profile/ProfileAvatar';
-import ProfileForm from '../../ui/Profile/ProfileForm';
-import DefaultAddress from '../../ui/Profile/DefaultAddress';
+import ProfileAvatar from '../../ui/Dashboard/Profile/ProfileAvatar';
+import ProfileForm from '../../ui/Dashboard/Profile/ProfileForm';
+import DefaultAddress from '../../ui/Dashboard/Profile/DefaultAddress';
 
 export default function ProfilePage() {
   const { session } = useAuth();

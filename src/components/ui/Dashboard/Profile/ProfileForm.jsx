@@ -1,21 +1,21 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { addressSchema } from '../../../schema/ProfileSchemas';
+import { profileSchema } from '../../../../schema/ProfileSchemas';
 import { Brush } from 'lucide-react';
 
-export default function DefaultAddress({
-  localAddress,
+export default function ProfileForm({
+  localProfile,
   onSubmit,
   isLoading = false,
 }) {
   const [isEditing, setIsEditing] = useState(false);
 
   const form = useForm({
-    resolver: zodResolver(addressSchema),
-    mode: 'onChange',
-    defaultValues: localAddress || {},
-    values: localAddress,
+    resolver: zodResolver(profileSchema),
+    mode: onchange,
+    defaultValues: localProfile || {},
+    values: localProfile,
   });
 
   const handleSave = async (formData) => {
@@ -24,37 +24,20 @@ export default function DefaultAddress({
   };
 
   const handleCancel = () => {
-    form.reset(localAddress || {});
+    form.reset(localProfile);
     setIsEditing(false);
   };
-
-  const addressFields = [
-    { key: 'full_name', label: 'Full Name' },
-    { key: 'phone_number', label: 'Phone Number' },
-    { key: 'country', label: 'Country' },
-    { key: 'region', label: 'Region' },
-    { key: 'province', label: 'Province' },
-    { key: 'city', label: 'City' },
-    { key: 'barangay', label: 'Barangay' },
-    { key: 'postal_code', label: 'Postal Code' },
-    { key: 'street_name', label: 'Street Name' },
-    { key: 'building_name', label: 'Building Name' },
-    { key: 'house_number', label: 'House Number' },
-    { key: 'address_label', label: 'Address Label' },
-  ];
 
   return (
     <div className='w-full'>
       <div className='flex gap-8 items-center'>
-        <h2 className='text-3xl font-bold'>Default Shipping Address</h2>
-
+        <h2 className='text-3xl font-bold'>Profile</h2>
         {!isEditing ? (
           <button
             className='px-4 py-2 text-black rounded flex gap-2 hover:underline'
             onClick={() => setIsEditing(true)}
           >
-            {localAddress ? 'Edit' : 'Add'}{' '}
-            <Brush className='w-6 h-6 text-gray-500' />
+            Edit <Brush className='w-6 h-6 text-gray-500' />
           </button>
         ) : (
           <div className='flex gap-2'>
@@ -75,39 +58,36 @@ export default function DefaultAddress({
         )}
       </div>
 
-      {/* Fields */}
-      <div className='flex flex-row flex-wrap mt-4 gap-8'>
-        {addressFields.map(({ key, label }) => (
-          <div key={key} className='flex flex-col gap-2 min-w-[200px]'>
-            <p className='text-lg font-medium'>{label}:</p>
+      <div className='flex flex-row gap-2 min-w-[200px]'>
+        {[
+          { key: 'username', label: 'Username:' },
+          { key: 'name_first', label: 'First Name:' },
+          { key: 'name_last', label: 'Last Name:' },
+        ].map(({ key, label }) => (
+          <div key={key} className='flex flex-col gap-2'>
+            <p className='text-lg font-medium pr-20'>{label}</p>
             {isEditing ? (
               <div>
                 <input
                   {...form.register(key)}
-                  className={`border p-1 rounded w-full ${
+                  className={`border p-1 rounded ${
                     form.formState.errors[key]
                       ? 'border-red-500'
                       : 'border-gray-300'
                   }`}
                 />
-                {form.formState.errors?.[key]?.message && (
+                {form.formState.errors[key] && (
                   <p className='text-red-500 text-sm mt-1'>
                     {form.formState.errors[key].message}
                   </p>
                 )}
               </div>
             ) : (
-              <p className='p-1'>{localAddress?.[key] || '-'}</p>
+              <p className='p-1'>{localProfile?.[key] || '-'}</p>
             )}
           </div>
         ))}
       </div>
-
-      {!localAddress && !isEditing && (
-        <p className='mt-4 text-red-500'>
-          Add an address to continue shopping!
-        </p>
-      )}
     </div>
   );
 }
