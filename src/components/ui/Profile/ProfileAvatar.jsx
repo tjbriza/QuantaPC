@@ -12,13 +12,13 @@ export default function ProfileAvatar({
         alt='Profile'
         className='rounded-full w-60 h-50 object-cover'
       />
-      {isEditing && (
+      {/* {isEditing && (
         <input
           type='file'
           accept='image/*'
           onChange={(e) => setSelectedFile(e.target.files[0])}
         />
-      )}
+      )} */}
       <div>
         <p>{username}</p>
         <p>{email}</p>
