@@ -43,7 +43,7 @@ export default function Footer() {
                   <a href='/services' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     Services
                   </a>
-                  <a href='/builder' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
+                  <a href='/custom-pc' className="text-black no-underline relative inline-block transition-all duration-300 hover:scale-105 text-base font-normal tracking-wide pb-1 overflow-hidden w-fit after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full">
                     Custom PC Builder
                   </a>
                 </div>

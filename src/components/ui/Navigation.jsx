@@ -82,7 +82,7 @@ export default function Navigation() {
               RENT
             </Link>
             <Link
-              to="/catalog"
+              to="/services"
               className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               SERVICES

@@ -11,6 +11,8 @@ import Login from './components/pages/Login';
 import SignUp from './components/pages/SignUp';
 import Catalog from './components/pages/Catalog';
 import About from './components/pages/About';
+import Services from './components/pages/Services';
+import CustomPc from './components/pages/CustomPc';
 import PrivateRoute from './components/PrivateRoute';
 import ProfileSetup from './components/pages/ProfileSetup';
 import ProductPage from './components/pages/ProductPage';
@@ -26,6 +28,8 @@ export const router = createBrowserRouter([
       { path: 'signup', element: <SignUp /> },
       { path: 'catalog', element: <Catalog /> },
       { path: 'about', element: <About /> },
+      { path: 'services', element: <Services /> },
+      { path: 'custom-pc', element: <CustomPc /> },
       { path: 'product/:id', element: <ProductPage /> },
       {
         path: 'dashboard',

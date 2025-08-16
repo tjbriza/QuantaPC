@@ -41,14 +41,14 @@ export default function BentoBox() {
               </p>
             </div>
 
-              {/* Fixed positioned image on the right - hidden on mobile */}
-              <div className='hidden lg:block absolute -top-8 right-0 -mr-10.5 w-[25rem] h-[44rem] overflow-hidden'>
-                <img
-                  src='/images/bento1.png'
-                  alt='PC Image'
-                  className='w-full h-full object-contain rounded-2xl'
-                />
-              </div>
+            {/* Fixed positioned image on the right - hidden on mobile */}
+            <div className='hidden lg:block absolute -top-8 right-0 -mr-10.5 w-[25rem] h-[44rem] overflow-hidden'>
+              <img
+                src='/images/bento1.png'
+                alt='PC Image'
+                className='w-full h-full object-contain rounded-2xl'
+              />
+            </div>
 
             {/* Feature list at bottom left - constrained width to avoid image overlap */}
             <div className='mt-auto max-w-full lg:max-w-[70%]'>
@@ -72,9 +72,9 @@ export default function BentoBox() {
 
         {/* Right column with two stacked cards */}
         <div className='flex flex-col h-full'>
-          {/* BUILDS - Top right card */}
+          {/* SERVICES - Top right card */}
           <Link
-            to='/catalog'
+            to='/services'
             className='group block rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
             style={{
               height: 'auto',
@@ -96,15 +96,15 @@ export default function BentoBox() {
                   <PcCase size={38} className='text-white' />
                 </div>
                 <h2 className='text-[#282E41] text-[2.375rem] font-bold font-heading leading-tight mb-4'>
-                  BUILDS
+                  SERVICES
                 </h2>
                 <p className='text-black font-dm-sans text-[1.25rem] leading-relaxed'>
-                  Check out our latest Prebuild PCs.<br />
-                  Get inspiration or request a similar<br />
-                  setup.
+                  Check out our trusted PC services expert consultations,
+                  upgrades, and repairs to keep your
+                  system running <br/>at its best.
                 </p>
               </div>
-              
+
               {/* Fixed positioned image on the right */}
               <div className='absolute -top-8 -right-10 -mr-8 w-80 h-80 hidden lg:block'>
                 <img
@@ -121,7 +121,7 @@ export default function BentoBox() {
 
           {/* CUSTOM PC BUILDER - Bottom right card */}
           <Link
-            to='/catalog'
+            to='/custom-pc'
             className='group block rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 transition-all duration-300 hover:scale-[1.02] border border-gray-200/50 flex-1'
             style={{
               height: 'auto',
@@ -152,7 +152,7 @@ export default function BentoBox() {
                   everyday use.
                 </p>
               </div>
-              
+
               {/* bento3.png image on the right */}
               <div className='absolute top-0 -right-6 w-64 h-64 hidden lg:block'>
                 <img
