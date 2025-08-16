@@ -82,3 +82,11 @@ create table cart_items (
   quantity int not null check (quantity > 0),
   added_at timestamptz default now()
 );
+
+create table wishlist (
+  id uuid primary key default uuid_generate_v4(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  product_id uuid not null references products(id) on delete cascade,
+  added_at timestamp with time zone default now(),
+  unique(user_id, product_id)
+);
