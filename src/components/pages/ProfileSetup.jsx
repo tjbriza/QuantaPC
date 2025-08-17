@@ -1,24 +1,37 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseWrite } from '../../hooks/useSupabaseWrite';
 import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
-import { FileImage } from 'lucide-react';
+import { FileImage, Check, X, Loader2 } from 'lucide-react';
+import { supabase } from '../../supabaseClient';
+
+// Schema for profile setup form
+const profileSetupSchema = z.object({
+  name_first: z.string().min(1, 'First name is required'),
+  name_last: z.string().min(1, 'Last name is required'),
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  avatar_url: z.any().refine((file) => file && file instanceof File, {
+    message: 'Please upload a profile picture',
+  }),
+});
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
-  const { insertData, loading, error } = useSupabaseWrite('profiles');
+  const {
+    insertData,
+    loading: insertLoading,
+    error: insertError,
+  } = useSupabaseWrite('profiles');
   const { session, signOut } = useAuth();
-  const [formdata, setFormData] = useState({
-    id: session?.user?.id || '',
-    name_first: '',
-    name_last: '',
-    username: '',
-    avatar_url: '',
-  });
   const [fileName, setFileName] = useState('No file chosen');
+  const [usernameStatus, setUsernameStatus] = useState(''); // 'checking', 'available', 'taken', ''
+  const [submitError, setSubmitError] = useState('');
 
   const navigate = useNavigate();
 
@@ -30,70 +43,147 @@ export default function ProfileSetup() {
       single: true,
     }
   );
+
   if (existingProfile) {
-    // If a profile already exists, redirect to the dashboard
     return <Navigate to='/dashboard' />;
   }
 
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+  const form = useForm({
+    resolver: zodResolver(profileSetupSchema),
+    mode: 'onChange',
+    defaultValues: {
+      name_first: '',
+      name_last: '',
+      username: '',
+      avatar_url: null,
+    },
+  });
 
-    if (type === 'file' && files.length > 0) {
-      setFileName(files[0].name);
+  // Username checking with debounce
+  useEffect(() => {
+    const username = form.watch('username');
+
+    if (username && username.length >= 3) {
+      const timeoutId = setTimeout(async () => {
+        setUsernameStatus('checking');
+
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('username')
+            .eq('username', username)
+            .single();
+
+          if (error && error.code === 'PGRST116') {
+            // No rows found - username is available
+            setUsernameStatus('available');
+          } else if (data) {
+            // Username exists
+            setUsernameStatus('taken');
+            form.setError('username', {
+              type: 'manual',
+              message: 'Username is already taken',
+            });
+          }
+        } catch (err) {
+          setUsernameStatus('');
+        }
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    } else {
+      setUsernameStatus('');
     }
+  }, [form.watch('username')]);
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === 'file' ? files[0] : value,
-    }));
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFileName(file.name);
+      form.setValue('avatar_url', file);
+      form.clearErrors('avatar_url');
+    }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const onSubmit = async (data) => {
+    setSubmitError('');
 
-    if (!formdata.avatar_url) {
-      alert('Please upload a profile picture.');
-      return;
-    }
+    try {
+      // Double-check username availability before proceeding
+      if (usernameStatus === 'taken') {
+        setSubmitError(
+          'Username is already taken. Please choose a different username.'
+        );
+        return;
+      }
 
-    const newProfile = {
-      id: formdata.id,
-      name_first: formdata.name_first,
-      name_last: formdata.name_last,
-      username: formdata.username,
-      avatar_url: '',
-    };
-
-    const result = await insertData(newProfile);
-
-    if (result.error) {
-      console.error('Error creating profile:', result.error);
-      alert('Failed to create profile. Please try again.');
-      return;
-    }
-
-    const { data: uploadData, error: uploadError } = await uploadFile(
-      `${formdata.id}`,
-      formdata.avatar_url
-    );
-
-    if (uploadError) {
-      console.error('Error uploading profile picture:', uploadError);
-      alert(
-        'Profile created but failed to upload picture. You can upload it later in settings.'
+      // Upload the profile picture first
+      const { data: uploadData, error: uploadError } = await uploadFile(
+        `${session?.user?.id}`,
+        data.avatar_url
       );
-      return;
+
+      if (uploadError) {
+        console.error('Error uploading profile picture:', uploadError);
+        setSubmitError('Failed to upload profile picture. Please try again.');
+        return;
+      }
+
+      // Get the public URL for the uploaded image
+      const avatarUrl = uploadData.publicUrl;
+
+      // Create the profile with the uploaded image URL
+      const newProfile = {
+        id: session?.user?.id,
+        name_first: data.name_first,
+        name_last: data.name_last,
+        username: data.username,
+        avatar_url: avatarUrl,
+      };
+
+      const result = await insertData(newProfile);
+
+      if (result.error) {
+        console.error('Error creating profile:', result.error);
+
+        // Check if it's a unique constraint violation for username
+        if (
+          result.error.code === '23505' &&
+          result.error.message.includes('username')
+        ) {
+          setSubmitError(
+            'Username is already taken. Please choose a different username.'
+          );
+        } else {
+          setSubmitError('Failed to create profile. Please try again.');
+        }
+        return;
+      }
+
+      // Success!
+      navigate('/dashboard');
+    } catch (error) {
+      console.error('Error in profile setup:', error);
+      setSubmitError(
+        'An error occurred during profile setup. Please try again.'
+      );
     }
-
-    const avatarUrl = uploadData.publicUrl;
-    await insertData(
-      { id: formdata.id, avatar_url: avatarUrl },
-      { upsert: true }
-    );
-
-    alert('Profile created successfully!');
-    navigate('/dashboard');
   };
+
+  const getUsernameStatusIcon = () => {
+    switch (usernameStatus) {
+      case 'checking':
+        return <Loader2 className='w-5 h-5 text-gray-500 animate-spin' />;
+      case 'available':
+        return <Check className='w-5 h-5 text-green-500' />;
+      case 'taken':
+        return <X className='w-5 h-5 text-red-500' />;
+      default:
+        return null;
+    }
+  };
+
+  const isFormValid = form.formState.isValid && usernameStatus === 'available';
 
   return (
     <div className='relative h-screen overflow-hidden'>
@@ -122,129 +212,135 @@ export default function ProfileSetup() {
               Almost done!
             </h1>
 
-            <form className='space-y-4' onSubmit={handleSubmit}>
-              <div className='mb-5'>
-                <label
-                  htmlFor='name_first'
-                  className='text-black text-xl block mb-2 font-afacad font-medium'
-                >
-                  First Name <span className='text-red-500'>*</span>
-                </label>
-                <div>
-                  <input
-                    id='name_first'
-                    name='name_first'
-                    type='text'
-                    className='bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                    style={{
-                      border: '1px solid #6E6E6E',
-                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
-                    }}
-                    placeholder='Enter your first name'
-                    required={true}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className='mb-5'>
-                <label
-                  htmlFor='name_last'
-                  className='text-black text-xl block mb-2 font-afacad font-medium'
-                >
-                  Last Name <span className='text-red-500'>*</span>
-                </label>
-                <div>
-                  <input
-                    id='name_last'
-                    name='name_last'
-                    type='text'
-                    className='bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                    style={{
-                      border: '1px solid #6E6E6E',
-                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
-                    }}
-                    placeholder='Enter your last name'
-                    required={true}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className='mb-5'>
-                <label
-                  htmlFor='username'
-                  className='text-black text-xl block mb-2 font-afacad font-medium'
-                >
-                  Username
-                </label>
-                <div>
-                  <input
-                    id='username'
-                    name='username'
-                    type='text'
-                    className='bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400'
-                    style={{
-                      border: '1px solid #6E6E6E',
-                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
-                    }}
-                    placeholder='Choose a username'
-                    required={true}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              <div className='mb-5'>
-                <label
-                  htmlFor='avatar_url'
-                  className='text-black text-xl block mb-2 font-afacad font-medium'
-                >
-                  Profile Picture
-                </label>
-                <div className='flex items-center gap-3'>
+            <form className='space-y-4' onSubmit={form.handleSubmit(onSubmit)}>
+              {[
+                {
+                  key: 'name_first',
+                  label: 'First Name',
+                  type: 'text',
+                  placeholder: 'Enter your first name',
+                  required: true,
+                },
+                {
+                  key: 'name_last',
+                  label: 'Last Name',
+                  type: 'text',
+                  placeholder: 'Enter your last name',
+                  required: true,
+                },
+                {
+                  key: 'username',
+                  label: 'Username',
+                  type: 'text',
+                  placeholder: 'Choose a username',
+                  required: true,
+                  special: 'username',
+                },
+                {
+                  key: 'avatar_url',
+                  label: 'Profile Picture',
+                  type: 'file',
+                  required: true,
+                  special: 'file',
+                },
+              ].map(({ key, label, type, placeholder, required, special }) => (
+                <div key={key} className='mb-5'>
                   <label
-                    htmlFor='avatar_url'
-                    className='bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer font-afacad text-lg'
-                    style={{
-                      border: '1px solid #6E6E6E',
-                      boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
-                    }}
+                    htmlFor={key}
+                    className='text-black text-xl block mb-2 font-afacad font-medium'
                   >
-                    Choose File
-                    <input
-                      id='avatar_url'
-                      name='avatar_url'
-                      type='file'
-                      accept='image/*'
-                      className='hidden'
-                      required={true}
-                      onChange={handleChange}
-                    />
+                    {label}{' '}
+                    {required && <span className='text-red-500'>*</span>}
                   </label>
-                  <span className='text-black font-afacad text-lg'>
-                    {fileName}
-                  </span>
-                </div>
-              </div>
 
-              {error && (
+                  {special === 'username' ? (
+                    <div className='relative'>
+                      <input
+                        id={key}
+                        {...form.register(key)}
+                        type={type}
+                        className='bg-white text-gray-900 rounded-2xl h-12 w-full px-4 pr-12 focus:outline-none focus:ring-2 focus:ring-blue-400'
+                        style={{
+                          border: '1px solid #6E6E6E',
+                          boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
+                        }}
+                        placeholder={placeholder}
+                      />
+                      <div className='absolute right-3 top-1/2 transform -translate-y-1/2'>
+                        {getUsernameStatusIcon()}
+                      </div>
+                    </div>
+                  ) : special === 'file' ? (
+                    <div className='flex items-center gap-3'>
+                      <label
+                        htmlFor={key}
+                        className='bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 px-6 font-medium transition-colors duration-200 flex items-center cursor-pointer font-afacad text-lg'
+                        style={{
+                          border: '1px solid #6E6E6E',
+                          boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
+                        }}
+                      >
+                        Choose File
+                        <input
+                          id={key}
+                          type={type}
+                          accept='image/*'
+                          className='hidden'
+                          onChange={handleFileChange}
+                        />
+                      </label>
+                      <span className='text-black font-afacad text-lg'>
+                        {fileName}
+                      </span>
+                    </div>
+                  ) : (
+                    <div>
+                      <input
+                        id={key}
+                        {...form.register(key)}
+                        type={type}
+                        className='bg-white text-gray-900 rounded-2xl h-12 w-full px-4 focus:outline-none focus:ring-2 focus:ring-blue-400'
+                        style={{
+                          border: '1px solid #6E6E6E',
+                          boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
+                        }}
+                        placeholder={placeholder}
+                      />
+                    </div>
+                  )}
+
+                  {form.formState.errors[key] && (
+                    <p className='text-red-600 text-l mt-1 font-afacad'>
+                      {form.formState.errors[key].message}
+                    </p>
+                  )}
+                  {key === 'username' && usernameStatus === 'available' && (
+                    <p className='text-green-600 text-l mt-1 font-afacad'>
+                      Username is available!
+                    </p>
+                  )}
+                </div>
+              ))}
+              {/* Error Messages */}
+              {(insertError || submitError) && (
                 <div className='text-red-300 text-lg text-center mb-4 font-afacad'>
-                  An error occurred, please try again:{' '}
-                  {error.message || JSON.stringify(error)}
+                  {submitError ||
+                    insertError?.message ||
+                    'An error occurred, please try again'}
                 </div>
               )}
 
+              {/* Submit Button */}
               <button
                 type='submit'
-                disabled={loading}
-                className='w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg'
+                disabled={insertLoading || !isFormValid}
+                className='w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg disabled:opacity-50 disabled:cursor-not-allowed'
                 style={{
                   border: '1px solid #6E6E6E',
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                 }}
               >
-                {loading ? 'Creating Profile...' : 'Complete Setup'}
+                {insertLoading ? 'Creating Profile...' : 'Complete Setup'}
               </button>
             </form>
           </div>
