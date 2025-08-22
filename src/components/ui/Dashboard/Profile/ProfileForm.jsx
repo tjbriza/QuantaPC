@@ -1,15 +1,24 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { profileSchema } from '../../../../schema/ProfileSchemas';
-import { Brush, User } from 'lucide-react';
-
+import { Brush, User, Check, X, Loader2 } from 'lucide-react';
+import { useAuth } from '../../../../context/AuthContext';
+import { useUsernameCheck } from '../../../../hooks/useCheckUsername';
 export default function ProfileForm({
   localProfile,
   onSubmit,
   isLoading = false,
 }) {
   const [isEditing, setIsEditing] = useState(false);
+  const { session } = useAuth();
+
+  const {
+    status: usernameStatus,
+    isChecking,
+    checkUsername,
+    clearStatus,
+  } = useUsernameCheck(session?.user?.id);
 
   const form = useForm({
     resolver: zodResolver(profileSchema),
@@ -18,15 +27,73 @@ export default function ProfileForm({
     values: localProfile,
   });
 
+  useEffect(() => {
+    if (!isEditing) {
+      clearStatus();
+      return;
+    }
+
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'username') {
+        checkUsername(value.username, localProfile?.username);
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form, isEditing, localProfile?.username, checkUsername, clearStatus]);
+
+  useEffect(() => {
+    if (usernameStatus === 'taken') {
+      form.setError('username', {
+        type: 'manual',
+        message: 'Username is already taken',
+      });
+    } else if (usernameStatus === 'available') {
+      form.clearErrors('username');
+    }
+  }, [usernameStatus, form]);
+
   const handleSave = async (formData) => {
+    if (
+      formData.username !== localProfile?.username &&
+      usernameStatus === 'taken'
+    ) {
+      return; // Form validation will show the error
+    }
+
     await onSubmit(formData);
     setIsEditing(false);
+    clearStatus();
   };
 
   const handleCancel = () => {
     form.reset(localProfile);
     setIsEditing(false);
   };
+
+  const getUsernameStatusIcon = () => {
+    if (!isEditing) return null;
+
+    switch (usernameStatus) {
+      case 'checking':
+        return <Loader2 className='w-4 h-4 text-gray-500 animate-spin' />;
+      case 'available':
+        return <Check className='w-4 h-4 text-green-500' />;
+      case 'taken':
+        return <X className='w-4 h-4 text-red-500' />;
+      default:
+        return isChecking ? (
+          <Loader2 className='w-4 h-4 text-gray-500 animate-spin' />
+        ) : null;
+    }
+  };
+
+  // Form validation
+  const isFormValid =
+    form.formState.isValid &&
+    !isChecking &&
+    (usernameStatus === '' || usernameStatus === 'available') &&
+    usernameStatus !== 'taken';
 
   return (
     <div className='w-full'>
@@ -45,9 +112,7 @@ export default function ProfileForm({
             <button
               className='px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50'
               onClick={form.handleSubmit(handleSave)}
-              disabled={
-                isLoading || !form.formState.isValid || !form.formState.isDirty
-              }
+              disabled={isLoading || !isFormValid}
             >
               {isLoading ? 'Saving...' : 'Save'}
             </button>
@@ -62,8 +127,8 @@ export default function ProfileForm({
       </div>
 
       <div className='flex flex-row gap-2 min-w-[200px]'>
+        {/* First Name and Last Name fields */}
         {[
-          { key: 'username', label: 'Username:' },
           { key: 'name_first', label: 'First Name:' },
           { key: 'name_last', label: 'Last Name:' },
         ].map(({ key, label }) => (
@@ -79,19 +144,60 @@ export default function ProfileForm({
                       : 'border-gray-300'
                   }`}
                 />
-                <div className='min-h-[1.5rem]'>
-                  {form.formState.errors[key]?.message && (
-                    <p className='text-red-500 text-sm mt-1'>
-                      {form.formState.errors[key].message}
-                    </p>
-                  )}
-                </div>
+                {form.formState.errors[key] && (
+                  <p className='text-red-500 text-sm mt-1'>
+                    {form.formState.errors[key].message}
+                  </p>
+                )}
               </div>
             ) : (
               <p className='p-1'>{localProfile?.[key] || '-'}</p>
             )}
           </div>
         ))}
+
+        {/* Username field with special handling */}
+        <div className='flex flex-col gap-2'>
+          <p className='text-lg font-bold pr-20'>Username:</p>
+          {isEditing ? (
+            <div>
+              <div className='relative'>
+                <input
+                  {...form.register('username')}
+                  className={`border p-1 rounded pr-8 ${
+                    form.formState.errors.username
+                      ? 'border-red-500'
+                      : usernameStatus === 'available'
+                      ? 'border-green-500'
+                      : 'border-gray-300'
+                  }`}
+                />
+                <div className='absolute right-2 top-1/2 transform -translate-y-1/2'>
+                  {getUsernameStatusIcon()}
+                </div>
+              </div>
+
+              {/* Username validation messages */}
+              {form.formState.errors.username && (
+                <p className='text-red-500 text-sm mt-1'>
+                  {form.formState.errors.username.message}
+                </p>
+              )}
+              {usernameStatus === 'available' && (
+                <p className='text-green-600 text-sm mt-1'>
+                  Username is available!
+                </p>
+              )}
+              {isChecking && (
+                <p className='text-gray-500 text-sm mt-1'>
+                  Checking availability...
+                </p>
+              )}
+            </div>
+          ) : (
+            <p className='p-1'>{localProfile?.username || '-'}</p>
+          )}
+        </div>
       </div>
     </div>
   );
