@@ -8,19 +8,10 @@ import { useSupabaseWrite } from '../../hooks/useSupabaseWrite';
 import { useSupabaseStorage } from '../../hooks/useSupabaseStorage';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
+import { profileSetupSchema } from '../../schema/ProfileSchemas';
 import { FileImage, Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
 import { useUsernameCheck } from '../../hooks/useCheckUsername';
-
-// Schema for profile setup form
-const profileSetupSchema = z.object({
-  name_first: z.string().min(1, 'First name is required'),
-  name_last: z.string().min(1, 'Last name is required'),
-  username: z.string().min(3, 'Username must be at least 3 characters'),
-  avatar_url: z.any().refine((file) => file && file instanceof File, {
-    message: 'Please upload a profile picture',
-  }),
-});
 
 export default function ProfileSetup() {
   const { uploadFile } = useSupabaseStorage('profile-images');
@@ -67,12 +58,18 @@ export default function ProfileSetup() {
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
-      if (name === 'username' && value.username.trim() !== '') {
-        checkUsername(value.username);
+      if (name === 'username') {
+        const username = value.username.trim();
+
+        if (profileSetupSchema.shape.username.safeParse(username).success) {
+          checkUsername(username);
+        } else {
+          clearStatus(); // reset status if invalid
+        }
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, checkUsername]);
+  }, [form, checkUsername, clearStatus]);
 
   useEffect(() => {
     if (usernameStatus === 'taken') {
