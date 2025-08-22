@@ -4,77 +4,72 @@ import { useSupabaseRead } from './useSupabaseRead';
 import { useDebounce } from './useDebounce';
 
 export function useUsernameCheck(currentUserId = null) {
-  const [username, setUsername] = useState('');
+  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameToCheck, setUsernameToCheck] = useState('');
   const [status, setStatus] = useState(''); // 'checking', 'available', 'taken', ''
-  const [enabled, setEnabled] = useState(false);
 
   const { data, loading, error } = useSupabaseRead('profiles', {
-    filter: { username },
+    filter: { username: usernameToCheck },
     select: 'username, id',
     single: true,
-    enabled: enabled && username.length >= 3,
+    enabled: usernameToCheck.length >= 3,
   });
 
-  // Debounced function to trigger the check
-  const [debouncedCheck] = useDebounce(() => {
-    if (username && username.length >= 3) {
-      setStatus('checking');
-      setEnabled(true);
-    } else {
-      setStatus('');
-      setEnabled(false);
-    }
-  }, 500);
+  // Debounced function to update usernameToCheck
+  const [debouncedCheck] = useDebounce((newUsername) => {
+    setUsernameToCheck(newUsername);
+    setStatus('checking');
+  }, 300);
 
-  // Function to check username availability
+  // Function to trigger username check from input
   const checkUsername = useCallback(
     (newUsername, originalUsername = null) => {
-      // Skip if username hasn't changed from original
+      setUsernameInput(newUsername);
+
       if (originalUsername && newUsername === originalUsername) {
         setStatus('');
-        setEnabled(false);
+        setUsernameToCheck(''); // Stop query
         return;
       }
 
-      setUsername(newUsername);
-      debouncedCheck();
+      if (newUsername.length >= 3) {
+        debouncedCheck(newUsername);
+      } else {
+        setStatus('');
+        setUsernameToCheck('');
+      }
     },
     [debouncedCheck]
   );
 
-  // Process the result when data changes
+  // Update status based on query result
   useEffect(() => {
-    if (!enabled) return;
-
     if (loading) {
       setStatus('checking');
     } else if (error) {
-      if (error.code === 'PGRST116') {
-        // No rows found - username is available
-        setStatus('available');
-      } else {
-        setStatus('');
-        console.error('Username check error:', error);
-      }
+      console.error('Username check error:', error);
+      setStatus('');
     } else if (data) {
-      // Username exists - check if it's the current user
       if (currentUserId && data.id === currentUserId) {
-        setStatus('available'); // It's the current user's username
+        setStatus('available');
       } else {
         setStatus('taken');
       }
+    } else if (!data && usernameToCheck.length >= 3) {
+      setStatus('available');
     }
-  }, [data, loading, error, enabled, currentUserId]);
+  }, [data, loading, error, currentUserId, usernameToCheck]);
 
   const clearStatus = useCallback(() => {
     setStatus('');
-    setEnabled(false);
-    setUsername('');
+    setUsernameInput('');
+    setUsernameToCheck('');
   }, []);
 
   return {
+    username: usernameInput,
     status,
-    isChecking: loading && enabled,
+    isChecking: loading && usernameToCheck.length >= 3,
     checkUsername,
     clearStatus,
   };
