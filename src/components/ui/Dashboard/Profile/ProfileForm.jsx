@@ -13,7 +13,7 @@ export default function ProfileForm({
 
   const form = useForm({
     resolver: zodResolver(profileSchema),
-    mode: onchange,
+    mode: 'onChange',
     defaultValues: localProfile || {},
     values: localProfile,
   });
@@ -45,7 +45,9 @@ export default function ProfileForm({
             <button
               className='px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50'
               onClick={form.handleSubmit(handleSave)}
-              disabled={isLoading || !form.formState.isValid}
+              disabled={
+                isLoading || !form.formState.isValid || !form.formState.isDirty
+              }
             >
               {isLoading ? 'Saving...' : 'Save'}
             </button>
@@ -77,11 +79,13 @@ export default function ProfileForm({
                       : 'border-gray-300'
                   }`}
                 />
-                {form.formState.errors[key] && (
-                  <p className='text-red-500 text-sm mt-1'>
-                    {form.formState.errors[key].message}
-                  </p>
-                )}
+                <div className='min-h-[1.5rem]'>
+                  {form.formState.errors[key]?.message && (
+                    <p className='text-red-500 text-sm mt-1'>
+                      {form.formState.errors[key].message}
+                    </p>
+                  )}
+                </div>
               </div>
             ) : (
               <p className='p-1'>{localProfile?.[key] || '-'}</p>

@@ -53,7 +53,9 @@ export default function DefaultAddress({
             className='px-4 text-black text-xl rounded flex gap-2 hover:underline'
             onClick={() => setIsEditing(true)}
           >
-            {localAddress ? 'Edit Address' : 'Add'}{' '}
+            {localAddress && Object.keys(localAddress).length > 0
+              ? 'Edit Address'
+              : 'Add'}{' '}
             <Brush className='w-6 h-6' />
           </button>
         ) : (
@@ -61,7 +63,9 @@ export default function DefaultAddress({
             <button
               className='px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50'
               onClick={form.handleSubmit(handleSave)}
-              disabled={isLoading || !form.formState.isValid}
+              disabled={
+                isLoading || !form.formState.isValid || !form.formState.isDirty
+              }
             >
               {isLoading ? 'Saving...' : 'Save'}
             </button>
@@ -75,38 +79,38 @@ export default function DefaultAddress({
         )}
       </div>
 
-      {/* Fields */}
-      <div className='flex flex-row flex-wrap mt-4 gap-8'>
-        {addressFields.map(({ key, label }) => (
-          <div key={key} className='flex flex-col gap-2 min-w-[200px]'>
-            <p className='text-lg font-bold'>{label}:</p>
-            {isEditing ? (
-              <div>
-                <input
-                  {...form.register(key)}
-                  className={`border p-1 rounded w-full ${
-                    form.formState.errors[key]
-                      ? 'border-red-500'
-                      : 'border-gray-300'
-                  }`}
-                />
-                {form.formState.errors?.[key]?.message && (
-                  <p className='text-red-500 text-sm mt-1'>
-                    {form.formState.errors[key].message}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <p className='p-1'>{localAddress?.[key] || '-'}</p>
-            )}
-          </div>
-        ))}
-      </div>
-
-      {!localAddress && !isEditing && (
+      {/* Conditional content */}
+      {Object.keys(localAddress).length === 0 && !isEditing ? (
         <p className='mt-4 text-red-500'>
           Add an address to continue shopping!
         </p>
+      ) : (
+        <div className='flex flex-row flex-wrap mt-4 gap-8'>
+          {addressFields.map(({ key, label }) => (
+            <div key={key} className='flex flex-col gap-2 min-w-[200px]'>
+              <p className='text-lg font-bold'>{label}:</p>
+              {isEditing ? (
+                <div>
+                  <input
+                    {...form.register(key)}
+                    className={`border p-1 rounded w-full ${
+                      form.formState.errors[key]
+                        ? 'border-red-500'
+                        : 'border-gray-300'
+                    }`}
+                  />
+                  {form.formState.errors?.[key]?.message && (
+                    <p className='text-red-500 text-sm mt-1'>
+                      {form.formState.errors[key].message}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <p className='p-1'>{localAddress?.[key] || '-'}</p>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
