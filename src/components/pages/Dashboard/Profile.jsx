@@ -4,12 +4,16 @@ import { useSupabaseStorage } from '../../../hooks/useSupabaseStorage';
 import { useAuth } from '../../../context/AuthContext';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+import { useToast } from '../../../context/ToastContext';
+
 import ProfileAvatar from '../../ui/Dashboard/Profile/ProfileAvatar';
 import ProfileForm from '../../ui/Dashboard/Profile/ProfileForm';
 import DefaultAddress from '../../ui/Dashboard/Profile/DefaultAddress';
 
 export default function ProfilePage() {
   const { session } = useAuth();
+  const { toast } = useToast();
+
   const { data: profileData } = useSupabaseRead('profiles', {
     filter: { id: session?.user.id },
     single: true,
@@ -31,6 +35,7 @@ export default function ProfilePage() {
   const [previewUrl, setPreviewUrl] = useState(null);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
   useEffect(() => {
     if (profileData) {
@@ -53,34 +58,72 @@ export default function ProfilePage() {
     setPreviewUrl(null);
   }, [selectedFile]);
 
-  const onSubmitProfile = async (formData) => {
-    setIsEditingAddress(true);
+  const onSubmitProfileData = async (formData) => {
+    setIsEditingProfile(true);
     try {
-      let avatarUrl = localProfile.avatar_url;
+      const updatedProfile = {
+        ...formData,
+        avatar_url: localProfile.avatar_url,
+      };
 
-      if (selectedFile) {
-        const { data: uploaded } = await uploadFile(
-          `${session?.user.id}`,
-          selectedFile,
-          true
-        );
-        avatarUrl = uploaded.publicUrl;
-      }
-
-      const updatedProfile = { ...formData, avatar_url: avatarUrl };
       const { error } = await updateProfileData(
         { id: session?.user.id },
         updatedProfile
       );
 
       if (!error) {
-        setLocalProfile(updatedProfile);
-        setSelectedFile(null);
+        setLocalProfile((prev) => ({ ...prev, ...updatedProfile }));
+        toast.success('Profile updated successfully!');
+      } else {
+        toast.error('Failed to update profile. Please try again.');
       }
     } catch (error) {
-      console.error('Error updating profile:', error);
+      console.error('Error updating profile data:', error);
+      toast.error('An unexpected error occurred while updating profile.');
     } finally {
       setIsEditingProfile(false);
+    }
+  };
+
+  const onSubmitAvatar = async () => {
+    if (!selectedFile) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      const { data: uploaded, error: uploadError } = await uploadFile(
+        `${session?.user.id}`,
+        selectedFile,
+        true
+      );
+
+      if (uploadError) {
+        toast.error('Failed to upload image. Please try again.');
+      }
+
+      if (uploaded?.publicUrl) {
+        const avatarUrlWithCacheBust = `${uploaded.publicUrl}?v=${Date.now()}`;
+
+        const { error } = await updateProfileData(
+          { id: session?.user.id },
+          { avatar_url: avatarUrlWithCacheBust }
+        );
+
+        if (!error) {
+          setLocalProfile((prev) => ({
+            ...prev,
+            avatar_url: avatarUrlWithCacheBust,
+          }));
+          setSelectedFile(null);
+          toast.success('Profile picture updated successfully!');
+        } else {
+          toast.error('Failed to update profile picture. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Error updating avatar:', error);
+      toast.error('An unexpected error occurred while updating avatar.');
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -105,13 +148,23 @@ export default function ProfilePage() {
 
       if (!error) {
         setLocalAddress(updatedAddress);
+        toast.success(
+          localAddress?.id
+            ? 'Address updated successfully!'
+            : 'Address added successfully!'
+        );
+      } else {
+        toast.error('Failed to save address. Please try again.');
       }
     } catch (error) {
       console.error('Error updating address:', error);
+      toast.error('An unexpected error occurred while saving address.');
     } finally {
       setIsEditingAddress(false);
     }
   };
+
+  console.log(localAddress);
 
   return (
     <div className='flex flex-col w-full items-center mt-4 mb-16'>
@@ -122,12 +175,15 @@ export default function ProfilePage() {
           username={localProfile.username}
           email={session?.user?.email}
           setSelectedFile={setSelectedFile}
+          onSubmitAvatar={onSubmitAvatar}
+          isUploadingAvatar={isUploadingAvatar}
+          hasSelectedFile={!!selectedFile}
         />
 
         <div className='flex flex-col w-full px-4 gap-16'>
           <ProfileForm
             localProfile={localProfile}
-            onSubmit={onSubmitProfile}
+            onSubmit={onSubmitProfileData}
             isLoading={isEditingProfile}
           />
           <DefaultAddress
