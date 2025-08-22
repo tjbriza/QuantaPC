@@ -23,5 +23,7 @@ export function useDebounce(callback, delay) {
     }
   }, []);
 
+  useEffect(() => cancel, [cancel]);
+
   return [debouncedCallback, cancel];
 }
