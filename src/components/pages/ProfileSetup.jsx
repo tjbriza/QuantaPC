@@ -10,6 +10,7 @@ import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { Navigate } from 'react-router-dom';
 import { FileImage, Check, X, Loader2 } from 'lucide-react';
 import { supabase } from '../../supabaseClient';
+import { useUsernameCheck } from '../../hooks/useCheckUsername';
 
 // Schema for profile setup form
 const profileSetupSchema = z.object({
@@ -30,11 +31,16 @@ export default function ProfileSetup() {
   } = useSupabaseWrite('profiles');
   const { session, signOut } = useAuth();
   const [fileName, setFileName] = useState('No file chosen');
-  const [usernameStatus, setUsernameStatus] = useState(''); // 'checking', 'available', 'taken', ''
+  const {
+    status: usernameStatus,
+    isChecking,
+    checkUsername,
+    clearStatus,
+  } = useUsernameCheck();
   const [submitError, setSubmitError] = useState('');
 
   const navigate = useNavigate();
-
+  console.log(isChecking);
   // Check if the user already has a profile
   const { data: existingProfile, error: readError } = useSupabaseRead(
     'profiles',
@@ -59,48 +65,36 @@ export default function ProfileSetup() {
     },
   });
 
-  // Username checking with debounce
   useEffect(() => {
-    const username = form.watch('username');
+    const subscription = form.watch((value, { name }) => {
+      if (name === 'username' && value.username.trim() !== '') {
+        checkUsername(value.username);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form, checkUsername]);
 
-    if (username && username.length >= 3) {
-      const timeoutId = setTimeout(async () => {
-        setUsernameStatus('checking');
-
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('username')
-            .eq('username', username)
-            .single();
-
-          if (error && error.code === 'PGRST116') {
-            // No rows found - username is available
-            setUsernameStatus('available');
-          } else if (data) {
-            // Username exists
-            setUsernameStatus('taken');
-            form.setError('username', {
-              type: 'manual',
-              message: 'Username is already taken',
-            });
-          }
-        } catch (err) {
-          setUsernameStatus('');
-        }
-      }, 500);
-
-      return () => clearTimeout(timeoutId);
-    } else {
-      setUsernameStatus('');
+  useEffect(() => {
+    if (usernameStatus === 'taken') {
+      form.setError('username', {
+        type: 'manual',
+        message: 'Username is already taken',
+      });
+    } else if (usernameStatus === 'available') {
+      form.clearErrors('username');
     }
-  }, [form.watch('username')]);
+
+    form.trigger('username');
+  }, [usernameStatus, form]);
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setFileName(file.name);
-      form.setValue('avatar_url', file);
+      form.setValue('avatar_url', file, {
+        shouldValidate: true,
+        shouldTouch: true,
+      });
       form.clearErrors('avatar_url');
     }
   };
@@ -171,9 +165,11 @@ export default function ProfileSetup() {
   };
 
   const getUsernameStatusIcon = () => {
+    if (isChecking) {
+      return <Loader2 className='w-5 h-5 text-gray-500 animate-spin' />;
+    }
+
     switch (usernameStatus) {
-      case 'checking':
-        return <Loader2 className='w-5 h-5 text-gray-500 animate-spin' />;
       case 'available':
         return <Check className='w-5 h-5 text-green-500' />;
       case 'taken':

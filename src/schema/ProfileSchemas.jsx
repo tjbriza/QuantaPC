@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const profileSchema = z.object({
   username: z
     .string()
-    .min(3, 'At least 3 characters for Username is required')
+    .min(3, 'At least 3 characters for username is required')
     .max(20, 'Username too long'),
   name_first: z
     .string()
@@ -15,6 +15,26 @@ export const profileSchema = z.object({
     .min(2, 'At least 2 characters for last name is required')
     .max(30, 'Last name too long')
     .regex(/^[A-Za-z]+$/, 'Only letters allowed'),
+});
+
+export const profileSetupSchema = z.object({
+  username: z
+    .string()
+    .min(3, 'At least 3 characters for username is required')
+    .max(20, 'Username too long'),
+  name_first: z
+    .string()
+    .min(2, 'At least 2 characters for first name is required')
+    .max(30, 'First name too long')
+    .regex(/^[A-Za-z]+$/, 'Only letters allowed'),
+  name_last: z
+    .string()
+    .min(2, 'At least 2 characters for last name is required')
+    .max(30, 'Last name too long')
+    .regex(/^[A-Za-z]+$/, 'Only letters allowed'),
+  avatar_url: z.any().refine((file) => file && file instanceof File, {
+    message: 'Please upload a profile picture',
+  }),
 });
 
 export const addressSchema = z.object({

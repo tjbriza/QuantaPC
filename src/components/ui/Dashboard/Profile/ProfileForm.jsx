@@ -88,7 +88,6 @@ export default function ProfileForm({
     }
   };
 
-  // Form validation
   const isFormValid =
     form.formState.isValid &&
     !isChecking &&
@@ -112,7 +111,7 @@ export default function ProfileForm({
             <button
               className='px-4 py-2 bg-green-500 text-white rounded disabled:opacity-50'
               onClick={form.handleSubmit(handleSave)}
-              disabled={isLoading || !isFormValid}
+              disabled={isLoading || !isFormValid || !form.formState.isDirty}
             >
               {isLoading ? 'Saving...' : 'Save'}
             </button>
