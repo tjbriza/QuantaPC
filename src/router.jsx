@@ -18,6 +18,7 @@ import ProfileSetup from './components/pages/ProfileSetup';
 import ProductPage from './components/pages/ProductPage';
 import CartPage from './components/pages/CartPage';
 import ErrorPage from './components/pages/ErrorPage';
+import TestInvoice from './components/testInvoice';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -30,6 +31,7 @@ export const router = createBrowserRouter([
       { path: 'about', element: <About /> },
       { path: 'services', element: <Services /> },
       { path: 'custom-pc', element: <CustomPc /> },
+      { path: 'invoice', element: <TestInvoice /> },
       { path: 'product/:id', element: <ProductPage /> },
       {
         path: 'dashboard',
