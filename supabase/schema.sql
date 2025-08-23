@@ -61,6 +61,31 @@ create table orders (
   created_at timestamptz default now()
 );
 
+-- added columns to support xendit
+alter table orders add column if not exists order_number varchar(50) unique;
+alter table orders add column if not exists xendit_invoice_id varchar(100) unique;
+alter table orders add column if not exists xendit_invoice_url text;
+alter table orders add column if not exists payment_method varchar(50);
+alter table orders add column if not exists paid_at timestamp with time zone;
+alter table orders add column if not exists customer_email varchar(255);
+alter table orders add column if not exists subtotal int;
+alter table orders add column if not exists shipping_fee int default 50; -- ₱50 
+alter table orders add column if not exists expires_at timestamp with time zone;
+
+--denormalized for order history
+alter table orders add column if not exists shipping_full_name varchar(100);
+alter table orders add column if not exists shipping_phone varchar(20);
+alter table orders add column if not exists shipping_address_line text;
+alter table orders add column if not exists shipping_city varchar(50);
+alter table orders add column if not exists shipping_province varchar(50);
+alter table orders add column if not exists shipping_postal_code varchar(10);
+
+-- added more states to status
+alter table orders drop constraint if exists orders_status_check;
+alter table orders add constraint orders_status_check 
+  check (status in ('pending', 'paid', 'failed', 'expired', 'cancelled', 'shipped', 'delivered'));
+
+
 create table order_items (
   id uuid primary key default uuid_generate_v4(),
   order_id uuid not null references orders(id) on delete cascade,
