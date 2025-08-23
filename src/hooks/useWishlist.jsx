@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSupabaseWrite } from './useSupabaseWrite';
 import { supabase } from '../supabaseClient';
+import { useToast } from '../context/ToastContext';
 
 export function useWishlist() {
   const { session } = useAuth();
@@ -10,6 +11,7 @@ export function useWishlist() {
   const [isLoading, setIsLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(false);
   const [fetchError, setFetchError] = useState(null);
+  const { toast } = useToast();
 
   // Write operations
   const { insertData: addWishlistItem } = useSupabaseWrite('wishlist');
@@ -138,8 +140,10 @@ export function useWishlist() {
   const toggleWishlist = useCallback(
     async (productId) => {
       if (isInWishlist(productId)) {
+        toast.info('item removed from wishlist');
         return await removeFromWishlist(productId);
       } else {
+        toast.success('item added to wishlist!');
         return await addToWishlist(productId);
       }
     },
