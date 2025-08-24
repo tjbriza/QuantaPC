@@ -5,7 +5,7 @@ create function updateProductStock(
 )
 returns json
 language plpgsql
-as $
+as $$
 declare
     v_current_stock int;
     v_new_stock int;
@@ -45,5 +45,9 @@ begin
     where id = p_product_id;
 
     return json_build_object('success', true, 'old_stock', v_current_stock, 'new_stock', v_new_stock);
+
+    exception
+        when others then
+            return json_build_object('success', false, 'message', 'Unexpected error: ' || sqlerrm)
 end
-$
+$$
