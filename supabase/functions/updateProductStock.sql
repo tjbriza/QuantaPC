@@ -27,13 +27,12 @@ begin
     end if;
 
     --calculate new stock based on operation
-    if p_operation = 'subtract' then
-        v_new_stock := v_current_stock - p_quantity;
-    elsif p_operation = 'add' then
-        v_new_stock := v_current_stock + p_quantity;
-    else
-        return json_build_object('success', false, 'message', 'Invalid operation');
-    end if;
+    case p_operation
+        when 'subtract' then v_new_stock := v_current_stock - p_quantity;
+        when 'add' then v_new_stock := v_current_stock + p_quantity;
+        else
+            return json_build_object('success', false,'message', 'Invalid operation. Use ''add'' or ''subtract''');
+    end case;
 
     --prevent negative stock
     if v_new_stock < 0 then
