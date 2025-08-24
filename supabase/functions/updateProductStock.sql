@@ -14,12 +14,14 @@ begin
     if p_quantity <= 0 then
         return json_build_object('success', false, 'message', 'Quantity must be greater than zero');
     end if;
-    
+
     --get current stock
-    select stock_quantity into v_current_stock
+    select stock_quantity 
+    into v_current_stock
     from products
     where id = p_product_id;
-
+    for update;
+    
     if not found then
         return json_build_object('success', false, 'message', 'Product not found');
     end if;
