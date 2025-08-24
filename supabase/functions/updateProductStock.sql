@@ -49,5 +49,5 @@ begin
     exception
         when others then
             return json_build_object('success', false, 'message', 'Unexpected error: ' || sqlerrm)
-end
+end;
 $$
