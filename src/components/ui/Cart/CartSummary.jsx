@@ -24,9 +24,12 @@ export default function CartSummary({ totalItems, totalPrice }) {
         >
           Continue Shopping
         </Link>
-        <button className='bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-bold'>
+        <Link
+          to='/checkout'
+          className='bg-green-600 text-white px-8 py-3 rounded-lg hover:bg-green-700 transition-colors font-bold'
+        >
           Proceed to Checkout
-        </button>
+        </Link>
       </div>
     </div>
   );

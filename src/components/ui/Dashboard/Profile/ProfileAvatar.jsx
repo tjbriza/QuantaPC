@@ -19,7 +19,6 @@ export default function ProfileAvatar({
   const handleCancelUpload = () => {
     setSelectedFile(null);
   };
-  console.log(avatarUrl);
   return (
     <div className='flex flex-col items-start gap-4'>
       <div className='relative'>
