@@ -14,7 +14,10 @@ const xenditInvoiceClient = new Invoice({
 
 // cors headers
 const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.FRONTEND_URL || '*',
+  'Access-Control-Allow-Origin':
+    process.env.NODE_ENV === 'development'
+      ? 'http://localhost:5173'
+      : process.env.FRONTEND_URL || '*',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Max-Age': '86400', // 24 hours
@@ -44,6 +47,13 @@ export default async function handler(req, res) {
       customerEmail,
     } = req.body;
 
+    console.log('=== ORDER CREATE DEBUG ===');
+    console.log('userId:', userId);
+    console.log('items count:', items?.length);
+    console.log('subtotal:', subtotal);
+    console.log('shippingFee:', shippingFee);
+    console.log('total:', total);
+    console.log('items', items);
     if (
       !userId ||
       !items ||
@@ -51,9 +61,10 @@ export default async function handler(req, res) {
       !shippingAddress ||
       !customerEmail
     ) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Missing required fields' });
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields',
+      });
     }
 
     const invalidItems = items.filter(
@@ -96,6 +107,8 @@ export default async function handler(req, res) {
       .toString(36)
       .slice(2, 6)
       .toUpperCase()}`;
+    console.log('Creating order:', orderNumber);
+
     const formattedItems = items.map((item) => ({
       product_id: item.product_id,
       quantity: parseInt(item.quantity),
@@ -103,6 +116,7 @@ export default async function handler(req, res) {
       product_name: item.product_name || 'Unknown Product',
     }));
 
+    console.log('Calling createOrderTransaction RPC...');
     const { data: rpcResult, error: rpcError } = await supabase.rpc(
       'createOrderTransaction',
       {
@@ -118,6 +132,7 @@ export default async function handler(req, res) {
     );
 
     if (rpcError) {
+      console.error('RPC Error:', rpcError);
       return res.status(500).json({
         success: false,
         message: 'Database error while creating order',
@@ -125,16 +140,21 @@ export default async function handler(req, res) {
       });
     }
 
+    console.log('RPC raw result:', rpcResult);
+
     if (!rpcResult || !rpcResult.success) {
       return res.status(400).json({
         success: false,
-        message: rpcResult?.message || 'Order creation failed',
+        message: rpcResult?.message || 'Order RPC failed',
       });
     }
 
     const orderId = rpcResult.id;
+    console.log('Order created in database:', orderId, rpcResult.order_number);
+
     const externalId = `order-${orderNumber}`;
 
+    console.log('Creating Xendit invoice...');
     const invoice = await xenditInvoiceClient.createInvoice({
       data: {
         externalId,
@@ -143,8 +163,12 @@ export default async function handler(req, res) {
         description: `Order ${orderNumber} - ${items.length} items`,
         currency: 'PHP',
         shouldSendEmail: true,
-        successRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/success`,
-        failureRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/failed`,
+        successRedirectUrl: `${
+          process.env.FRONTEND_URL || 'http://localhost:5173'
+        }/orders/${orderNumber}/success`,
+        failureRedirectUrl: `${
+          process.env.FRONTEND_URL || 'http://localhost:5173'
+        }/orders/${orderNumber}/failed`,
         invoiceDuration: 86400,
         customer: {
           id: shippingAddress.user_id,
@@ -156,7 +180,10 @@ export default async function handler(req, res) {
           mobileNumber: shippingAddress.phone_number,
           addresses: [
             {
-              street: `${shippingAddress.house_number} ${shippingAddress.street_name}`,
+              street:
+                shippingAddress.house_number +
+                ' ' +
+                shippingAddress.street_name,
               city: shippingAddress.city,
               province: shippingAddress.province,
               postalCode: shippingAddress.postal_code,
@@ -166,21 +193,23 @@ export default async function handler(req, res) {
         },
       },
     });
-
-    const { error: updateError } = await supabase
+    console.log('user details:', shippingAddress);
+    console.log('Xendit invoice created:', invoice.id);
+    console.log('full invoice:', invoice);
+    const { data: updated, error: updateError } = await supabase
       .from('orders')
       .update({
         xendit_invoice_id: invoice.id,
         xendit_invoice_url: invoice.invoiceUrl,
         expires_at: invoice.expiryDate,
       })
-      .eq('id', orderId);
+      .eq('id', orderId)
+      .select();
 
     if (updateError) {
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to update order with invoice details',
-      });
+      console.error('Failed to update order with Xendit details:', updateError);
+    } else {
+      console.log('Updated order with Xendit details:', updated);
     }
 
     return res.status(200).json({
@@ -191,15 +220,17 @@ export default async function handler(req, res) {
       message: 'Order created successfully',
     });
   } catch (error) {
+    console.error('=== CREATE ORDER ERROR ===', error);
+
     let errorMessage = 'Failed to create order';
     let statusCode = 500;
 
-    if (error.message?.includes('xendit')) {
+    if (error.message && error.message.includes('xendit')) {
       errorMessage = 'Payment processing error. Please try again.';
     } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
       errorMessage = 'Service temporarily unavailable. Please try again later.';
       statusCode = 503;
-    } else if (error.response?.status === 400) {
+    } else if (error.response && error.response.status === 400) {
       errorMessage = 'Invalid payment information. Please check your details.';
       statusCode = 400;
     }
@@ -207,6 +238,10 @@ export default async function handler(req, res) {
     return res.status(statusCode).json({
       success: false,
       message: errorMessage,
+      ...(process.env.NODE_ENV === 'development' && {
+        debug: error.message,
+        stack: error.stack,
+      }),
     });
   }
 }
