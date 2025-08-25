@@ -129,13 +129,29 @@ export default async function handler(req, res) {
       data: {
         externalId: `order-${orderNumber}`,
         payerEmail: customerEmail,
-        amount: total, // Use server-calculated total
+        amount: total,
         description: `Order ${orderNumber}`,
         currency: 'PHP',
         shouldSendEmail: true,
         successRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/success`,
         failureRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/failed`,
         invoiceDuration: 86400,
+        customer: {
+          givenNames: shippingAddress.full_name.split(' ')[0],
+          surname:
+            shippingAddress.full_name.split(' ').slice(1).join(' ') || '',
+          email: customerEmail,
+          mobileNumber: shippingAddress.phone_number,
+          addresses: [
+            {
+              street: `${shippingAddress.house_number} ${shippingAddress.street_name}`,
+              city: shippingAddress.city,
+              province: shippingAddress.province,
+              postalCode: shippingAddress.postal_code,
+              country: shippingAddress.country,
+            },
+          ],
+        },
       },
     });
 
