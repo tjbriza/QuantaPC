@@ -31,7 +31,7 @@ export default function ProfileSetup() {
   const [submitError, setSubmitError] = useState('');
 
   const navigate = useNavigate();
-  console.log(isChecking);
+
   // Check if the user already has a profile
   const { data: existingProfile, error: readError } = useSupabaseRead(
     'profiles',
@@ -40,10 +40,6 @@ export default function ProfileSetup() {
       single: true,
     }
   );
-
-  if (existingProfile) {
-    return <Navigate to='/dashboard' />;
-  }
 
   const form = useForm({
     resolver: zodResolver(profileSetupSchema),
@@ -55,6 +51,10 @@ export default function ProfileSetup() {
       avatar_url: null,
     },
   });
+
+  if (existingProfile) {
+    return <Navigate to='/dashboard' />;
+  }
 
   useEffect(() => {
     const subscription = form.watch((value, { name }) => {
