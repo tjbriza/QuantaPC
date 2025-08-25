@@ -14,6 +14,7 @@ import { supabase } from '../../supabaseClient';
 import { useUsernameCheck } from '../../hooks/useCheckUsername';
 
 export default function ProfileSetup() {
+  // All hooks must be called before any conditional returns
   const { uploadFile } = useSupabaseStorage('profile-images');
   const {
     insertData,
@@ -29,7 +30,6 @@ export default function ProfileSetup() {
     clearStatus,
   } = useUsernameCheck();
   const [submitError, setSubmitError] = useState('');
-
   const navigate = useNavigate();
 
   // Check if the user already has a profile
@@ -41,6 +41,7 @@ export default function ProfileSetup() {
     }
   );
 
+  // Initialize form hook
   const form = useForm({
     resolver: zodResolver(profileSetupSchema),
     mode: 'onChange',
@@ -52,11 +53,9 @@ export default function ProfileSetup() {
     },
   });
 
-  if (existingProfile) {
-    return <Navigate to='/dashboard' />;
-  }
-
   useEffect(() => {
+    if (existingProfile) return;
+
     const subscription = form.watch((value, { name }) => {
       if (name === 'username') {
         const username = value.username.trim();
@@ -69,9 +68,11 @@ export default function ProfileSetup() {
       }
     });
     return () => subscription.unsubscribe();
-  }, [form, checkUsername, clearStatus]);
+  }, [form, checkUsername, clearStatus, existingProfile]);
 
   useEffect(() => {
+    if (existingProfile) return;
+
     if (usernameStatus === 'taken') {
       form.setError('username', {
         type: 'manual',
@@ -82,7 +83,11 @@ export default function ProfileSetup() {
     }
 
     form.trigger('username');
-  }, [usernameStatus, form]);
+  }, [usernameStatus, form, existingProfile]);
+
+  if (existingProfile) {
+    return <Navigate to='/dashboard' />;
+  }
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
