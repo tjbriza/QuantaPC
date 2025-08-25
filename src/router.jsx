@@ -19,6 +19,9 @@ import ProductPage from './components/pages/ProductPage';
 import CartPage from './components/pages/CartPage';
 import ErrorPage from './components/pages/ErrorPage';
 import TestInvoice from './components/testInvoice';
+import CheckoutPage from './components/pages/CheckoutPage';
+import OrderFailed from './components/pages/OrderFail';
+import OrderSuccess from './components/pages/OrderSuccess';
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -66,6 +69,30 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CartPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'checkout',
+        element: (
+          <PrivateRoute>
+            <CheckoutPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'orders/:orderNumber/success',
+        element: (
+          <PrivateRoute>
+            <OrderSuccess />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: 'orders/:orderNumber/failed',
+        element: (
+          <PrivateRoute>
+            <OrderFailed />
           </PrivateRoute>
         ),
       },
