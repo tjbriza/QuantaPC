@@ -12,12 +12,11 @@ const xenditInvoiceClient = new Invoice({
   secretKey: process.env.XENDIT_API_KEY,
 });
 
-// cors headers
 const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.FRONTEND_URL || '*',
+  'Access-Control-Allow-Origin':
+    process.env.FRONTEND_URL || 'http://localhost:5173',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-  'Access-Control-Max-Age': '86400', // 24 hours
 };
 
 export default async function handler(req, res) {
@@ -34,179 +33,134 @@ export default async function handler(req, res) {
   }
 
   try {
-    const {
-      userId,
-      items,
-      shippingAddress,
-      subtotal,
-      shippingFee,
-      total,
-      customerEmail,
-    } = req.body;
+    const { items, shippingAddress, customerEmail } = req.body;
 
-    if (
-      !userId ||
-      !items ||
-      items.length === 0 ||
-      !shippingAddress ||
-      !customerEmail
-    ) {
-      return res
-        .status(400)
-        .json({ success: false, message: 'Missing required fields' });
-    }
-
-    const invalidItems = items.filter(
-      (item) =>
-        !item.product_id ||
-        !item.quantity ||
-        !item.product_price ||
-        typeof item.quantity !== 'number' ||
-        typeof item.product_price !== 'number' ||
-        item.quantity <= 0 ||
-        item.product_price <= 0
-    );
-    if (invalidItems.length > 0) {
+    // basic validation
+    if (!items?.length || !shippingAddress || !customerEmail) {
       return res.status(400).json({
         success: false,
-        message:
-          'Invalid item data - missing or invalid product_id, quantity, or product_price',
+        message: 'Missing required fields',
       });
     }
 
-    const requiredAddressFields = [
-      'full_name',
-      'phone_number',
-      'city',
-      'house_number',
-      'street_name',
-      'barangay',
-    ];
-    const missingFields = requiredAddressFields.filter(
-      (field) => !shippingAddress[field]
-    );
-    if (missingFields.length > 0) {
-      return res.status(400).json({
+    // get user id from session
+    const userId = req.body.userId;
+
+    // fetch current prices from database
+    const productIds = items.map((item) => item.product_id);
+    const { data: products, error: productsError } = await supabase
+      .from('products')
+      .select('id, name, price, stock_quantity')
+      .in('id', productIds);
+
+    if (productsError) {
+      return res.status(500).json({
         success: false,
-        message: `Missing required address fields: ${missingFields.join(', ')}`,
+        message: 'Failed to fetch products',
       });
     }
 
+    // validate stock and calculate server-side totals
+    let subtotal = 0;
+    const formattedItems = [];
+
+    for (const item of items) {
+      const product = products.find((p) => p.id === item.product_id);
+
+      if (!product) {
+        return res.status(400).json({
+          success: false,
+          message: `Product ${item.product_id} not found`,
+        });
+      }
+
+      if (product.stock_quantity < item.quantity) {
+        return res.status(400).json({
+          success: false,
+          message: `Insufficient stock for ${product.name}`,
+        });
+      }
+
+      // Use server price, not client price
+      const lineTotal = product.price * item.quantity;
+      subtotal += lineTotal;
+
+      formattedItems.push({
+        product_id: product.id,
+        quantity: item.quantity,
+        product_price: product.price, // Server-determined price
+        product_name: product.name,
+      });
+    }
+
+    const shippingFee = 50;
+    const total = subtotal + shippingFee;
+
+    // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random()
       .toString(36)
       .slice(2, 6)
       .toUpperCase()}`;
-    const formattedItems = items.map((item) => ({
-      product_id: item.product_id,
-      quantity: parseInt(item.quantity),
-      product_price: parseInt(item.product_price),
-      product_name: item.product_name || 'Unknown Product',
-    }));
 
+    // Create order in database
     const { data: rpcResult, error: rpcError } = await supabase.rpc(
       'createOrderTransaction',
       {
         p_user_id: userId,
         p_order_number: orderNumber,
         p_items: formattedItems,
-        p_subtotal: parseInt(subtotal),
-        p_shipping_fee: parseInt(shippingFee),
-        p_total_amount: parseInt(total),
+        p_subtotal: subtotal,
+        p_shipping_fee: shippingFee,
+        p_total_amount: total,
         p_customer_email: customerEmail,
         p_shipping_address: shippingAddress,
       }
     );
 
-    if (rpcError) {
+    if (rpcError || !rpcResult?.success) {
       return res.status(500).json({
         success: false,
-        message: 'Database error while creating order',
-        details: rpcError.message,
+        message: 'Failed to create order',
       });
     }
 
-    if (!rpcResult || !rpcResult.success) {
-      return res.status(400).json({
-        success: false,
-        message: rpcResult?.message || 'Order creation failed',
-      });
-    }
-
-    const orderId = rpcResult.id;
-    const externalId = `order-${orderNumber}`;
-
+    // Create Xendit invoice
     const invoice = await xenditInvoiceClient.createInvoice({
       data: {
-        externalId,
+        externalId: `order-${orderNumber}`,
         payerEmail: customerEmail,
-        amount: total,
-        description: `Order ${orderNumber} - ${items.length} items`,
+        amount: total, // Use server-calculated total
+        description: `Order ${orderNumber}`,
         currency: 'PHP',
         shouldSendEmail: true,
         successRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/success`,
         failureRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/failed`,
         invoiceDuration: 86400,
-        customer: {
-          id: shippingAddress.user_id,
-          phoneNumber: shippingAddress.phone_number,
-          givenNames: shippingAddress.full_name.split(' ')[0],
-          surname:
-            shippingAddress.full_name.split(' ').slice(1).join(' ') || '',
-          email: customerEmail,
-          mobileNumber: shippingAddress.phone_number,
-          addresses: [
-            {
-              street: `${shippingAddress.house_number} ${shippingAddress.street_name}`,
-              city: shippingAddress.city,
-              province: shippingAddress.province,
-              postalCode: shippingAddress.postal_code,
-              country: shippingAddress.country,
-            },
-          ],
-        },
       },
     });
 
-    const { error: updateError } = await supabase
+    // Update order with invoice details
+    await supabase
       .from('orders')
       .update({
         xendit_invoice_id: invoice.id,
         xendit_invoice_url: invoice.invoiceUrl,
         expires_at: invoice.expiryDate,
       })
-      .eq('id', orderId);
-
-    if (updateError) {
-      return res.status(500).json({
-        success: false,
-        message: 'Failed to update order with invoice details',
-      });
-    }
+      .eq('id', rpcResult.id);
 
     return res.status(200).json({
       success: true,
       orderNumber,
       invoiceUrl: invoice.invoiceUrl,
-      orderId,
+      orderId: rpcResult.id,
       message: 'Order created successfully',
     });
   } catch (error) {
-    let errorMessage = 'Failed to create order';
-    let statusCode = 500;
-
-    if (error.message?.includes('xendit')) {
-      errorMessage = 'Payment processing error. Please try again.';
-    } else if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      errorMessage = 'Service temporarily unavailable. Please try again later.';
-      statusCode = 503;
-    } else if (error.response?.status === 400) {
-      errorMessage = 'Invalid payment information. Please check your details.';
-      statusCode = 400;
-    }
-
-    return res.status(statusCode).json({
+    console.error('Order creation error:', error);
+    return res.status(500).json({
       success: false,
-      message: errorMessage,
+      message: 'Failed to create order',
     });
   }
 }
