@@ -21,7 +21,13 @@ export default async function handler(req, res) {
 
     const { id, status, external_id } = req.body;
 
-    if (!external_id?.startsWith('order-')) {
+    // Validate required fields
+    if (!id || !status || !external_id) {
+      console.log('Missing required fields:', { id, status, external_id });
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (!external_id.startsWith('order-')) {
       return res.status(200).json({ success: true, message: 'Test webhook' });
     }
 
@@ -34,33 +40,66 @@ export default async function handler(req, res) {
     if (status === 'FAILED') newStatus = 'failed';
 
     if (newStatus) {
+      console.log(
+        `Processing webhook for order ${orderNumber} with status: ${newStatus}`
+      );
+
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .select('id')
+        .eq('order_number', orderNumber)
+        .single();
+
+      if (orderError) {
+        console.error('Order lookup error:', orderError);
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
+      if (!orderData?.id) {
+        console.error('No order ID found for order number:', orderNumber);
+        return res.status(404).json({ error: 'Order not found' });
+      }
+
       // update order status
-      const { error } = await supabase
+      const { error: updateError } = await supabase
         .from('orders')
         .update({ status: newStatus })
-        .eq('order_number', orderNumber);
+        .eq('id', orderData.id);
 
-      if (error) {
+      if (updateError) {
+        console.error('Order status update error:', updateError);
         return res.status(500).json({ error: 'Database update failed' });
       }
 
+      console.log(`Order ${orderNumber} status updated to ${newStatus}`);
+
       // stock restoration for failed/expired orders
       if (newStatus === 'failed' || newStatus === 'expired') {
-        await supabase.rpc('restoreOrderStock', {
-          p_order_id: (
-            await supabase
-              .from('orders')
-              .select('id')
-              .eq('order_number', orderNumber)
-              .single()
-          ).data.id,
-        });
+        try {
+          const { error: restoreError } = await supabase.rpc(
+            'restoreOrderStock',
+            {
+              p_order_id: orderData.id,
+            }
+          );
+
+          if (restoreError) {
+            console.error('Stock restoration error:', restoreError);
+          } else {
+            console.log(`Stock restored for order ${orderNumber}`);
+          }
+        } catch (restoreError) {
+          console.error('Stock restoration exception:', restoreError);
+        }
       }
     }
 
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Webhook error:', error);
-    return res.status(500).json({ error: 'Internal server error' });
+    return res.status(500).json({
+      error: 'Internal server error',
+      message: error.message,
+    });
   }
 }
