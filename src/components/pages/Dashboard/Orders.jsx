@@ -124,10 +124,7 @@ export default function Orders() {
       ) : (
         <div className='space-y-6 w-full'>
           {filteredOrders?.map((order) => (
-            <div
-              key={order.id}
-              className='bg-white rounded-lg shadow-md border p-6'
-            >
+            <div key={order.id} className=' rounded-lg shadow-md border p-6'>
               {/* Order Header */}
               <div className='flex justify-between items-start mb-4'>
                 <div>
