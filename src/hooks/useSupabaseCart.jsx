@@ -207,7 +207,12 @@ export function useSupabaseCart() {
   );
 
   const refreshCart = useCallback(() => {
-    if (userId) fetchCartItems();
+    if (userId) {
+      setLoadingCart(true);
+      setOpError('refreshCart', null);
+      fetchCartItems();
+      setLoadingCart(false);
+    }
   }, [userId, fetchCartItems]);
 
   // Effects
