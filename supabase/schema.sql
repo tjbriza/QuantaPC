@@ -4,7 +4,8 @@ create table profiles (
   name_last text not null,
   username text unique not null,
   avatar_url text,
-  created_at timestamp with time zone default now() 
+  created_at timestamp with time zone default now(),
+  role text not null default 'user'
 ); 
 
 create table shipping_address (
