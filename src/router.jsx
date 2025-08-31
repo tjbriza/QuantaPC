@@ -1,4 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
+
+// user routes
 import Layout from './components/Layout';
 import App from './App';
 import Dashboard from './components/pages/Dashboard';
@@ -21,6 +23,17 @@ import ErrorPage from './components/pages/ErrorPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import OrderFailed from './components/pages/OrderFail';
 import OrderSuccess from './components/pages/OrderSuccess';
+
+// admin routes
+import AdminRoute from './components/AdminRoute';
+import AdminLayout from './components/AdminLayout';
+import AdminLogin from './components/admin/pages/AdminLogin';
+import AdminDashboard from './components/admin/pages/AdminDashboard';
+// import AdminProducts from './components/pages/AdminProducts';
+// import AdminOrders from './components/pages/AdminOrders';
+// import AdminCustomers from './components/pages/AdminCustomers';
+// import AdminSettings from './components/pages/AdminSettings';
+
 export const router = createBrowserRouter([
   {
     path: '/',
@@ -93,6 +106,22 @@ export const router = createBrowserRouter([
             <OrderFailed />
           </PrivateRoute>
         ),
+      },
+      {
+        path: '/admin',
+        element: (
+          <AdminRoute>
+            <AdminLayout />
+          </AdminRoute>
+        ),
+        children: [
+          { index: true, element: <AdminLogin /> },
+          { path: 'dashboard', element: <AdminDashboard /> },
+          // { path: 'dashboard/products', element: <AdminProducts /> },
+          // { path: 'dashboard/orders', element: <AdminOrders /> },
+          // { path: 'dashboard/customers', element: <AdminCustomers /> },
+          // { path: 'dashboard/settings', element: <AdminSettings /> },
+        ],
       },
     ],
   },
