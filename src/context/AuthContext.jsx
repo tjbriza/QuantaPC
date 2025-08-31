@@ -101,6 +101,29 @@ export const AuthContextProvider = ({ children }) => {
     }
   }
 
+  //admin sign in
+  const adminSignIn = async (email, password) => {
+    const { success, data, error } = await signInUser(email, password);
+    if (!success) return { success: false, error };
+
+    // role check
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single();
+
+    if (profileError || profile?.role !== 'admin') {
+      await signOut();
+      return {
+        success: false,
+        error: { message: 'Invalid credentials for admin access.' },
+      };
+    }
+
+    return { success: true, data };
+  };
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -113,7 +136,14 @@ export const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ signUpNewUser, signInUser, session, signOut, signInWithGoogle }}
+      value={{
+        signUpNewUser,
+        signInUser,
+        session,
+        signOut,
+        signInWithGoogle,
+        adminSignIn,
+      }}
     >
       {children}
     </AuthContext.Provider>
