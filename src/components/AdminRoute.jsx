@@ -1,19 +1,21 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../supabaseClient';
-
+import { useState, useEffect } from 'react';
 export default function AdminRoute({ children }) {
   const { session } = useAuth();
-  const [isChecking, setIsChecking] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    const checkAdminRole = async () => {
-      if (!session) {
-        setIsChecking(false);
-        return;
-      }
+    if (!session) {
+      setIsChecking(false);
+      return;
+    }
 
+    let cancelled = false;
+
+    const checkAdminRole = async () => {
       try {
         const { data: profile, error } = await supabase
           .from('profiles')
