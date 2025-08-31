@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 
-// user routes
+// User routes
 import Layout from './components/Layout';
 import App from './App';
 import Dashboard from './components/pages/Dashboard';
@@ -19,20 +19,16 @@ import PrivateRoute from './components/PrivateRoute';
 import ProfileSetup from './components/pages/ProfileSetup';
 import ProductPage from './components/pages/ProductPage';
 import CartPage from './components/pages/CartPage';
-import ErrorPage from './components/pages/ErrorPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import OrderFailed from './components/pages/OrderFail';
 import OrderSuccess from './components/pages/OrderSuccess';
+import ErrorPage from './components/pages/ErrorPage';
 
-// admin routes
-import AdminRoute from './components/AdminRoute';
+// Admin routes
 import AdminLayout from './components/AdminLayout';
 import AdminLogin from './components/admin/pages/AdminLogin';
 import AdminDashboard from './components/admin/pages/AdminDashboard';
-// import AdminProducts from './components/pages/AdminProducts';
-// import AdminOrders from './components/pages/AdminOrders';
-// import AdminCustomers from './components/pages/AdminCustomers';
-// import AdminSettings from './components/pages/AdminSettings';
+import AdminRoute from './components/AdminRoute';
 
 export const router = createBrowserRouter([
   {
@@ -72,10 +68,6 @@ export const router = createBrowserRouter([
         ),
       },
       {
-        path: '*',
-        element: <ErrorPage />,
-      },
-      {
         path: 'cart',
         element: (
           <PrivateRoute>
@@ -107,22 +99,25 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      { path: '*', element: <ErrorPage /> }, // Catch-all for user routes
+    ],
+  },
+  {
+    path: '/admin',
+    element: <AdminLayout />,
+    children: [
+      { index: true, element: <AdminLogin /> }, // Unprotected login
       {
-        path: '/admin',
+        path: 'dashboard',
         element: (
           <AdminRoute>
-            <AdminLayout />
+            <AdminDashboard />
           </AdminRoute>
         ),
-        children: [
-          { index: true, element: <AdminLogin /> },
-          { path: 'dashboard', element: <AdminDashboard /> },
-          // { path: 'dashboard/products', element: <AdminProducts /> },
-          // { path: 'dashboard/orders', element: <AdminOrders /> },
-          // { path: 'dashboard/customers', element: <AdminCustomers /> },
-          // { path: 'dashboard/settings', element: <AdminSettings /> },
-        ],
       },
+      // Add more protected admin routes here, e.g.,
+      // { path: "dashboard/products", element: <AdminRoute><AdminProducts /></AdminRoute> },
+      { path: '*', element: <ErrorPage /> }, // Catch-all for admin routes
     ],
   },
 ]);
