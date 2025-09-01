@@ -28,6 +28,11 @@ import ErrorPage from './components/pages/ErrorPage';
 import AdminLayout from './components/AdminLayout';
 import AdminLogin from './components/admin/pages/AdminLogin';
 import AdminDashboard from './components/admin/pages/AdminDashboard';
+import AdminProducts from './components/admin/pages/AdminProducts';
+import AdminUsers from './components/admin/pages/AdminUsers';
+import AdminOrders from './components/admin/pages/AdminOrders';
+import AdminServices from './components/admin/pages/AdminServices';
+import AdminSettings from './components/admin/pages/AdminSettings';
 import AdminRoute from './components/AdminRoute';
 
 export const router = createBrowserRouter([
@@ -99,7 +104,7 @@ export const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
-      { path: '*', element: <ErrorPage /> }, // Catch-all for user routes
+      { path: '*', element: <ErrorPage /> },
     ],
   },
   {
@@ -115,9 +120,47 @@ export const router = createBrowserRouter([
           </AdminRoute>
         ),
       },
-      // Add more protected admin routes here, e.g.,
-      // { path: "dashboard/products", element: <AdminRoute><AdminProducts /></AdminRoute> },
-      { path: '*', element: <ErrorPage /> }, // Catch-all for admin routes
+      {
+        path: 'products',
+        element: (
+          <AdminRoute>
+            <AdminProducts />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'users',
+        element: (
+          <AdminRoute>
+            <AdminUsers />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'orders',
+        element: (
+          <AdminRoute>
+            <AdminOrders />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'services',
+        element: (
+          <AdminRoute>
+            <AdminServices />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'settings',
+        element: (
+          <AdminRoute>
+            <AdminSettings />
+          </AdminRoute>
+        ),
+      },
+      { path: '*', element: <ErrorPage /> },
     ],
   },
 ]);
