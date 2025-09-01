@@ -71,24 +71,28 @@ export default function Navigation() {
           <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
             <Link
               to="/catalog"
+              title="Products"
               className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               PRODUCTS
             </Link>
             <Link
               to="/catalog"
+              title="Rent"
               className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               RENT
             </Link>
             <Link
               to="/services"
+              title="Services"
               className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               SERVICES
             </Link>
             <Link
               to="/about"
+              title="About"
               className={`${textColor} text-sm font-medium tracking-wide relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
             >
               ABOUT
@@ -99,6 +103,7 @@ export default function Navigation() {
           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
             <Link
               to="/"
+              title="Home"
               className={`flex items-center justify-center p-2 rounded-lg transition-all duration-300 hover:scale-105`}
             >
               <div className="relative flex items-center justify-center">
@@ -126,6 +131,8 @@ export default function Navigation() {
           <div className="flex items-center space-x-3 md:space-x-6">
             {/* Search */}
             <button
+              aria-label="Search"
+              title="Search"
               className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
             >
               <svg
@@ -142,6 +149,8 @@ export default function Navigation() {
             {/* Cart */}
             <Link
               to="/cart"
+              aria-label="Cart"
+              title="Cart"
               className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 relative hover:scale-105`}
             >
               <svg
@@ -161,6 +170,8 @@ export default function Navigation() {
               <button
                 ref={profileButtonRef}
                 onClick={handleProfileClick}
+                aria-label="Profile"
+                title="Profile"
                 className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
               >
                 <svg
@@ -176,6 +187,8 @@ export default function Navigation() {
             ) : (
               <Link
                 to="/login"
+                aria-label="Log In"
+                title="Log In"
                 className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
               >
                 <svg
@@ -193,6 +206,8 @@ export default function Navigation() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              aria-label={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
+              title={isMobileMenuOpen ? "Close Menu" : "Open Menu"}
               className={`${iconColor} p-1.5 rounded-lg transition-all duration-300 hover:scale-105 lg:hidden`}
             >
               <svg
@@ -228,6 +243,7 @@ export default function Navigation() {
               <Link
                 to="/catalog"
                 onClick={() => setIsMobileMenuOpen(false)}
+                title="Shop"
                 className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 SHOP
@@ -235,6 +251,7 @@ export default function Navigation() {
               <Link
                 to="/catalog"
                 onClick={() => setIsMobileMenuOpen(false)}
+                title="Builds"
                 className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 BUILDS
@@ -242,6 +259,7 @@ export default function Navigation() {
               <Link
                 to="/about"
                 onClick={() => setIsMobileMenuOpen(false)}
+                title="About"
                 className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
               >
                 ABOUT
@@ -250,6 +268,7 @@ export default function Navigation() {
                 <Link
                   to="/dashboard"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  title="Dashboard"
                   className={`${textColor} text-sm font-medium tracking-wide py-2 relative inline-block transition-all duration-300 hover:scale-105 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-[0.125rem] after:w-0 after:rounded-full after:bg-gradient-to-r after:from-blue-400 after:to-cyan-300 after:transition-all after:duration-300 hover:after:w-full`}
                 >
                   DASHBOARD
