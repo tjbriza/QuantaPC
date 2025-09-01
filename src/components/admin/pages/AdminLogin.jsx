@@ -1,4 +1,3 @@
-// src/components/admin/pages/AdminLogin.jsx
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TextField, Button, Box, Typography, Alert } from '@mui/material';
@@ -53,10 +52,20 @@ export default function AdminLogin() {
         p: 3,
       }}
     >
-      <Typography variant='h4' component='h1' gutterBottom>
-        quantapc admin
-      </Typography>
-
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+        <Box
+          component='img'
+          src='/favicon.png'
+          alt='QuantaPC Logo'
+          sx={{ width: 48, height: 48, objectFit: 'contain' }}
+        />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Typography variant='h4' fontWeight={800} component='h1'>
+            quantapc
+          </Typography>
+          <Typography variant='h4'>admin console</Typography>
+        </Box>
+      </Box>
       <Box
         component='form'
         onSubmit={handleSubmit(onSubmit)}
