@@ -1,35 +1,38 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { AtSign, Lock } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '../../schema/AuthFormsSchema';
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const { signInUser, signInWithGoogle } = useAuth();
-
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    clearErrors,
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    mode: 'onChange',
+  });
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const onSubmit = async (data) => {
+    clearErrors('root');
     try {
-      const result = await signInUser(email, password);
-
+      const result = await signInUser(data.email, data.password);
       if (result.success) {
         navigate('/dashboard');
       } else {
-        setError(result.error.message);
+        setError('root', { message: result.error.message });
       }
     } catch (error) {
-      setError(
-        'An unexpected error occurred. Please try again: ' + error.message
-      );
-    } finally {
-      setLoading(false);
+      setError('root', {
+        message:
+          'An unexpected error occurred. Please try again: ' + error.message,
+      });
     }
   };
 
@@ -75,7 +78,11 @@ export default function Login() {
               Welcome Back!
             </h1>
 
-            <form className='space-y-4' onSubmit={handleLogin}>
+            <form
+              className='space-y-4'
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+            >
               <div className='mb-5'>
                 <label
                   htmlFor='email'
@@ -94,11 +101,14 @@ export default function Login() {
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                     }}
                     placeholder='Enter your email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={true}
+                    {...register('email')}
                   />
                 </div>
+                {errors.email && (
+                  <p className='text-red-600 text-l mt-1 font-afacad'>
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className='mb-5'>
@@ -119,11 +129,14 @@ export default function Login() {
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                     }}
                     placeholder='Enter your password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required={true}
+                    {...register('password')}
                   />
                 </div>
+                {errors.password && (
+                  <p className='text-red-600 text-l mt-1 font-afacad'>
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <div className='text-left mb-6'>
@@ -137,19 +150,19 @@ export default function Login() {
 
               <button
                 type='submit'
-                disabled={loading}
+                disabled={isSubmitting}
                 className='w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg'
                 style={{
                   border: '1px solid #6E6E6E',
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                 }}
               >
-                {loading ? 'Logging in...' : 'Login'}
+                {isSubmitting ? 'Logging in...' : 'Login'}
               </button>
 
-              {error && (
+              {errors.root && (
                 <p className='text-red-300 text-lg text-center font-afacad'>
-                  Error: {error}
+                  Error: {errors.root.message}
                 </p>
               )}
 

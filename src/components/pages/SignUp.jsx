@@ -1,41 +1,38 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { AtSign, Lock } from 'lucide-react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { signUpSchema } from '../../schema/AuthFormsSchema';
 
 export default function SignUp() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { signUpNewUser, signInWithGoogle } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    setError,
+    clearErrors,
+  } = useForm({
+    resolver: zodResolver(signUpSchema),
+    mode: 'onChange',
+  });
 
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-
-    if (password !== confirmPassword) {
-      setError('Passwords do not match.');
-      setLoading(false);
-      return;
-    }
-
+  const onSubmit = async (data) => {
+    clearErrors('root');
     try {
-      const result = await signUpNewUser(email, password);
-
+      const result = await signUpNewUser(data.email, data.password);
       if (result.success) {
         navigate('/profilesetup');
       } else {
-        setError(result.error.message);
+        setError('root', { message: result.error.message });
       }
     } catch (error) {
-      setError(
-        'An unexpected error occurred. Please try again: ' + error.message
-      );
-    } finally {
-      setLoading(false);
+      setError('root', {
+        message:
+          'An unexpected error occurred. Please try again: ' + error.message,
+      });
     }
   };
 
@@ -81,7 +78,11 @@ export default function SignUp() {
               Sign up to <span className='text-white'>quantapc</span>
             </h1>
 
-            <form className='space-y-4' onSubmit={handleSignUp}>
+            <form
+              className='space-y-4'
+              onSubmit={handleSubmit(onSubmit)}
+              noValidate
+            >
               <div className='mb-5'>
                 <label
                   htmlFor='email'
@@ -100,11 +101,14 @@ export default function SignUp() {
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                     }}
                     placeholder='Enter your email'
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required={true}
+                    {...register('email')}
                   />
                 </div>
+                {errors.email && (
+                  <p className='text-red-600 text-l mt-1 font-afacad'>
+                    {errors.email.message}
+                  </p>
+                )}
               </div>
 
               <div className='mb-5'>
@@ -125,11 +129,14 @@ export default function SignUp() {
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                     }}
                     placeholder='Create a password'
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required={true}
+                    {...register('password')}
                   />
                 </div>
+                {errors.password && (
+                  <p className='text-red-600 text-l mt-1 font-afacad'>
+                    {errors.password.message}
+                  </p>
+                )}
               </div>
 
               <div className='mb-5'>
@@ -149,29 +156,32 @@ export default function SignUp() {
                       boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                     }}
                     placeholder='Confirm your password'
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    required={true}
+                    {...register('confirmPassword')}
                   />
                 </div>
+                {errors.confirmPassword && (
+                  <p className='text-red-600 text-l mt-1 font-afacad'>
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
 
-              {error && (
+              {errors.root && (
                 <div className='text-red-300 text-lg text-center mb-4 font-afacad'>
-                  An error occured, please try again: {error}
+                  {errors.root.message}
                 </div>
               )}
 
               <button
                 type='submit'
-                disabled={loading}
+                disabled={isSubmitting}
                 className='w-full bg-white text-gray-900 hover:bg-gray-100 rounded-2xl h-12 font-medium transition-colors duration-200 font-afacad text-lg'
                 style={{
                   border: '1px solid #6E6E6E',
                   boxShadow: '0 0 8px rgba(0, 0, 0, 0.6)',
                 }}
               >
-                {loading ? 'Creating Account...' : 'Sign Up'}
+                {isSubmitting ? 'Creating Account...' : 'Sign Up'}
               </button>
 
               <div className='text-center'>
