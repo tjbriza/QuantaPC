@@ -10,6 +10,7 @@ import {
 import { Menu as MenuIcon, Logout } from '@mui/icons-material';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { display, flex, flexDirection } from '@mui/system';
 
 export default function AdminTopbar({ onDrawerToggle }) {
   const { signOut } = useAuth();
@@ -44,19 +45,29 @@ export default function AdminTopbar({ onDrawerToggle }) {
           >
             <MenuIcon />
           </IconButton>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <img
-              src='/favicon.png'
-              alt='QuantaPC Logo'
-              style={{
-                width: '32px',
-                height: '32px',
-                objectFit: 'contain',
-              }}
-            />
-            <Typography variant='h6' noWrap component='div'>
-              quantapc Admin Console
-            </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <img
+                src='/favicon.png'
+                alt='QuantaPC Logo'
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  objectFit: 'contain',
+                }}
+              />
+              <Typography variant='h6' fontWeight={800} noWrap component='div'>
+                quantapc
+              </Typography>
+            </Box>
+            <Typography>admin console</Typography>
           </Box>
         </div>
 
@@ -67,6 +78,7 @@ export default function AdminTopbar({ onDrawerToggle }) {
           sx={{
             color: 'black',
             borderColor: 'black',
+            borderRadius: 4,
             '&:hover': {
               backgroundColor: 'rgba(0, 0, 0, 0.04)',
               borderColor: 'black',
