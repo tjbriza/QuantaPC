@@ -3,6 +3,8 @@ import { useAuth } from '../../context/AuthContext';
 import { useState, useEffect, useRef } from 'react';
 import ProfileWindow from './ProfileWindow';
 import NavbarSearch from './NavbarSearch';
+import { Key, X } from 'lucide-react';
+import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import '../../components.css';
 
 export default function Navigation() {
@@ -12,6 +14,12 @@ export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileWindowOpen, setIsProfileWindowOpen] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+
+  const { data: profileData } = useSupabaseRead('profiles', {
+    filter: { id: session?.user?.id },
+    single: true,
+    enabled: !!session,
+  });
 
   const profileButtonRef = useRef(null);
   const profileWindowRef = useRef(null);
@@ -68,7 +76,7 @@ export default function Navigation() {
   return (
     <div className='fixed top-0 left-0 right-0 z-50 p-2 md:p-4'>
       <nav className='relative mx-auto bg-white/20 backdrop-blur-xl rounded-2xl border border-white/20 max-w-[90rem] shadow-[0_0_25px_rgba(0,0,0,0.3)]'>
-        <div className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4'>
+        <div className='flex items-center justify-between px-4 md:px-8 py-3 md:py-4 relative'>
           {/* Left Navigation */}
           <div className='hidden lg:flex items-center space-x-6 xl:space-x-8'>
             <Link
@@ -134,7 +142,7 @@ export default function Navigation() {
           </div>
 
           {/* Right Icons */}
-          <div className='flex items-center space-x-3 md:space-x-6'>
+          <div className='flex items-center space-x-3 md:space-x-6 min-h-[40px] md:min-h-[48px] relative'>
             {/* Search */}
             {!showSearch && (
               <button
@@ -174,25 +182,36 @@ export default function Navigation() {
               </svg>
             </Link>
 
-            {/* User Profile */}
+            {/* User Profile Icon/Avatar/Close */}
             {session ? (
-              <button
-                ref={profileButtonRef}
-                onClick={handleProfileClick}
-                aria-label='Profile'
-                title='Profile'
-                className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
-              >
-                <svg
-                  className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
+              isProfileWindowOpen ? (
+                <button
+                  ref={profileButtonRef}
+                  onClick={handleProfileClick}
+                  aria-label='Close Profile'
+                  title='Close Profile'
+                  className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-110`}
                 >
-                  <path d='M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2' />
-                  <circle cx='12' cy='7' r='4' />
-                </svg>
-              </button>
+                  <X className='w-5 h-5' />
+                </button>
+              ) : (
+                <button
+                  ref={profileButtonRef}
+                  onClick={handleProfileClick}
+                  aria-label='Profile'
+                  title='Profile'
+                  className={`${iconColor} p-1 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
+                >
+                  <img
+                    src={
+                      profileData?.avatar_url ||
+                      `https://ui-avatars.com/api/?name=${encodeURIComponent((profileData?.name_first || session.user.user_metadata?.first_name || session.user.email?.split('@')[0] || 'User') + ' ' + (profileData?.name_last || session.user.user_metadata?.last_name || ''))}&background=0ea5e9&color=fff`
+                    }
+                    alt='Profile'
+                    className='w-7 h-7 md:w-8 md:h-8 rounded-full object-cover border-2 border-gray-300 bg-white'
+                  />
+                </button>
+              )
             ) : (
               <Link
                 to='/login'
@@ -200,15 +219,7 @@ export default function Navigation() {
                 title='Log In'
                 className={`${iconColor} p-1.5 md:p-2 rounded-lg transition-all duration-300 hover:scale-105`}
               >
-                <svg
-                  className='w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 hover:scale-110'
-                  fill='none'
-                  stroke='currentColor'
-                  viewBox='0 0 24 24'
-                >
-                  <path d='M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2' />
-                  <circle cx='12' cy='7' r='4' />
-                </svg>
+                <Key className='w-5 h-5' />
               </Link>
             )}
 
@@ -291,7 +302,8 @@ export default function Navigation() {
         {isProfileWindowOpen && (
           <div
             ref={profileWindowRef}
-            className='absolute right-4 top-full mt-2 z-50'
+            className='fixed right-8 md:right-16 top-[72px] md:top-[88px] z-50'
+            style={{ minWidth: 240 }}
           >
             <ProfileWindow
               isOpen={isProfileWindowOpen}
