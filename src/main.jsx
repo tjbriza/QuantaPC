@@ -6,12 +6,16 @@ import { RouterProvider } from 'react-router-dom';
 import { router } from './router.jsx';
 import { AuthContextProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
+import { ThemeProvider } from '@mui/material/styles';
+import adminTheme from './theme/adminTheme.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthContextProvider>
-      <ToastProvider>
-        <RouterProvider router={router} />
-      </ToastProvider>
+      <ThemeProvider theme={adminTheme}>
+        <ToastProvider>
+          <RouterProvider router={router} />
+        </ToastProvider>
+      </ThemeProvider>
     </AuthContextProvider>
-  </StrictMode>
+  </StrictMode>,
 );
