@@ -1,3 +1,41 @@
+import React from 'react';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  Typography,
+} from '@mui/material';
+
+export default function ConfirmDialog({
+  open,
+  title,
+  description,
+  onConfirm,
+  onClose,
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
+}) {
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      aria-labelledby='confirm-dialog-title'
+    >
+      <DialogTitle id='confirm-dialog-title'>{title}</DialogTitle>
+      <DialogContent>
+        <Typography>{description}</Typography>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>{cancelText}</Button>
+        <Button color='error' onClick={onConfirm} variant='contained'>
+          {confirmText}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
 import { useState, useCallback } from 'react';
 
 export function useConfirmDialog() {

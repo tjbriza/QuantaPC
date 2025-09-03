@@ -36,7 +36,7 @@ export default function CheckoutPage() {
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.product_price * item.quantity,
-    0
+    0,
   );
   const shippingFee = 50;
   const total = subtotal + shippingFee;
@@ -83,7 +83,7 @@ export default function CheckoutPage() {
           JSON.stringify({
             orderNumber: result.orderNumber,
             total: total,
-          })
+          }),
         );
 
         // redirect to payment page
