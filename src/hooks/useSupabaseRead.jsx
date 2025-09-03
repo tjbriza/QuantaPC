@@ -32,12 +32,19 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
       try {
         let query = supabase.from(tableName).select(queryOptions.select || '*');
 
-        // Apply filters (supports eq and neq)
+        // Apply advanced filters: eq, neq, ilike, or
         if (queryOptions.filter) {
           for (const key in queryOptions.filter) {
             const value = queryOptions.filter[key];
-            if (typeof value === 'object' && value.neq !== undefined) {
-              query = query.neq(key, value.neq);
+            if (typeof value === 'object') {
+              if (value.neq !== undefined) {
+                query = query.neq(key, value.neq);
+              } else if (value.ilike !== undefined) {
+                query = query.ilike(key, value.ilike);
+              }
+            } else if (key === 'or') {
+              // value should be a string like 'name.ilike.%foo%,description.ilike.%foo%'
+              query = query.or(value);
             } else {
               query = query.eq(key, value);
             }
