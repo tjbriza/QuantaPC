@@ -97,6 +97,9 @@ export default function AdminLogin() {
               borderRadius: 4,
             },
           }}
+          slotProps={{
+            formHelperText: { sx: { fontSize: '1rem' } },
+          }}
         />
 
         <TextField
@@ -115,6 +118,9 @@ export default function AdminLogin() {
             '& .MuiOutlinedInput-root': {
               borderRadius: 4,
             },
+          }}
+          slotProps={{
+            formHelperText: { sx: { fontSize: '1rem' } },
           }}
         />
 
