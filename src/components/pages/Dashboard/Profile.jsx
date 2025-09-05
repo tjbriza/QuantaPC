@@ -168,7 +168,7 @@ export default function ProfilePage() {
 
   return (
     <div className='flex flex-col w-full items-center mt-2 mb-8'>
-      <h1 className='text-3xl w-full font-bold'>Account Details</h1>
+
       <div className='flex flex-row w-full mt-2 gap-8'>
         <ProfileAvatar
           avatarUrl={previewUrl || localProfile.avatar_url}
