@@ -2,19 +2,17 @@ import { NavLink } from 'react-router-dom';
 
 export default function DashboardNavigation() {
   return (
-    <div className='flex flex-row items-center mt-16 mb-8 gap-8'>
-      <h1 className='hero-main-title font-bold leading-tight antialiased font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl'>
-        Dashboard
+    <div className="flex flex-col lg:flex-row items-center mt-16 mb-8 gap-8 lg:gap-[104px]">
+      <h1 className="hero-main-title font-bold leading-tight antialiased font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-[#282E41]">
+        DASHBOARD
       </h1>
-      <nav className='mt-4'>
-        <ul className='flex flex-row space-y-2 gap-16'>
+      <nav>
+        <ul className="flex flex-col lg:flex-row items-center gap-6 lg:gap-16 text-xl">
           <li>
             <NavLink
-              to='profile'
+              to="profile"
               className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
+                isActive ? 'font-bold underline' : 'text-black-600 hover:underline'
               }
             >
               Account Details
@@ -22,11 +20,9 @@ export default function DashboardNavigation() {
           </li>
           <li>
             <NavLink
-              to='orders'
+              to="orders"
               className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
+                isActive ? 'font-bold underline' : 'text-black-600 hover:underline'
               }
             >
               My Orders
@@ -34,11 +30,9 @@ export default function DashboardNavigation() {
           </li>
           <li>
             <NavLink
-              to='addresses'
+              to="addresses"
               className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
+                isActive ? 'font-bold underline' : 'text-black-600 hover:underline'
               }
             >
               My Addresses
@@ -46,23 +40,9 @@ export default function DashboardNavigation() {
           </li>
           <li>
             <NavLink
-              to='tracking'
+              to="wishlist"
               className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              Track Order
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to='wishlist'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
+                isActive ? 'font-bold underline' : 'text-black-600 hover:underline'
               }
             >
               Wishlist

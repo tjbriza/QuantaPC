@@ -21,7 +21,7 @@ export default function Dashboard() {
 
   return (
     <div className=' flex item-center mt-16'>
-      <div className='container mx-auto px-4 '>
+      <div className='container mx-auto px-13 '>
         <DashboardNavigation />
         <Outlet />
       </div>
