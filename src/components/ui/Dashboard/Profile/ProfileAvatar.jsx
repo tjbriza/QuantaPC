@@ -25,10 +25,10 @@ export default function ProfileAvatar({
         <img
           src={avatarUrl || 'https://placehold.co/200x200'}
           alt='Profile'
-          className='rounded-full w-50 h-50 object-cover'
+          className='rounded-full w-52 h-52 object-cover'
         />
         <label className='absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 hover:opacity-50 transition-opacity cursor-pointer rounded-full'>
-          <Upload className='w-8 h-8 text-white' />
+          <Upload className='w-10 h-10 text-white' />
           <input
             type='file'
             accept='image/*'
@@ -37,7 +37,7 @@ export default function ProfileAvatar({
           />
         </label>
       </div>
-      <p className='text-sm text-center w-full'>
+      <p className='text-base text-center w-full font-medium'>
         hover to change profile picture
       </p>
 
@@ -60,13 +60,13 @@ export default function ProfileAvatar({
         </div>
       )}
 
-      <div className='flex flex-col gap-2'>
-        <p className='flex gap-2'>
-          <User />
+      <div className='flex flex-col gap-3'>
+        <p className='flex gap-2 items-center text-base'>
+          <User className='w-5 h-5' />
           {username || 'No username set'}
         </p>
-        <p className='flex gap-2'>
-          <Mail />
+        <p className='flex gap-2 items-center text-base'>
+          <Mail className='w-5 h-5' />
           {email}
         </p>
       </div>
