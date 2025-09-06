@@ -6,6 +6,7 @@ import App from './App';
 import Dashboard from './components/pages/Dashboard';
 import Profile from './components/pages/Dashboard/Profile';
 import Orders from './components/pages/Dashboard/Orders';
+import OrderDetails from './components/pages/Dashboard/OrderDetails';
 import Addresses from './components/pages/Dashboard/Addresses';
 import Tracking from './components/pages/Dashboard/Tracking';
 import Wishlist from './components/pages/Dashboard/Wishlist';
@@ -88,6 +89,7 @@ export const router = createBrowserRouter([
           { index: true, element: <Profile /> },
           { path: 'profile', element: <Profile /> },
           { path: 'orders', element: <Orders /> },
+          { path: 'orders/:orderNumber', element: <OrderDetails /> },
           { path: 'addresses', element: <Addresses /> },
           { path: 'tracking', element: <Tracking /> },
           { path: 'wishlist', element: <Wishlist /> },
