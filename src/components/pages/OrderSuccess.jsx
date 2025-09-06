@@ -1,4 +1,3 @@
-// Success Page (src/components/pages/OrderSuccess.jsx)
 import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { CheckCircle } from 'lucide-react';

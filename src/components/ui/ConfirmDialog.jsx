@@ -22,14 +22,28 @@ export default function ConfirmDialog({
       open={open}
       onClose={onClose}
       aria-labelledby='confirm-dialog-title'
+      sx={{
+        '& .MuiPaper-root': {
+          borderRadius: 4,
+        },
+      }}
     >
-      <DialogTitle id='confirm-dialog-title'>{title}</DialogTitle>
-      <DialogContent>
-        <Typography>{description}</Typography>
+      <DialogTitle id='confirm-dialog-title' sx={{ borderRadius: 3, pb: 1.5 }}>
+        {title}
+      </DialogTitle>
+      <DialogContent sx={{ borderRadius: 3, pt: 0 }}>
+        <Typography sx={{ borderRadius: 3 }}>{description}</Typography>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{cancelText}</Button>
-        <Button color='error' onClick={onConfirm} variant='contained'>
+      <DialogActions sx={{ borderRadius: 3, pb: 2, px: 3 }}>
+        <Button onClick={onClose} sx={{ borderRadius: 3 }}>
+          {cancelText}
+        </Button>
+        <Button
+          color='error'
+          onClick={onConfirm}
+          variant='contained'
+          sx={{ borderRadius: 3 }}
+        >
           {confirmText}
         </Button>
       </DialogActions>

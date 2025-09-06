@@ -1,4 +1,3 @@
-// Failed Page (src/components/pages/OrderFailed.jsx)
 import { useParams, Link } from 'react-router-dom';
 import { XCircle } from 'lucide-react';
 
