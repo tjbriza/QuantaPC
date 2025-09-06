@@ -24,7 +24,6 @@ export default function AdminOrders() {
     quickFilterValues: [],
   });
 
-  // draft filter state (user edits here)
   const [statuses, setStatuses] = useState([]); // multi-select
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');

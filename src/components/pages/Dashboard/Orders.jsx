@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useSupabaseRead } from '../../../hooks/useSupabaseRead';
 import { Package, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
@@ -6,6 +7,8 @@ import { Package, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
 export default function Orders() {
   const { session } = useAuth();
   const [selectedStatus, setSelectedStatus] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [ordersPerPage] = useState(5);
 
   const {
     data: orders,
@@ -72,6 +75,27 @@ export default function Orders() {
       ? orders
       : orders?.filter((order) => order.status === selectedStatus);
 
+  // Pagination logic
+  const indexOfLastOrder = currentPage * ordersPerPage;
+  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
+  const currentOrders = filteredOrders?.slice(
+    indexOfFirstOrder,
+    indexOfLastOrder,
+  );
+
+  const totalPages = Math.ceil((filteredOrders?.length || 0) / ordersPerPage);
+
+  const paginate = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
@@ -98,15 +122,20 @@ export default function Orders() {
         {/* Status Filter */}
         <select
           value={selectedStatus}
-          onChange={(e) => setSelectedStatus(e.target.value)}
+          onChange={(e) => {
+            setSelectedStatus(e.target.value);
+            setCurrentPage(1); // reset to first page when filter changes
+          }}
           className='border rounded px-3 py-2'
         >
           <option value='all'>All Orders</option>
           <option value='pending'>Pending</option>
           <option value='paid'>Paid</option>
+          <option value='failed'>Failed</option>
+          <option value='expired'>Expired</option>
+          <option value='cancelled'>Cancelled</option>
           <option value='shipped'>Shipped</option>
           <option value='delivered'>Delivered</option>
-          <option value='cancelled'>Cancelled</option>
         </select>
       </div>
 
@@ -121,10 +150,26 @@ export default function Orders() {
             Start Shopping
           </a>
         </div>
+      ) : filteredOrders?.length === 0 ? (
+        <div className='text-center py-12 w-full'>
+          <Package className='w-14 h-14 text-gray-300 mx-auto mb-4' />
+          <p className='text-gray-600 mb-2'>
+            No orders with status "{selectedStatus}".
+          </p>
+          <button
+            onClick={() => setSelectedStatus('all')}
+            className='text-blue-600 hover:underline text-sm'
+          >
+            Clear filter
+          </button>
+        </div>
       ) : (
         <div className='space-y-6 w-full'>
-          {filteredOrders?.map((order) => (
-            <div key={order.id} className=' rounded-lg shadow-md border p-6'>
+          {currentOrders?.map((order) => (
+            <div
+              key={order.id}
+              className='bg-white rounded-lg shadow-md border p-6'
+            >
               {/* Order Header */}
               <div className='flex justify-between items-start mb-4'>
                 <div>
@@ -134,7 +179,7 @@ export default function Orders() {
                     </h3>
                     <span
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                        order.status
+                        order.status,
                       )}`}
                     >
                       {getStatusIcon(order.status)}
@@ -219,6 +264,12 @@ export default function Orders() {
 
               {/* Order Actions */}
               <div className='flex justify-end space-x-2 mt-4 pt-4 border-t'>
+                <Link
+                  to={`/dashboard/orders/${order.order_number}`}
+                  className='bg-gray-100 text-gray-800 px-4 py-2 rounded text-sm hover:bg-gray-200'
+                >
+                  View Details
+                </Link>
                 {order.status === 'shipped' && (
                   <button className='bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700'>
                     Track Package
@@ -242,6 +293,44 @@ export default function Orders() {
               </div>
             </div>
           ))}
+        </div>
+      )}
+      {totalPages > 1 && filteredOrders?.length > 0 && (
+        <div className='flex justify-center mt-8'>
+          <nav>
+            <ul className='flex gap-2'>
+              <li>
+                <button
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className='py-2 px-3 text-black rounded disabled:opacity-40 hover:text-blue-600'
+                >
+                  Previous
+                </button>
+              </li>
+              {Array.from({ length: totalPages }, (_, i) => (
+                <li key={i}>
+                  <button
+                    onClick={() => paginate(i + 1)}
+                    className={`py-2 px-3 text-black hover:text-blue-600 ${
+                      currentPage === i + 1 ? 'font-semibold underline' : ''
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                </li>
+              ))}
+              <li>
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className='py-2 px-3 text-black rounded disabled:opacity-40 hover:text-blue-600'
+                >
+                  Next
+                </button>
+              </li>
+            </ul>
+          </nav>
         </div>
       )}
     </div>
