@@ -43,7 +43,6 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
                 query = query.ilike(key, value.ilike);
               }
             } else if (key === 'or') {
-              // value should be a string like 'name.ilike.%foo%,description.ilike.%foo%'
               query = query.or(value);
             } else {
               query = query.eq(key, value);
