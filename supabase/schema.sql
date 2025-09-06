@@ -86,6 +86,44 @@ alter table orders drop constraint if exists orders_status_check;
 alter table orders add constraint orders_status_check 
   check (status in ('pending', 'paid', 'failed', 'expired', 'cancelled', 'shipped', 'delivered'));
 
+create table order_status_history (
+  id uuid primary key default uuid_generate_v4(),
+  order_id uuid not null references orders(id) on delete cascade,
+  status text not null check (status in ('pending', 'paid', 'failed', 'expired', 'cancelled', 'shipped', 'delivered')),
+  message text not null,
+  created_at timestamptz default now(),
+  created_by uuid references auth.users(id) -- track which admin made the update
+);
+
+create table if not exists profile_edit_logs (
+  id uuid primary key default uuid_generate_v4(),
+  edited_user_id uuid not null references auth.users(id) on delete cascade,
+  actor_user_id uuid not null references auth.users(id) on delete set null,
+  changed_fields text[] not null, -- list of column names that changed
+  previous_values jsonb not null, -- key:value of old values
+  new_values jsonb not null,      -- key:value of new values
+  created_at timestamptz default now()
+);
+
+-- Index to query logs by edited user quickly
+create index if not exists idx_profile_edit_logs_edited_user on profile_edit_logs(edited_user_id, created_at desc);
+-- Index to query by actor
+create index if not exists idx_profile_edit_logs_actor_user on profile_edit_logs(actor_user_id, created_at desc);
+
+
+create table if not exists product_edit_logs (
+  id uuid primary key default uuid_generate_v4(),
+  product_id uuid not null references products(id) on delete cascade,
+  actor_user_id uuid not null references auth.users(id) on delete set null,
+  changed_fields text[] not null,
+  previous_values jsonb not null,
+  new_values jsonb not null,
+  created_at timestamptz default now()
+);
+
+create index if not exists idx_product_edit_logs_product on product_edit_logs(product_id, created_at desc);
+create index if not exists idx_product_edit_logs_actor on product_edit_logs(actor_user_id, created_at desc);
+
 
 create table order_items (
   id uuid primary key default uuid_generate_v4(),
