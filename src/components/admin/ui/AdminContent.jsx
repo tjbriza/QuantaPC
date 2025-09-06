@@ -16,7 +16,6 @@ export default function AdminContent({ children }) {
       }}
     >
       <Toolbar />
-      {/* Main content target for skip-to-content */}
       <Box
         id='admin-main-content'
         tabIndex={-1}

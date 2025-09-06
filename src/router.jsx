@@ -24,6 +24,15 @@ import OrderFailed from './components/pages/OrderFail';
 import OrderSuccess from './components/pages/OrderSuccess';
 import ErrorPage from './components/pages/ErrorPage';
 
+import CustomerServiceLayout from './components/pages/CustomerService/CustomerServiceLayout';
+import PaymentFAQs from './components/pages/CustomerService/PaymentFAQs';
+import PrivacyPolicy from './components/pages/CustomerService/PrivacyPolicy';
+import CancellationPolicy from './components/pages/CustomerService/CancellationPolicy';
+import CookiePolicy from './components/pages/CustomerService/CookiePolicy';
+import ReturnAndRefunds from './components/pages/CustomerService/ReturnAndRefunds';
+import TermsAndConditions from './components/pages/CustomerService/TermsAndConditions';
+import ContactUs from './components/pages/CustomerService/ContactUs';
+
 // Admin routes
 import AdminLayout from './components/AdminLayout';
 import AdminLogin from './components/admin/pages/AdminLogin';
@@ -49,6 +58,19 @@ export const router = createBrowserRouter([
       { path: 'services', element: <Services /> },
       { path: 'custom-pc', element: <CustomPc /> },
       { path: 'product/:id', element: <ProductPage /> },
+      {
+        path: 'CustomerService',
+        element: <CustomerServiceLayout />,
+        children: [
+          { path: 'PaymentFaqs', element: <PaymentFAQs /> },
+          { path: 'PrivacyPolicy', element: <PrivacyPolicy /> },
+          { path: 'CancellationPolicy', element: <CancellationPolicy /> },
+          { path: 'CookiePolicy', element: <CookiePolicy /> },
+          { path: 'ReturnAndRefunds', element: <ReturnAndRefunds /> },
+          { path: 'TermsAndConditions', element: <TermsAndConditions /> },
+          { path: 'ContactUs', element: <ContactUs /> },
+        ],
+      },
       {
         path: 'dashboard',
         element: (

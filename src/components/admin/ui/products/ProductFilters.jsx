@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Stack,
@@ -66,14 +65,14 @@ export default function ProductFilters({
     ) &&
     !isDirty;
 
-  // Ensure numeric filter inputs never go negative; allow empty string for clearing.
+  // ensure numeric filter inputs never go negative; allow empty string for clearing.
   const handleNonNegative = (setter) => (e) => {
     let v = e.target.value;
     if (v === '') {
       setter('');
       return;
     }
-    // Strip leading minus signs
+    // strip leading minus signs
     if (v.startsWith('-')) v = v.replace(/^-+/, '');
     const num = Number(v);
     if (isNaN(num) || num < 0) {
