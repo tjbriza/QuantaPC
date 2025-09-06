@@ -6,6 +6,8 @@ export function usePaginatedProducts(
   pageSize,
   sortModel = [],
   filterModel = {},
+  reloadKey = null,
+  advancedFilters = {}, // { search, categories:[], disabled:'', priceMin, priceMax, stockMin, stockMax }
 ) {
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(0);
@@ -21,15 +23,24 @@ export function usePaginatedProducts(
 
       let query = supabase.from('products').select(
         `
-          *,
-          categories:category_id (
             id,
-            name
-          )
-        `,
+            name,
+            description,
+            price,
+            stock_quantity,
+            category_id,
+            brand,
+            image_url,
+            is_disabled,
+            created_at,
+            categories:category_id (
+              id,
+              name
+            )
+          `,
         { count: 'exact' },
       );
-      // apply filters if provided
+      // apply grid filters if provided
       if (filterModel.items && filterModel.items.length > 0) {
         filterModel.items.forEach((filter) => {
           if (filter.value !== undefined && filter.value !== '') {
@@ -100,7 +111,40 @@ export function usePaginatedProducts(
         });
       }
 
-      console.log(rows);
+      // apply advanced filters (outside data grid built-in)
+      if (advancedFilters) {
+        const {
+          search,
+          categories: catList,
+          disabled,
+          priceMin,
+          priceMax,
+          stockMin,
+          stockMax,
+        } = advancedFilters;
+
+        if (search && search.trim()) {
+          const s = `%${search.trim()}%`;
+          query = query.or(
+            `name.ilike.${s},description.ilike.${s},brand.ilike.${s}`,
+          );
+        }
+        if (catList && Array.isArray(catList) && catList.length > 0) {
+          // need category names; we selected categories.name via foreign table alias - cannot filter by alias in or ; filter separately using a subquery strategy isn't supported directly; fallback to filtering after fetch inefficiently if needed
+          // Simpler: pass category ids instead in advancedFilters, so expect catList are category ids
+          query = query.in('category_id', catList);
+        }
+        if (disabled === 'true') query = query.eq('is_disabled', true);
+        if (disabled === 'false') query = query.eq('is_disabled', false);
+        if (priceMin !== undefined && priceMin !== '')
+          query = query.gte('price', Number(priceMin));
+        if (priceMax !== undefined && priceMax !== '')
+          query = query.lte('price', Number(priceMax));
+        if (stockMin !== undefined && stockMin !== '')
+          query = query.gte('stock_quantity', Number(stockMin));
+        if (stockMax !== undefined && stockMax !== '')
+          query = query.lte('stock_quantity', Number(stockMax));
+      }
 
       // apply sorting if provided
       if (sortModel.length > 0) {
@@ -121,15 +165,20 @@ export function usePaginatedProducts(
       const { data, error, count } = await query.range(from, to);
 
       if (error) {
-        console.error(error);
+        console.error('Supabase query error:', error);
       } else if (isMounted) {
+        console.log('Products fetched from Supabase:', data);
+        console.log('Count from Supabase:', count);
+
         // transform the data to flatten the category object
         const transformedData = (data || []).map((product) => ({
           ...product,
           category: product.categories?.name || 'No Category',
           category_id: product.category_id,
+          is_disabled: product.is_disabled ?? false,
         }));
 
+        console.log('Transformed product data:', transformedData);
         setRows(transformedData);
         setRowCount(count || 0);
       }
@@ -141,7 +190,14 @@ export function usePaginatedProducts(
     return () => {
       isMounted = false;
     };
-  }, [page, pageSize, sortModel, filterModel]);
+  }, [
+    page,
+    pageSize,
+    sortModel,
+    filterModel,
+    reloadKey,
+    JSON.stringify(advancedFilters),
+  ]);
 
   return { rows, rowCount, loading };
 }

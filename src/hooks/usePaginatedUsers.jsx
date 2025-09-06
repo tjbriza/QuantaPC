@@ -6,6 +6,7 @@ export function usePaginatedUsers(
   pageSize,
   sortModel = [],
   filterModel = {},
+  reloadKey,
 ) {
   const [rows, setRows] = useState([]);
   const [rowCount, setRowCount] = useState(0);
@@ -23,7 +24,7 @@ export function usePaginatedUsers(
         .from('user_with_profile')
         .select('*', { count: 'exact' });
 
-      // Apply filters if provided
+      // apply filters if provided
       if (filterModel.items && filterModel.items.length > 0) {
         filterModel.items.forEach((filter) => {
           if (filter.value !== undefined && filter.value !== '') {
@@ -60,23 +61,23 @@ export function usePaginatedUsers(
                 }
                 break;
               default:
-                // Default to contains for unknown operators
+                // default to contains for unknown operators
                 query = query.ilike(field, `%${value}%`);
             }
           }
         });
       }
 
-      // Apply sorting if provided
+      // apply sorting if provided
       if (sortModel.length > 0) {
         const { field, sort } = sortModel[0];
         query = query.order(field, { ascending: sort === 'asc' });
       } else {
-        // Default sorting
+        // default sorting
         query = query.order('auth_created_at', { ascending: false });
       }
 
-      // Apply pagination
+      // apply pagination
       const { data, error, count } = await query.range(from, to);
 
       if (error) {
@@ -93,7 +94,7 @@ export function usePaginatedUsers(
     return () => {
       isMounted = false;
     };
-  }, [page, pageSize, sortModel, filterModel]);
+  }, [page, pageSize, sortModel, filterModel, reloadKey]);
 
   return { rows, rowCount, loading };
 }
