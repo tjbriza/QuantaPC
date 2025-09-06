@@ -48,22 +48,15 @@ export const addressSchema = z.object({
     .min(1, 'Phone number is required')
     .regex(
       /^(09|\+639)\d{9}$/,
-      'Please enter a valid Philippine mobile number (09XXXXXXXXX)'
+      'Please enter a valid Philippine mobile number (09XXXXXXXXX)',
     ),
-  country: z
-    .string()
-    .min(1, 'Country is required')
-    .max(30, 'Country name too long')
-    .regex(/^[A-Za-z\s]+$/, 'Only letters allowed'),
-  region: z
-    .string()
-    .min(1, 'Region is required')
-    .max(60, 'Region name too long'),
-  province: z
-    .string()
-    .min(1, 'Province is required')
-    .max(30, 'Province name too long')
-    .regex(/^[A-Za-z\s]+$/, 'Only letters allowed'),
+  country: z.enum(['Philippines'], { message: 'Only Philippines is allowed' }),
+  region: z.enum(['NCR'], {
+    message: 'Only NCR is allowed',
+  }),
+  province: z.enum(['Metro Manila'], {
+    message: 'Only Metro Manila is allowed',
+  }),
   city: z
     .string()
     .min(1, 'City is required')
