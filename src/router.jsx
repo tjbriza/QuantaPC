@@ -33,6 +33,7 @@ import AdminUsers from './components/admin/pages/AdminUsers';
 import AdminOrders from './components/admin/pages/AdminOrders';
 import AdminServices from './components/admin/pages/AdminServices';
 import AdminSettings from './components/admin/pages/AdminSettings';
+import AdminLogs from './components/admin/pages/AdminLogs';
 import AdminRoute from './components/AdminRoute';
 
 export const router = createBrowserRouter([
@@ -141,6 +142,14 @@ export const router = createBrowserRouter([
         element: (
           <AdminRoute>
             <AdminOrders />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: 'logs',
+        element: (
+          <AdminRoute>
+            <AdminLogs />
           </AdminRoute>
         ),
       },
