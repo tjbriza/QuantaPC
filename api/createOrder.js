@@ -5,7 +5,7 @@ dotenv.config({ path: '.env.local' });
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 const xenditInvoiceClient = new Invoice({
@@ -40,11 +40,19 @@ export default async function handler(req, res) {
       return res.status(400).json({
         success: false,
         message: 'Missing required fields',
+        debug: { items, shippingAddress, customerEmail },
       });
     }
 
     // get user id from session
     const userId = req.body.userId;
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing userId',
+        debug: { userId },
+      });
+    }
 
     // fetch current prices from database
     const productIds = items.map((item) => item.product_id);
@@ -57,6 +65,7 @@ export default async function handler(req, res) {
       return res.status(500).json({
         success: false,
         message: 'Failed to fetch products',
+        debug: { productsError },
       });
     }
 
@@ -114,45 +123,89 @@ export default async function handler(req, res) {
         p_total_amount: total,
         p_customer_email: customerEmail,
         p_shipping_address: shippingAddress,
-      }
+      },
     );
 
     if (rpcError || !rpcResult?.success) {
       return res.status(500).json({
         success: false,
         message: 'Failed to create order',
+        debug: {
+          rpcError,
+          rpcResult,
+          userId,
+          orderNumber,
+          formattedItems,
+          subtotal,
+          shippingFee,
+          total,
+          customerEmail,
+          shippingAddress,
+        },
       });
     }
 
+    // Format mobile number to E.164 (PH only)
+    function toE164PH(num) {
+      if (!num) return '';
+      let n = num.replace(/\D/g, '');
+      if (n.startsWith('0')) n = '+63' + n.slice(1);
+      else if (n.startsWith('63')) n = '+63' + n.slice(2);
+      else if (!n.startsWith('+63')) n = '+63' + n;
+      else n = '+' + n;
+      return n;
+    }
+
+    const allowedCountry = 'Philippines';
+    const allowedProvince = 'Metro Manila';
+    if (
+      shippingAddress.country !== allowedCountry ||
+      shippingAddress.province !== allowedProvince
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: 'Only Philippines and Metro Manila are allowed for shipping.',
+        debug: {
+          country: shippingAddress.country,
+          province: shippingAddress.province,
+        },
+      });
+    }
+
+    // Prepare invoice payload for Xendit
+    const invoicePayload = {
+      externalId: `order-${orderNumber}`,
+      payerEmail: customerEmail,
+      amount: total,
+      description: `Order ${orderNumber}`,
+      currency: 'PHP',
+      shouldSendEmail: true,
+      successRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/success`,
+      failureRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/failed`,
+      invoiceDuration: 86400,
+      customer: {
+        givenNames: shippingAddress.full_name?.split(' ')[0] || '',
+        surname:
+          shippingAddress.full_name?.split(' ').slice(1).join(' ') || '-',
+        email: customerEmail,
+        mobileNumber: toE164PH(shippingAddress.phone_number || ''),
+        addresses: [
+          {
+            street:
+              `${shippingAddress.house_number || ''} ${shippingAddress.street_name || ''}`.trim(),
+            city: shippingAddress.city || '',
+            province: shippingAddress.province || '',
+            postalCode: shippingAddress.postal_code || '',
+            country: 'PH',
+          },
+        ],
+      },
+    };
+    // ...
+
     // Create Xendit invoice
     const invoice = await xenditInvoiceClient.createInvoice({
-      data: {
-        externalId: `order-${orderNumber}`,
-        payerEmail: customerEmail,
-        amount: total,
-        description: `Order ${orderNumber}`,
-        currency: 'PHP',
-        shouldSendEmail: true,
-        successRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/success`,
-        failureRedirectUrl: `${process.env.FRONTEND_URL}/orders/${orderNumber}/failed`,
-        invoiceDuration: 86400,
-        customer: {
-          givenNames: shippingAddress.full_name.split(' ')[0],
-          surname:
-            shippingAddress.full_name.split(' ').slice(1).join(' ') || '',
-          email: customerEmail,
-          mobileNumber: shippingAddress.phone_number,
-          addresses: [
-            {
-              street: `${shippingAddress.house_number} ${shippingAddress.street_name}`,
-              city: shippingAddress.city,
-              province: shippingAddress.province,
-              postalCode: shippingAddress.postal_code,
-              country: shippingAddress.country,
-            },
-          ],
-        },
-      },
+      data: invoicePayload,
     });
 
     // Update order with invoice details
@@ -162,6 +215,7 @@ export default async function handler(req, res) {
         xendit_invoice_id: invoice.id,
         xendit_invoice_url: invoice.invoiceUrl,
         expires_at: invoice.expiryDate,
+        payment_method: null, // will be set by webhook when paid
       })
       .eq('id', rpcResult.id);
 

@@ -4,7 +4,7 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 export default async function handler(req, res) {
@@ -19,7 +19,16 @@ export default async function handler(req, res) {
       return res.status(401).json({ error: 'Invalid webhook token' });
     }
 
-    const { id, status, external_id } = req.body;
+    const {
+      id,
+      status,
+      external_id,
+      payment_method,
+      payment_method_type,
+      payment_channel,
+      payment_method_id,
+      paid_at,
+    } = req.body;
 
     // Validate required fields
     if (!id || !status || !external_id) {
@@ -41,7 +50,7 @@ export default async function handler(req, res) {
 
     if (newStatus) {
       console.log(
-        `Processing webhook for order ${orderNumber} with status: ${newStatus}`
+        `Processing webhook for order ${orderNumber} with status: ${newStatus}`,
       );
 
       const { data: orderData, error: orderError } = await supabase
@@ -60,10 +69,43 @@ export default async function handler(req, res) {
         return res.status(404).json({ error: 'Order not found' });
       }
 
-      // update order status
+      // derive payment method string (fallback order)
+      let derivedPaymentMethod = null;
+      if (payment_method) derivedPaymentMethod = payment_method;
+      else if (payment_method_type) derivedPaymentMethod = payment_method_type;
+      else if (payment_channel) derivedPaymentMethod = payment_channel;
+      else if (payment_method_id) derivedPaymentMethod = payment_method_id; // last resort id
+
+      const updatePayload = { status: newStatus };
+      if (derivedPaymentMethod) {
+        updatePayload.payment_method =
+          String(derivedPaymentMethod).toLowerCase();
+      }
+
+      // only set paid_at when transitioning to paid; don't overwrite if already set
+      if (newStatus === 'paid') {
+        try {
+          // fetch existing paid_at to avoid overwriting in case of duplicate webhook delivery
+          const { data: existing, error: existingErr } = await supabase
+            .from('orders')
+            .select('paid_at')
+            .eq('id', orderData.id)
+            .single();
+          if (!existingErr && !existing?.paid_at) {
+            updatePayload.paid_at = paid_at || new Date().toISOString();
+          }
+        } catch (e) {
+          console.error('paid_at fetch error (non-fatal):', e);
+          // fallback: still set if not provided
+          if (!updatePayload.paid_at) {
+            updatePayload.paid_at = paid_at || new Date().toISOString();
+          }
+        }
+      }
+
       const { error: updateError } = await supabase
         .from('orders')
-        .update({ status: newStatus })
+        .update(updatePayload)
         .eq('id', orderData.id);
 
       if (updateError) {
@@ -71,7 +113,9 @@ export default async function handler(req, res) {
         return res.status(500).json({ error: 'Database update failed' });
       }
 
-      console.log(`Order ${orderNumber} status updated to ${newStatus}`);
+      console.log(
+        `Order ${orderNumber} status updated to ${newStatus}${updatePayload.payment_method ? ' payment_method=' + updatePayload.payment_method : ''}${updatePayload.paid_at ? ' paid_at=' + updatePayload.paid_at : ''}`,
+      );
 
       // stock restoration for failed/expired orders
       if (newStatus === 'failed' || newStatus === 'expired') {
@@ -80,7 +124,7 @@ export default async function handler(req, res) {
             'restoreOrderStock',
             {
               p_order_id: orderData.id,
-            }
+            },
           );
 
           if (restoreError) {

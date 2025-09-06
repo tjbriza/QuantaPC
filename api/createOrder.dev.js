@@ -5,7 +5,7 @@ dotenv.config({ path: '.env.local' });
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
+  process.env.SUPABASE_SERVICE_ROLE_KEY,
 );
 
 const xenditInvoiceClient = new Invoice({
@@ -75,7 +75,7 @@ export default async function handler(req, res) {
         typeof item.quantity !== 'number' ||
         typeof item.product_price !== 'number' ||
         item.quantity <= 0 ||
-        item.product_price <= 0
+        item.product_price <= 0,
     );
     if (invalidItems.length > 0) {
       return res.status(400).json({
@@ -94,7 +94,7 @@ export default async function handler(req, res) {
       'barangay',
     ];
     const missingFields = requiredAddressFields.filter(
-      (field) => !shippingAddress[field]
+      (field) => !shippingAddress[field],
     );
     if (missingFields.length > 0) {
       return res.status(400).json({
@@ -128,7 +128,7 @@ export default async function handler(req, res) {
         p_total_amount: parseInt(total),
         p_customer_email: customerEmail,
         p_shipping_address: shippingAddress,
-      }
+      },
     );
 
     if (rpcError) {
@@ -202,6 +202,7 @@ export default async function handler(req, res) {
         xendit_invoice_id: invoice.id,
         xendit_invoice_url: invoice.invoiceUrl,
         expires_at: invoice.expiryDate,
+        payment_method: null,
       })
       .eq('id', orderId)
       .select();
