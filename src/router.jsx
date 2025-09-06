@@ -45,10 +45,16 @@ import AdminSettings from './components/admin/pages/AdminSettings';
 import AdminLogs from './components/admin/pages/AdminLogs';
 import AdminRoute from './components/AdminRoute';
 
+import ScrollToTop from './components/ui/ScrollToTop';
+
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />,
+    element: (
+      <ScrollToTop>
+        <Layout />
+      </ScrollToTop>
+    ),
     children: [
       { index: true, element: <App /> },
       { path: 'login', element: <Login /> },
