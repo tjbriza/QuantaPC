@@ -27,7 +27,7 @@ export default function AdminTopbar({ onDrawerToggle }) {
   const handleSkipToContent = () => {
     const mainContent = document.getElementById('admin-main-content');
     if (mainContent) {
-      // Find the first focusable element within the main content
+      // find the first focusable element within the main content
       const focusableSelectors = [
         'button:not([disabled])',
         'input:not([disabled])',
@@ -43,14 +43,14 @@ export default function AdminTopbar({ onDrawerToggle }) {
       );
 
       if (focusableElements.length > 0) {
-        // Focus on the first focusable element
+        // focus on the first focusable element
         focusableElements[0].focus();
         focusableElements[0].scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
       } else {
-        // Fallback to focusing the main content container
+        // fallback to focusing the main content container
         mainContent.focus();
         mainContent.scrollIntoView({ behavior: 'smooth' });
       }
@@ -59,7 +59,6 @@ export default function AdminTopbar({ onDrawerToggle }) {
 
   return (
     <>
-      {/* Skip to Content Link - Only visible when focused */}
       <Button
         onClick={handleSkipToContent}
         aria-label='Skip to main content'
