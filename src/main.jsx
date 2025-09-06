@@ -7,11 +7,11 @@ import { router } from './router.jsx';
 import { AuthContextProvider } from './context/AuthContext.jsx';
 import { ToastProvider } from './context/ToastContext.jsx';
 import { ThemeProvider } from '@mui/material/styles';
-import adminTheme from './theme/adminTheme.jsx';
+import theme from './theme.jsx';
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthContextProvider>
-      <ThemeProvider theme={adminTheme}>
+      <ThemeProvider theme={theme}>
         <ToastProvider>
           <RouterProvider router={router} />
         </ToastProvider>
