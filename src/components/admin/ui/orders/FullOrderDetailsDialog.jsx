@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,7 +12,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 
-// Read-only rich details view for an order
+// Read only details view for an order
 export default function FullOrderDetailsDialog({
   open,
   onClose,
