@@ -16,6 +16,7 @@ import {
   ShoppingBasket,
   Bolt,
   ClipboardPen,
+  History,
 } from 'lucide-react';
 const drawerWidth = 240;
 
@@ -24,6 +25,7 @@ const menuItems = [
   { text: 'Users', icon: <Users />, path: '/admin/users' },
   { text: 'Products', icon: <Package />, path: '/admin/products' },
   { text: 'Orders', icon: <ShoppingBasket />, path: '/admin/orders' },
+  { text: 'Logs', icon: <History />, path: '/admin/logs' },
   { text: 'Services', icon: <ClipboardPen />, path: '/admin/services' },
   { text: 'Settings', icon: <Bolt />, path: '/admin/settings' },
 ];
