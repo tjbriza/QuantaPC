@@ -95,9 +95,9 @@ export default function ProfileForm({
     usernameStatus !== 'taken';
 
   return (
-    <div className='w-full'>
-      <div className='flex gap-4 items-end-safe mb-2 pb-4'>
-        <h2 className='text-3xl font-bold'>Profile</h2>
+    <div className='w-full bg-white p-4 rounded-md shadow-sm'>
+      <div className='flex gap-4 items-end-safe mb-1 pb-2'>
+        <h2 className='text-2xl font-bold'>Profile</h2>
         {!isEditing ? (
           <button
             className='px-4 text-black text-xl rounded flex gap-2 hover:underline'

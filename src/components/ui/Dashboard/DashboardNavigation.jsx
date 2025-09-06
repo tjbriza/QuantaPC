@@ -1,73 +1,36 @@
 import { NavLink } from 'react-router-dom';
 
+const navItems = [
+  { to: 'profile', label: 'Account Details' },
+  { to: 'orders', label: 'My Orders' },
+  { to: 'addresses', label: 'My Addresses' },
+  { to: 'wishlist', label: 'Wishlist' },
+];
+
 export default function DashboardNavigation() {
   return (
-    <div className='flex flex-row items-center mt-16 mb-8 gap-8'>
-      <h1 className='hero-main-title font-bold leading-tight antialiased font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl'>
-        Dashboard
+    <div className="flex flex-col lg:flex-row items-start mt-20 mb-8 gap-8 lg:gap-[104px]">
+      <h1 className="hero-main-title font-bold leading-tight antialiased font-heading text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-[#282E41]">
+        DASHBOARD
       </h1>
-      <nav className='mt-4'>
-        <ul className='flex flex-row space-y-2 gap-16'>
-          <li>
-            <NavLink
-              to='profile'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              Account Details
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to='orders'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              My Orders
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to='addresses'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              My Addresses
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to='tracking'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              Track Order
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to='wishlist'
-              className={({ isActive }) =>
-                isActive
-                  ? 'font-bold underline'
-                  : 'text-black-600 hover:underline'
-              }
-            >
-              Wishlist
-            </NavLink>
-          </li>
+      <nav className="mt-8">
+        <ul className="flex flex-col lg:flex-row items-center gap-8 lg:gap-20 text-2xl">
+          {navItems.map(({ to, label }) => (
+            <li key={to}>
+              <NavLink
+                to={to}
+                className={({ isActive }) =>
+                  `mt-12 text-2xl font-[Afacad] transition-colors duration-200 ${
+                    isActive
+                      ? 'font-bold underline'
+                      : 'font-bold text-black-600 hover:underline'
+                  }`
+                }
+              >
+                {label}
+              </NavLink>
+            </li>
+          ))}
         </ul>
       </nav>
     </div>

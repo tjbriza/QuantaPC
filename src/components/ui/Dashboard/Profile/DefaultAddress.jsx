@@ -44,9 +44,9 @@ export default function DefaultAddress({
   ];
 
   return (
-    <div className='w-full'>
-      <div className='flex gap-4 items-end-safe mb-2 pb-4'>
-        <h2 className='text-3xl font-bold'>Default Shipping Address</h2>
+    <div className='w-full bg-white p-4 rounded-md shadow-sm'>
+      <div className='flex gap-4 items-end-safe mb-1 pb-2'>
+        <h2 className='text-2xl font-bold'>Default Shipping Address</h2>
 
         {!isEditing ? (
           <button

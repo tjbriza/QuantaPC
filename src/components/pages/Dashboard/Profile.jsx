@@ -167,9 +167,9 @@ export default function ProfilePage() {
   console.log(localAddress);
 
   return (
-    <div className='flex flex-col w-full items-center mt-4 mb-16'>
-      <h1 className='text-3xl w-full font-bold'>Account Details</h1>
-      <div className='flex flex-row w-full mt-4 gap-16'>
+    <div className='flex flex-col w-full items-center mt-2 mb-8'>
+
+      <div className='flex flex-row w-full mt-2 gap-8'>
         <ProfileAvatar
           avatarUrl={previewUrl || localProfile.avatar_url}
           username={localProfile.username}
@@ -180,7 +180,7 @@ export default function ProfilePage() {
           hasSelectedFile={!!selectedFile}
         />
 
-        <div className='flex flex-col w-full px-4 gap-16'>
+        <div className='flex flex-col w-full px-2 gap-8'>
           <ProfileForm
             localProfile={localProfile}
             onSubmit={onSubmitProfileData}
