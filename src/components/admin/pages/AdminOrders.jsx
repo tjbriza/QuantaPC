@@ -1,32 +1,20 @@
-import { useState, useMemo } from 'react';
-import {
-  Box,
-  Typography,
-  CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  List,
-  ListItem,
-  ListItemAvatar,
-  Avatar,
-  ListItemText,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-} from '@mui/material';
-import { DataGrid } from '@mui/x-data-grid';
+import { useState, useMemo, useEffect } from 'react';
+import { Box, Typography, Button } from '@mui/material';
 import { useSupabaseRead } from '../../../hooks/useSupabaseRead';
 import { useSupabaseWrite } from '../../../hooks/useSupabaseWrite';
 import { useToast } from '../../../context/ToastContext';
 import { usePaginatedOrders } from '../../../hooks/usePaginatedOrders';
+import { useAuth } from '../../../context/AuthContext';
+import OrderFilters from '../ui/orders/OrderFilters';
+import OrderTable from '../ui/orders/OrderTable';
+import OrderDetailsDialog from '../ui/orders/OrderDetailsDialog';
+import FullOrderDetailsDialog from '../ui/orders/FullOrderDetailsDialog';
 
 export default function AdminOrders() {
   const [ordersReloadKey, setOrdersReloadKey] = useState(Date.now());
+  const [messagesReloadKey, setMessagesReloadKey] = useState(Date.now());
   const { toast } = useToast();
+  const { session } = useAuth();
 
   const [page, setPage] = useState(0);
   const [pageSize, setPageSize] = useState(10);
@@ -36,22 +24,65 @@ export default function AdminOrders() {
     quickFilterValues: [],
   });
 
+  // draft filter state (user edits here)
+  const [statuses, setStatuses] = useState([]); // multi-select
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [search, setSearch] = useState('');
+  const [appliedAdvancedFilters, setAppliedAdvancedFilters] = useState({
+    statuses: [],
+    dateFrom: '',
+    dateTo: '',
+    paymentMethod: '',
+    search: '',
+  });
+  const isDirty = useMemo(
+    () =>
+      JSON.stringify(appliedAdvancedFilters) !==
+      JSON.stringify({ statuses, dateFrom, dateTo, paymentMethod, search }),
+    [appliedAdvancedFilters, statuses, dateFrom, dateTo, paymentMethod, search],
+  );
+  const applyAdvancedFilters = () => {
+    setAppliedAdvancedFilters({
+      statuses: [...statuses],
+      dateFrom,
+      dateTo,
+      paymentMethod,
+      search,
+    });
+    setPage(0);
+  };
+
   const {
     rows: orders,
     rowCount,
     loading: ordersLoading,
-  } = usePaginatedOrders(page, pageSize, sortModel, filterModel);
+  } = usePaginatedOrders(
+    page,
+    pageSize,
+    sortModel,
+    filterModel,
+    ordersReloadKey,
+    appliedAdvancedFilters,
+  );
   const ordersError = null;
 
   const {
-    insertData,
-    updateData,
-    deleteData,
-    loading: writeLoading,
+    insertData: insertOrder,
+    updateData: updateOrder,
+    deleteData: deleteOrder,
+    loading: orderWriteLoading,
   } = useSupabaseWrite('orders');
+
+  const { insertData: insertHistory, loading: historyWriteLoading } =
+    useSupabaseWrite('order_status_history');
 
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [statusSelection, setStatusSelection] = useState('');
+  const [fullDetailsOrder, setFullDetailsOrder] = useState(null); // { order, items }
+  const [fullDetailsOrderId, setFullDetailsOrderId] = useState(null); // id being fetched
+  const [statusMessage, setStatusMessage] = useState('');
 
   const {
     data: items,
@@ -63,33 +94,143 @@ export default function AdminOrders() {
     enabled: !!selectedOrder,
   });
 
+  // fetch all status messages
+  const { data: allMessages, loading: messagesLoading } = useSupabaseRead(
+    'order_status_history',
+    {
+      select: 'order_id, message, created_at',
+      enabled: true,
+      key: messagesReloadKey, // forces refresh when messages are updated
+    },
+  );
+
+  // get the latest message for each order by finding the most recent created_at
+  const latestMessages = useMemo(() => {
+    if (!allMessages) return [];
+
+    // group messages by order_id and find the latest for each
+    const messageMap = new Map();
+    allMessages.forEach((msg) => {
+      const existing = messageMap.get(msg.order_id);
+      if (
+        !existing ||
+        new Date(msg.created_at) > new Date(existing.created_at)
+      ) {
+        messageMap.set(msg.order_id, msg);
+      }
+    });
+    return Array.from(messageMap.values());
+  }, [allMessages]);
+
+  const {
+    data: orderHistory,
+    loading: historyLoading,
+    error: historyError,
+  } = useSupabaseRead('order_status_history', {
+    select: '*',
+    filter: { order_id: selectedOrder ? selectedOrder.id : null },
+    options: { order: 'created_at.desc' },
+    enabled: !!selectedOrder,
+  });
+
   const rows = useMemo(
     () =>
-      (orders || []).map((o) => ({
-        id: o.id,
-        order_number: o.order_number,
-        customer_email: o.customer_email,
-        total_amount: o.total_amount,
-        status: o.status,
-        created_at: o.created_at,
-      })),
-    [orders],
+      (orders || []).map((o) => {
+        const latestMessage = latestMessages?.find((m) => m.order_id === o.id);
+        return {
+          id: o.id,
+          order_number: o.order_number,
+          customer_email: o.customer_email,
+          total_amount: o.total_amount,
+          status: o.status,
+          created_at: o.created_at,
+          latest_message: latestMessage?.message || '',
+        };
+      }),
+    [orders, latestMessages],
   );
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 260 },
-    { field: 'order_number', headerName: 'Order #', width: 160 },
+    { field: 'order_number', headerName: 'Order #', width: 220 },
     { field: 'customer_email', headerName: 'Email', width: 220 },
     { field: 'total_amount', headerName: 'Total', width: 120 },
     { field: 'status', headerName: 'Status', width: 140 },
-    { field: 'created_at', headerName: 'Created At', width: 200 },
+    {
+      field: 'latest_message',
+      headerName: 'Latest Update',
+      width: 220,
+      renderCell: (params) => (
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            display: 'flex',
+            alignItems: 'center',
+          }}
+        >
+          <Typography
+            variant='body2'
+            sx={{
+              width: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              px: 1,
+            }}
+          >
+            {params.value}
+          </Typography>
+        </Box>
+      ),
+    },
+    { field: 'created_at', headerName: 'Created At', width: 270 },
+    {
+      field: 'actions',
+      headerName: 'Actions',
+      width: 260,
+      sortable: false,
+      filterable: false,
+      renderCell: (params) => {
+        const order = orders.find((o) => o.id === params.row.id);
+        return (
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+            }}
+          >
+            <Button
+              variant='contained'
+              size='small'
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedOrder(order);
+                setStatusSelection(order?.status || 'pending');
+              }}
+              sx={{ minWidth: 'unset', whiteSpace: 'nowrap', borderRadius: 3 }}
+            >
+              Change Status
+            </Button>
+            <Button
+              variant='outlined'
+              size='small'
+              onClick={(e) => {
+                e.stopPropagation();
+                if (!order) return;
+                setFullDetailsOrderId(order.id); // trigger hook fetch
+              }}
+              sx={{ minWidth: 'unset', whiteSpace: 'nowrap', borderRadius: 3 }}
+            >
+              Full Details
+            </Button>
+          </Box>
+        );
+      },
+    },
   ];
-
-  const handleRowClick = (params) => {
-    const order = orders.find((o) => o.id === params.id);
-    setSelectedOrder(order);
-    setStatusSelection(order?.status || 'pending');
-  };
 
   const closeDialog = () => {
     setSelectedOrder(null);
@@ -97,136 +238,233 @@ export default function AdminOrders() {
 
   const handleSaveStatus = async () => {
     if (!selectedOrder) return;
-    const { data, error } = await updateData(
+    if (!statusMessage.trim()) {
+      toast.error('Please provide a message for the status change');
+      return;
+    }
+
+    const { error: orderError } = await updateOrder(
       { id: selectedOrder.id },
       { status: statusSelection },
     );
-    if (error) {
-      console.error('Failed to update order status', error);
+
+    if (orderError) {
+      console.error('Failed to update order status', orderError);
       toast.error('Failed to update order status');
       return;
     }
-    toast.success('Order status updated');
-    setOrdersReloadKey(Date.now());
-    // refresh selected order details
-    const updated = { ...selectedOrder, status: statusSelection };
-    setSelectedOrder(updated);
+
+    // insert into order_status_history
+    const { error: historyError } = await insertHistory({
+      order_id: selectedOrder.id,
+      status: statusSelection,
+      message: statusMessage.trim(),
+      created_by: session?.user?.id,
+    });
+
+    if (historyError) {
+      console.error('Failed to save status history', historyError);
+      toast.error('Failed to save status history');
+      return;
+    }
+
+    // update the reload keys to refresh data
+    const newTime = Date.now();
+    setOrdersReloadKey(newTime);
+    setMessagesReloadKey(newTime);
+
+    // force a rerender of the grid and close dialog
+    setTimeout(() => {
+      // show success message
+      toast.success('Order status updated');
+
+      // clear form and close dialog
+      setStatusMessage('');
+      setSelectedOrder(null);
+
+      // update keys again to ensure refresh
+      const refreshTime = Date.now();
+      setOrdersReloadKey(refreshTime);
+      setMessagesReloadKey(refreshTime);
+    }, 100);
   };
 
+  const resetAdvancedFilters = () => {
+    setStatuses([]);
+    setDateFrom('');
+    setDateTo('');
+    setPaymentMethod('');
+    setSearch('');
+    setAppliedAdvancedFilters({
+      statuses: [],
+      dateFrom: '',
+      dateTo: '',
+      paymentMethod: '',
+      search: '',
+    });
+    setPage(0);
+  };
+
+  // simple status options
+  const STATUS_OPTIONS = [
+    'pending',
+    'paid',
+    'shipped',
+    'delivered',
+    'cancelled',
+    'refunded',
+  ];
+  // dynamically load distinct payment methods from existing orders
+  const { data: paymentMethodRows, loading: paymentMethodsLoading } =
+    useSupabaseRead('orders', {
+      select: 'payment_method',
+      limit: 500,
+      enabled: true,
+    });
+
+  const PAYMENT_METHOD_OPTIONS = useMemo(() => {
+    if (!paymentMethodRows || paymentMethodRows.length === 0) {
+      return ['']; // fallback defaults
+    }
+    const set = new Set();
+    paymentMethodRows.forEach((r) => {
+      if (r && r.payment_method) {
+        set.add(String(r.payment_method).toLowerCase());
+      }
+    });
+    if (set.size === 0) return ['cod', 'gcash', 'card', 'paypal'];
+    return Array.from(set).sort();
+  }, [paymentMethodRows]);
+  // full order & items fetch via hooks (enabled when id set)
+  const {
+    data: fullOrderData,
+    loading: fullOrderLoading,
+    error: fullOrderError,
+  } = useSupabaseRead('orders', {
+    select: '*',
+    filter: { id: fullDetailsOrderId },
+    single: true,
+    enabled: !!fullDetailsOrderId,
+  });
+  const {
+    data: fullOrderItems,
+    loading: fullItemsLoading,
+    error: fullItemsError,
+  } = useSupabaseRead('order_items', {
+    select: '*, product:products(id, name, image_url)',
+    filter: { order_id: fullDetailsOrderId },
+    enabled: !!fullDetailsOrderId,
+  });
+
+  // consolidate in effect (avoid setState during render)
+  useEffect(() => {
+    if (!fullDetailsOrderId) return;
+    if (fullOrderError || fullItemsError) {
+      console.error(
+        'Failed loading full order',
+        fullOrderError || fullItemsError,
+      );
+      toast.error('Failed to load full details');
+      setFullDetailsOrderId(null);
+      return;
+    }
+    if (!fullOrderLoading && !fullItemsLoading) {
+      setFullDetailsOrder({
+        order: fullOrderData,
+        items: fullOrderItems || [],
+      });
+    }
+  }, [
+    fullDetailsOrderId,
+    fullOrderLoading,
+    fullItemsLoading,
+    fullOrderData,
+    fullOrderItems,
+    fullOrderError,
+    fullItemsError,
+    toast,
+  ]);
+
   return (
-    <Box sx={{ p: 3 }}>
-      <Typography variant='h5' fontWeight={600} sx={{ mb: 2 }}>
-        Orders
-      </Typography>
-
-      {ordersError ? (
-        <Typography color='error'>Error loading orders</Typography>
-      ) : (
-        <div style={{ height: 600, width: '100%' }}>
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            rowCount={rowCount}
-            loading={ordersLoading || writeLoading}
-            getRowId={(r) => r.id}
-            onRowClick={handleRowClick}
-            paginationMode='server'
-            sortingMode='server'
-            filterMode='server'
-            paginationModel={{ page, pageSize }}
-            sortModel={sortModel}
-            filterModel={filterModel}
-            onPaginationModelChange={(model) => {
-              setPage(model.page);
-              setPageSize(model.pageSize);
-            }}
-            onSortModelChange={(model) => {
-              setSortModel(model);
-              setPage(0);
-            }}
-            onFilterModelChange={(model) => {
-              setFilterModel(model);
-              setPage(0);
-            }}
-            pageSizeOptions={[10, 25, 50]}
-          />
-        </div>
-      )}
-
-      <Dialog
+    <Box
+      sx={{
+        p: 3,
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 2,
+        height: 'calc(100vh - 64px)',
+        boxSizing: 'border-box',
+      }}
+    >
+      <OrderFilters
+        title='Orders'
+        statuses={statuses}
+        setStatuses={setStatuses}
+        dateFrom={dateFrom}
+        setDateFrom={setDateFrom}
+        dateTo={dateTo}
+        setDateTo={setDateTo}
+        paymentMethod={paymentMethod}
+        setPaymentMethod={setPaymentMethod}
+        search={search}
+        setSearch={setSearch}
+        STATUS_OPTIONS={STATUS_OPTIONS}
+        PAYMENT_METHOD_OPTIONS={PAYMENT_METHOD_OPTIONS}
+        paymentMethodsLoading={paymentMethodsLoading}
+        applyAdvancedFilters={applyAdvancedFilters}
+        resetAdvancedFilters={resetAdvancedFilters}
+        isDirty={isDirty}
+        appliedAdvancedFilters={appliedAdvancedFilters}
+      />
+      <Box sx={{ flex: 1, minHeight: 0, display: 'flex' }}>
+        <OrderTable
+          rows={rows}
+          columns={columns}
+          rowCount={rowCount}
+          loading={
+            ordersLoading ||
+            orderWriteLoading ||
+            historyWriteLoading ||
+            messagesLoading
+          }
+          page={page}
+          pageSize={pageSize}
+          setPage={setPage}
+          setPageSize={setPageSize}
+          sortModel={sortModel}
+          setSortModel={setSortModel}
+          filterModel={filterModel}
+          setFilterModel={setFilterModel}
+        />
+      </Box>
+      <OrderDetailsDialog
         open={!!selectedOrder}
         onClose={closeDialog}
-        fullWidth
-        maxWidth='md'
-      >
-        <DialogTitle>Order Details</DialogTitle>
-        <DialogContent dividers>
-          {selectedOrder && (
-            <Box>
-              <Typography variant='subtitle1' sx={{ mb: 1 }}>
-                Order #: {selectedOrder.order_number || selectedOrder.id}
-              </Typography>
-              <Typography variant='body2' sx={{ mb: 2 }}>
-                Customer email: {selectedOrder.customer_email}
-              </Typography>
-              <Typography variant='body2' sx={{ mb: 2 }}>
-                Total: ₱{selectedOrder.total_amount}
-              </Typography>
-
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel id='status-label'>Status</InputLabel>
-                <Select
-                  labelId='status-label'
-                  value={statusSelection}
-                  label='Status'
-                  onChange={(e) => setStatusSelection(e.target.value)}
-                >
-                  <MenuItem value='pending'>pending</MenuItem>
-                  <MenuItem value='paid'>paid</MenuItem>
-                  <MenuItem value='shipped'>shipped</MenuItem>
-                  <MenuItem value='delivered'>delivered</MenuItem>
-                  <MenuItem value='cancelled'>cancelled</MenuItem>
-                  <MenuItem value='failed'>failed</MenuItem>
-                  <MenuItem value='expired'>expired</MenuItem>
-                </Select>
-              </FormControl>
-
-              <Typography variant='h6' sx={{ mt: 2 }}>
-                Items
-              </Typography>
-              {itemsLoading ? (
-                <CircularProgress size={20} />
-              ) : itemsError ? (
-                <Typography color='error'>Error loading items</Typography>
-              ) : (
-                <List>
-                  {(items || []).map((it) => (
-                    <ListItem key={it.id} divider>
-                      <ListItemAvatar>
-                        <Avatar src={it.product?.image_url} variant='square' />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={it.product?.name}
-                        secondary={`Quantity: ${it.quantity} • Price: ₱${it.price_snapshot}`}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              )}
-            </Box>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDialog}>Close</Button>
-          <Button
-            variant='contained'
-            onClick={handleSaveStatus}
-            disabled={writeLoading}
-          >
-            Save
-          </Button>
-        </DialogActions>
-      </Dialog>
+        selectedOrder={selectedOrder}
+        statusSelection={statusSelection}
+        setStatusSelection={setStatusSelection}
+        statusMessage={statusMessage}
+        setStatusMessage={setStatusMessage}
+        handleSaveStatus={handleSaveStatus}
+        orderWriteLoading={orderWriteLoading}
+        historyWriteLoading={historyWriteLoading}
+        historyLoading={historyLoading}
+        historyError={historyError}
+        orderHistory={orderHistory}
+        itemsLoading={itemsLoading}
+        itemsError={itemsError}
+        items={items}
+      />
+      <FullOrderDetailsDialog
+        open={!!fullDetailsOrderId}
+        onClose={() => {
+          setFullDetailsOrder(null);
+          setFullDetailsOrderId(null);
+        }}
+        order={fullDetailsOrder?.order}
+        items={fullDetailsOrder?.items}
+        loading={fullOrderLoading || fullItemsLoading}
+      />
     </Box>
   );
 }
