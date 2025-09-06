@@ -1,29 +1,13 @@
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
-  palette: {
-    primary: { main: '#1e1e2f' },
-    secondary: { main: '#ff6f61' },
-    background: { default: '#f5f5f5' },
-  },
-  typography: {
-    fontFamily: 'Afacad, Roboto, Arial, sans-serif',
-    fontSize: 16,
-  },
   shape: {
     borderRadius: 4,
   },
+  typography: {
+    fontSize: 20,
+  },
   components: {
-    MuiPaper: {
-      defaultProps: {
-        elevation: 0,
-      },
-      styleOverrides: {
-        rounded: {
-          borderRadius: 4,
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -31,7 +15,7 @@ const theme = createTheme({
         },
       },
     },
-    MuiCard: {
+    MuiPaper: {
       styleOverrides: {
         root: {
           borderRadius: 4,
@@ -41,6 +25,13 @@ const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
+          borderRadius: 4,
+        },
+      },
+    },
+    MuiCard: {
+      styleOverrides: {
+        root: {
           borderRadius: 4,
         },
       },
@@ -56,18 +47,33 @@ const theme = createTheme({
     },
     MuiSelect: {
       styleOverrides: {
-        outlined: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 4,
+          },
+        },
+      },
+    },
+    MuiAutocomplete: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-root': {
+            borderRadius: 4,
+          },
+        },
+      },
+    },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
           borderRadius: 4,
         },
       },
     },
-    MuiDataGrid: {
+    MuiAlert: {
       styleOverrides: {
         root: {
           borderRadius: 4,
-          '& .MuiDataGrid-cell:focus': {
-            outline: 'none',
-          },
         },
       },
     },
@@ -75,4 +81,3 @@ const theme = createTheme({
 });
 
 export default theme;
-export { ThemeProvider };
