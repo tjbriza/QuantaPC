@@ -81,7 +81,7 @@ export default function AdminUsers() {
     });
     const items = [];
     if (idFilter)
-      items.push({ field: 'id', operator: 'contains', value: idFilter });
+      items.push({ field: 'id', operator: 'equals', value: idFilter.trim() });
     if (firstNameFilter)
       items.push({
         field: 'name_first',

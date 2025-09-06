@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Box,
   Typography,
@@ -16,14 +15,14 @@ import ClearIcon from '@mui/icons-material/Clear';
 
 /**
  * UsersFilters
- * Simple filter bar for AdminUsers similar to OrderFilters.
  * Props:
  *  - title
  *  - idFilter, setIdFilter
- *  - name, setNameFilter (matches first OR last name)
- *  - username, setUsernameFilter
- *  - email, setEmailFilter
- *  - role, setRoleFilter
+ *  - firstNameFilter, setFirstNameFilter
+ *  - lastNameFilter, setLastNameFilter
+ *  - usernameFilter, setUsernameFilter
+ *  - emailFilter, setEmailFilter
+ *  - roleFilter, setRoleFilter
  *  - ROLE_OPTIONS
  *  - applyFilters()
  *  - resetFilters()
@@ -32,40 +31,33 @@ import ClearIcon from '@mui/icons-material/Clear';
 export default function UsersFilters(props) {
   const {
     title = 'Users',
-    idFilter,
-    setIdFilter,
-    // combined name form
-    name,
-    setNameFilter,
-    // optional separate first/last provided by parent legacy API
-    firstNameFilter,
-    setFirstNameFilter,
-    lastNameFilter,
-    setLastNameFilter,
-    username,
-    setUsernameFilter,
-    email,
-    setEmailFilter,
-    role, // new prop name
-    roleFilter, // legacy prop name
-    setRoleFilter,
+  idFilter,
+  setIdFilter,
+  firstNameFilter,
+  setFirstNameFilter,
+  lastNameFilter,
+  setLastNameFilter,
+  usernameFilter,
+  setUsernameFilter,
+  emailFilter,
+  setEmailFilter,
+  roleFilter,
+  setRoleFilter,
     ROLE_OPTIONS = [],
     applyFilters,
     resetFilters,
     isDirty,
   } = props;
 
-  const roleValue = role !== undefined ? role : roleFilter || '';
-  // Determine name display precedence: combined name if provided, else concatenate first/last (for UX only)
-  const nameValue =
-    name !== undefined
-      ? name
-      : firstNameFilter || lastNameFilter
-        ? `${firstNameFilter || ''}`.trim()
-        : '';
-
+  const roleValue = roleFilter || '';
   const clearDisabled =
-    !idFilter && !nameValue && !username && !email && !roleValue && !isDirty;
+    !idFilter &&
+    !firstNameFilter &&
+    !lastNameFilter &&
+    !usernameFilter &&
+    !emailFilter &&
+    !roleValue &&
+    !isDirty;
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 2 }}>
@@ -90,25 +82,36 @@ export default function UsersFilters(props) {
             },
           }}
         />
-        {setNameFilter && (
-          <TextField
-            size='small'
-            label='Name (First or Last)'
-            value={nameValue}
-            onChange={(e) => setNameFilter(e.target.value)}
-            sx={{
-              minWidth: 200,
-              width: 110,
-              '& .MuiOutlinedInput-root': {
-                borderRadius: 4,
-              },
-            }}
-          />
-        )}
+        <TextField
+          size='small'
+          label='First Name'
+          value={firstNameFilter}
+          onChange={(e) => setFirstNameFilter(e.target.value)}
+          sx={{
+            minWidth: 160,
+            width: 110,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 4,
+            },
+          }}
+        />
+        <TextField
+          size='small'
+          label='Last Name'
+          value={lastNameFilter}
+          onChange={(e) => setLastNameFilter(e.target.value)}
+          sx={{
+            minWidth: 160,
+            width: 110,
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 4,
+            },
+          }}
+        />
         <TextField
           size='small'
           label='Username'
-          value={username}
+          value={usernameFilter}
           onChange={(e) => setUsernameFilter(e.target.value)}
           sx={{
             minWidth: 160,
@@ -121,7 +124,7 @@ export default function UsersFilters(props) {
         <TextField
           size='small'
           label='Email'
-          value={email}
+          value={emailFilter}
           onChange={(e) => setEmailFilter(e.target.value)}
           sx={{
             minWidth: 200,

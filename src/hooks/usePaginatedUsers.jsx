@@ -28,7 +28,14 @@ export function usePaginatedUsers(
       if (filterModel.items && filterModel.items.length > 0) {
         filterModel.items.forEach((filter) => {
           if (filter.value !== undefined && filter.value !== '') {
-            const { field, operator, value } = filter;
+            let { field, operator, value } = filter;
+
+            // Special handling: if filtering by id but value is not full UUID length, use ilike contains for convenience
+            if (field === 'id' && operator === 'equals') {
+              if (value.length < 36) {
+                operator = 'contains';
+              }
+            }
 
             switch (operator) {
               case 'contains':
@@ -61,7 +68,6 @@ export function usePaginatedUsers(
                 }
                 break;
               default:
-                // default to contains for unknown operators
                 query = query.ilike(field, `%${value}%`);
             }
           }
