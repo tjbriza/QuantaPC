@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -24,7 +24,7 @@ export default function CategoryDialog({
     description: '',
   });
 
-  // Update form data when category changes
+  // update form data when category changes
   useEffect(() => {
     if (category && open) {
       setFormData({

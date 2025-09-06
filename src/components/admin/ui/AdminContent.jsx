@@ -16,7 +16,20 @@ export default function AdminContent({ children }) {
       }}
     >
       <Toolbar />
-      {children}
+      {/* Main content target for skip-to-content */}
+      <Box
+        id='admin-main-content'
+        tabIndex={-1}
+        sx={{
+          outline: 'none',
+          '&:focus': {
+            outline: '2px solid #1976d2',
+            outlineOffset: '4px',
+          },
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }

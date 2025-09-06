@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -33,7 +33,7 @@ export default function ProductDialog({
     image_url: '',
   });
 
-  // Update form data when product changes
+  // update form data when product changes
   useEffect(() => {
     if (product && isEdit) {
       setFormData({
