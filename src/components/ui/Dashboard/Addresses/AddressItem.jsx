@@ -45,10 +45,10 @@ export default function AddressItem({
     <div
       className={`w-full p-6 rounded-lg border-2 ${
         address.is_default
-          ? 'border-slate-500 '
+          ? 'border-slate-500 bg-white'
           : isEditing
-          ? 'border-green-500 bg-green-50'
-          : 'border-gray-200 '
+            ? 'border-green-500 bg-green-50'
+            : 'border-gray-200 bg-white'
       } shadow-sm`}
     >
       <div className='flex gap-4 items-center mb-4'>

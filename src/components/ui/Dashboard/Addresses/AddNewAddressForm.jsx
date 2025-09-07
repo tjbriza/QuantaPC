@@ -39,7 +39,7 @@ export default function AddNewAddressForm({ onSave, onCancel, isLoading }) {
   ];
 
   return (
-    <div className='w-full mb-8 p-6 border-2 border-blue-500 rounded-lg bg-blue-50'>
+    <div className='w-full mb-8 p-6 border-2 border-blue-50 bg-white rounded-lg bg-blue-50'>
       <div className='flex gap-4 items-center mb-4'>
         <h2 className='text-2xl font-bold'>Add New Address</h2>
         <div className='flex gap-2'>
