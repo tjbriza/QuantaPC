@@ -265,31 +265,11 @@ export default function Orders() {
               {/* Order Actions */}
               <div className='flex justify-end space-x-2 mt-4 pt-4 border-t'>
                 <Link
-                  to={`/dashboard/orders/${order.order_number}`}
-                  className='bg-gray-100 text-gray-800 px-4 py-2 rounded text-sm hover:bg-gray-200'
+                  to={`/dashboard/orders/${order.id}`}
+                  className='text-blue-600 hover:underline'
                 >
                   View Details
                 </Link>
-                {order.status === 'shipped' && (
-                  <button className='bg-blue-600 text-white px-4 py-2 rounded text-sm hover:bg-blue-700'>
-                    Track Package
-                  </button>
-                )}
-                {order.status === 'delivered' && (
-                  <button className='bg-green-600 text-white px-4 py-2 rounded text-sm hover:bg-green-700'>
-                    Review Products
-                  </button>
-                )}
-                {(order.status === 'pending' || order.status === 'failed') && (
-                  <button
-                    onClick={() =>
-                      window.open(order.xendit_invoice_url, '_blank')
-                    }
-                    className='bg-orange-600 text-white px-4 py-2 rounded text-sm hover:bg-orange-700'
-                  >
-                    Complete Payment
-                  </button>
-                )}
               </div>
             </div>
           ))}
