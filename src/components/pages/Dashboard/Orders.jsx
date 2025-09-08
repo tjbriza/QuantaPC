@@ -265,7 +265,7 @@ export default function Orders() {
               {/* Order Actions */}
               <div className='flex justify-end space-x-2 mt-4 pt-4 border-t'>
                 <Link
-                  to={`/dashboard/orders/${order.id}`}
+                  to={`/dashboard/orders/${order.order_number}`}
                   className='text-blue-600 hover:underline'
                 >
                   View Details
