@@ -6,6 +6,17 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const [session, setSession] = useState(undefined);
 
+  // Resolve the base site URL from env (preferred) or browser origin.
+  const getSiteUrl = () => {
+    // Vite: define VITE_SITE_URL in .env files per environment
+    const fromEnv = import.meta?.env?.VITE_SITE_URL;
+    return fromEnv && typeof fromEnv === 'string' && fromEnv.length > 0
+      ? fromEnv
+      : typeof window !== 'undefined'
+        ? window.location.origin
+        : '';
+  };
+
   //sign up
   const signUpNewUser = async (email, password) => {
     try {
@@ -63,7 +74,7 @@ export const AuthContextProvider = ({ children }) => {
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/profilesetup`,
+          redirectTo: `${getSiteUrl()}/profilesetup`,
         },
       });
       if (error) {
@@ -73,6 +84,27 @@ export const AuthContextProvider = ({ children }) => {
       return { success: true, data };
     } catch (error) {
       console.error('Unexpected error during Google sign-in:', error.message);
+      return {
+        success: false,
+        message: 'An unexpected error occurred, please try again: ',
+        error,
+      };
+    }
+  };
+
+  // send reset password email
+  const resetPasswordForEmail = async (email) => {
+    try {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${getSiteUrl()}/resetpassword`,
+      });
+      if (error) {
+        console.error('Reset password email error:', error);
+        return { success: false, error };
+      }
+      return { success: true, data };
+    } catch (error) {
+      console.error('Unexpected error during reset password email:', error);
       return {
         success: false,
         message: 'An unexpected error occurred, please try again: ',
@@ -143,6 +175,7 @@ export const AuthContextProvider = ({ children }) => {
         signOut,
         signInWithGoogle,
         adminSignIn,
+        resetPasswordForEmail,
       }}
     >
       {children}
