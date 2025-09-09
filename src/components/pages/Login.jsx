@@ -36,6 +36,8 @@ export default function Login() {
     }
   };
 
+  // Forgot password now handled on dedicated page
+
   return (
     <div className='relative h-screen overflow-hidden'>
       {/* Logo in top left */}
@@ -141,8 +143,8 @@ export default function Login() {
 
               <div className='text-left mb-6'>
                 <Link
-                  to='#'
-                  className='text-black text-xl hover:text-black/80 font-afacad font-medium'
+                  to='/forgotpassword'
+                  className='text-black text-xl hover:text-black/80 font-afacad font-medium underline'
                 >
                   Forgot Your Password?
                 </Link>
