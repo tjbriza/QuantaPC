@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 import { Lock } from 'lucide-react';
 import { signUpSchema } from '../../schema/AuthFormsSchema';
 
-// Use existing signup password rule but validate fields used by this form
 const schema = z
   .object({
     password: signUpSchema.shape.password,
