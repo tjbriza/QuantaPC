@@ -11,19 +11,26 @@ export default function Layout() {
   const hideNavigation =
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
-    location.pathname === '/profilesetup';
+    location.pathname === '/profilesetup' ||
+    location.pathname === '/forgotpassword' ||
+    location.pathname === '/resetpassword';
 
   // Hide footer on login, signup, and profilesetup pages
   const hideFooter =
     location.pathname === '/login' ||
     location.pathname === '/signup' ||
-    location.pathname === '/profilesetup';
+    location.pathname === '/profilesetup' ||
+    location.pathname === '/forgotpassword' ||
+    location.pathname === '/resetpassword';
 
   // Show special background on homepage, signup, login, and profilesetup pages
-  const showBackground = location.pathname === '/' || 
-                        location.pathname === '/signup' ||
-                        location.pathname === '/login' ||
-                        location.pathname === '/profilesetup';
+  const showBackground =
+    location.pathname === '/' ||
+    location.pathname === '/signup' ||
+    location.pathname === '/login' ||
+    location.pathname === '/profilesetup' ||
+    location.pathname === '/forgotpassword' ||
+    location.pathname === '/resetpassword';
 
   // Show main background on all other pages
   const showMainBackground = !showBackground;
