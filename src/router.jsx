@@ -24,6 +24,8 @@ import CheckoutPage from './components/pages/CheckoutPage';
 import OrderFailed from './components/pages/OrderFail';
 import OrderSuccess from './components/pages/OrderSuccess';
 import ErrorPage from './components/pages/ErrorPage';
+import ResetPassword from './components/pages/ResetPassword';
+import ForgotPassword from './components/pages/ForgotPassword';
 
 import CustomerServiceLayout from './components/pages/CustomerService/CustomerServiceLayout';
 import PaymentFAQs from './components/pages/CustomerService/PaymentFAQs';
@@ -60,6 +62,8 @@ export const router = createBrowserRouter([
       { index: true, element: <App /> },
       { path: 'login', element: <Login /> },
       { path: 'signup', element: <SignUp /> },
+      { path: 'forgotpassword', element: <ForgotPassword /> },
+      { path: 'resetpassword', element: <ResetPassword /> },
       { path: 'catalog', element: <Catalog /> },
       { path: 'about', element: <About /> },
       { path: 'services', element: <Services /> },
