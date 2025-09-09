@@ -80,7 +80,7 @@ export default function ProductFilter() {
               </label>
               <input
                 type="text"
-                placeholder="999999"
+                placeholder="0"
                 className="w-full max-w-[160px] px-3 py-2 border border-black rounded-full text-[1.25rem] focus:outline-none focus:border-black"
               />
             </div>
