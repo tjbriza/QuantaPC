@@ -35,7 +35,15 @@ export default function ProfileForm({
 
     const subscription = form.watch((value, { name }) => {
       if (name === 'username') {
-        checkUsername(value.username, localProfile?.username);
+        // Only run username check if valid per Zod
+        const usernameResult = profileSchema.shape.username.safeParse(
+          value.username,
+        );
+        if (usernameResult.success) {
+          checkUsername(value.username, localProfile?.username);
+        } else {
+          clearStatus();
+        }
       }
     });
 
@@ -167,8 +175,8 @@ export default function ProfileForm({
                     form.formState.errors.username
                       ? 'border-red-500'
                       : usernameStatus === 'available'
-                      ? 'border-green-500'
-                      : 'border-gray-300'
+                        ? 'border-green-500'
+                        : 'border-gray-300'
                   }`}
                 />
                 <div className='absolute right-2 top-1/2 transform -translate-y-1/2'>
@@ -182,11 +190,12 @@ export default function ProfileForm({
                   {form.formState.errors.username.message}
                 </p>
               )}
-              {usernameStatus === 'available' && (
-                <p className='text-green-600 text-sm mt-1'>
-                  Username is available!
-                </p>
-              )}
+              {!form.formState.errors.username &&
+                usernameStatus === 'available' && (
+                  <p className='text-green-600 text-sm mt-1'>
+                    Username is available!
+                  </p>
+                )}
               {isChecking && (
                 <p className='text-gray-500 text-sm mt-1'>
                   Checking availability...
