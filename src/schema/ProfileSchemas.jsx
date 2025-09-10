@@ -4,7 +4,8 @@ export const profileSchema = z.object({
   username: z
     .string()
     .min(3, 'At least 3 characters for username is required')
-    .max(20, 'Username too long'),
+    .max(20, 'Username too long')
+    .regex(/^[A-Za-z0-9_]+$/, 'Only letters, numbers, and underscores allowed'),
   name_first: z
     .string()
     .min(2, 'At least 2 characters for first name is required')
@@ -21,7 +22,8 @@ export const profileSetupSchema = z.object({
   username: z
     .string()
     .min(3, 'At least 3 characters for username is required')
-    .max(20, 'Username too long'),
+    .max(20, 'Username too long')
+    .regex(/^[A-Za-z0-9_]+$/, 'Only letters, numbers, and underscores allowed'),
   name_first: z
     .string()
     .min(2, 'At least 2 characters for first name is required')
