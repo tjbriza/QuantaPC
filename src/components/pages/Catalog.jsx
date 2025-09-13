@@ -29,8 +29,15 @@ export default function Catalog() {
     loading: categoryLoading,
   } = useSupabaseRead('categories');
 
+  // Pagination state
+  const initialPage =
+    Number(new URLSearchParams(location.search).get('page')) || 1;
+  const [page, setPage] = useState(initialPage); // 1-based
+  const pageSize = 12;
+
   const {
     data: products,
+    count: productsCount,
     error: productError,
     loading: productLoading,
   } = useSupabaseRead(
@@ -40,8 +47,17 @@ export default function Catalog() {
           filter: {
             or: `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`,
           },
+          page,
+          pageSize,
+          withCount: true,
+          order: { column: 'created_at', ascending: false },
         }
-      : {},
+      : {
+          page,
+          pageSize,
+          withCount: true,
+          order: { column: 'created_at', ascending: false },
+        },
   );
 
   let categorizedProducts = [];
@@ -101,17 +117,35 @@ export default function Catalog() {
 
             {/* Product list */}
             <div className='flex-1 flex justify-center'>
-              <div
-                className='w-full overflow-y-auto pr-4 pb-8'
-                style={{ height: '70vh' }}
-              >
-                {categorizedProducts.map((category) => (
-                  <CategorySection
-                    key={category.id}
-                    title={searchQuery ? undefined : category.name}
-                    products={category.products}
+              <div className='w-full pr-4 pb-8'>
+                {searchQuery ? (
+                  <ProductGrid
+                    products={products}
+                    page={page}
+                    pageSize={pageSize}
+                    total={productsCount || 0}
+                    onPageChange={(p) => {
+                      setPage(p);
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }}
                   />
-                ))}
+                ) : (
+                  categorizedProducts.map((category) => (
+                    <div key={category.id} className='mb-16'>
+                      {/* Category title removed per original UI; keep grid per category with its own pagination if needed later */}
+                      <ProductGrid
+                        products={category.products}
+                        page={page}
+                        pageSize={pageSize}
+                        total={productsCount || category.products?.length || 0}
+                        onPageChange={(p) => {
+                          setPage(p);
+                          window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }}
+                      />
+                    </div>
+                  ))
+                )}
                 {searchQuery && products.length === 0 && (
                   <div className='text-center text-gray-500 mt-8'>
                     No products found for "{searchQuery}".
