@@ -16,6 +16,7 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
   const [data, setData] = useState(queryOptions.single ? null : []);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [count, setCount] = useState(undefined);
 
   const enabled =
     queryOptions.enabled !== undefined ? queryOptions.enabled : true;
@@ -30,7 +31,12 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
       setLoading(true);
       setError(null);
       try {
-        let query = supabase.from(tableName).select(queryOptions.select || '*');
+        const wantsCount = !!queryOptions.withCount;
+        let query = supabase
+          .from(tableName)
+          .select(queryOptions.select || '*', {
+            count: wantsCount ? 'exact' : undefined,
+          });
 
         // Apply advanced filters: eq, neq, ilike, or
         if (queryOptions.filter) {
@@ -57,8 +63,18 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
           });
         }
 
-        // Don't apply limit here if random is true (limit after shuffle)
-        if (!queryOptions.random && queryOptions.limit) {
+        // Pagination (server-side) has priority over simple limit
+        if (
+          Number.isInteger(queryOptions.page) &&
+          Number.isInteger(queryOptions.pageSize)
+        ) {
+          const page = Math.max(1, Number(queryOptions.page)); // 1-based
+          const size = Math.max(1, Number(queryOptions.pageSize));
+          const from = (page - 1) * size;
+          const to = from + size - 1;
+          query = query.range(from, to);
+        } else if (!queryOptions.random && queryOptions.limit) {
+          // Don't apply limit here if random is true (limit after shuffle)
           query = query.limit(queryOptions.limit);
         }
 
@@ -67,7 +83,11 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
           query = query.single();
         }
 
-        const { data: fetchedData, error: fetchError } = await query;
+        const {
+          data: fetchedData,
+          error: fetchError,
+          count: total,
+        } = await query;
 
         if (fetchError) {
           if (queryOptions.single && fetchError.code === 'PGRST116') {
@@ -87,6 +107,7 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
           }
 
           setData(finalData);
+          if (wantsCount) setCount(total ?? 0);
         }
       } catch (err) {
         setError(err);
@@ -98,5 +119,5 @@ export function useSupabaseRead(tableName, queryOptions = {}) {
     fetchData();
   }, [tableName, JSON.stringify(queryOptions), enabled]);
 
-  return { data, loading, error };
+  return { data, loading, error, count };
 }
