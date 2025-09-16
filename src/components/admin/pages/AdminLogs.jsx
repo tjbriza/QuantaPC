@@ -7,6 +7,14 @@ import {
   Chip,
   IconButton,
   Tooltip,
+  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  List,
+  ListItem,
+  ListItemText,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useAdminAuditLogs } from '../../../hooks/useAdminAuditLogs';
@@ -55,11 +63,19 @@ function formatTimestamp(raw) {
 }
 
 export default function AdminLogs() {
-  const { logs, loading, error } = useAdminAuditLogs({ limit: 300 });
   const [tab, setTab] = useState('all');
+  const [reloadKey, setReloadKey] = useState(Date.now());
+  const { logs, loading, error } = useAdminAuditLogs({
+    limit: 300,
+    key: reloadKey,
+  });
+  const [changeOpen, setChangeOpen] = useState(false);
+  const [changeRow, setChangeRow] = useState(null);
 
   const filtered = useMemo(() => {
     if (tab === 'all') return logs;
+    if (tab === 'services')
+      return logs.filter((l) => l.type === 'service_request_edit');
     return logs.filter((l) => l.type === tab);
   }, [tab, logs]);
 
@@ -97,16 +113,37 @@ export default function AdminLogs() {
             : '—',
       },
       {
-        field: 'previous_values',
-        headerName: 'Previous',
-        width: 200,
-        renderCell: (p) => <ValuePreview value={p.value} />,
-      },
-      {
-        field: 'new_values',
-        headerName: 'New',
-        width: 200,
-        renderCell: (p) => <ValuePreview value={p.value} />,
+        field: 'changes',
+        headerName: 'Changes',
+        width: 180,
+        sortable: false,
+        filterable: false,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (params) => (
+          <Box
+            sx={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Button
+              size='small'
+              variant='outlined'
+              onClick={(e) => {
+                e.stopPropagation();
+                setChangeRow(params.row);
+                setChangeOpen(true);
+              }}
+              sx={{ borderRadius: 3, textTransform: 'none' }}
+            >
+              View Changes
+            </Button>
+          </Box>
+        ),
       },
     ],
     [],
@@ -126,15 +163,16 @@ export default function AdminLogs() {
           sx={{ minHeight: 0, '& .MuiTab-root': { minHeight: 0 } }}
         >
           <Tab value='all' label={`All (${logs.length})`} />
-          <Tab value='order_status' label='Orders' />
+          <Tab value='order_edit' label='Orders' />
           <Tab value='product_edit' label='Products' />
           <Tab value='profile_edit' label='Profiles' />
+          <Tab value='services' label='Services' />
         </Tabs>
-        <Tooltip title='Refresh (auto on load)'>
+        <Tooltip title='Refresh logs'>
           <span>
             <IconButton
               disabled={loading}
-              onClick={() => window.location.reload()}
+              onClick={() => setReloadKey(Date.now())}
               size='small'
             >
               <RefreshCw size={18} />
@@ -154,14 +192,126 @@ export default function AdminLogs() {
           loading={loading}
           disableRowSelectionOnClick
           getRowId={(r) => r.id}
-          density='compact'
+          density='standard'
+          rowHeight={56}
           initialState={{
             sorting: { sortModel: [{ field: 'created_at', sort: 'desc' }] },
-            pagination: { paginationModel: { pageSize: 25, page: 0 } },
+            pagination: { paginationModel: { pageSize: 10, page: 0 } },
           }}
-          pageSizeOptions={[25, 50, 100]}
+          pageSizeOptions={[10]}
         />
       </Box>
+
+      <Dialog
+        open={changeOpen}
+        onClose={() => setChangeOpen(false)}
+        fullWidth
+        maxWidth='md'
+        sx={{ '& .MuiPaper-root': { borderRadius: 3 } }}
+      >
+        <DialogTitle sx={{ pb: 1.5 }}>Change Details</DialogTitle>
+        <DialogContent dividers>
+          {changeRow ? (
+            <Box>
+              <Typography variant='body2' sx={{ mb: 1 }}>
+                Target ID: <code>{changeRow.target_id}</code>
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                Edited by: <code>{changeRow.actor_user_id || '—'}</code>
+              </Typography>
+              <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                Summary
+              </Typography>
+              <Typography variant='body2' sx={{ mb: 2 }}>
+                {changeRow.summary}
+              </Typography>
+
+              <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                Changed fields
+              </Typography>
+              {changeRow.changed_fields?.length ? (
+                <Box sx={{ mb: 2 }}>
+                  {changeRow.changed_fields.map((f) => (
+                    <Chip key={f} size='small' label={f} sx={{ mr: 0.5 }} />
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant='body2' sx={{ mb: 2 }}>
+                  —
+                </Typography>
+              )}
+
+              <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                Changes
+              </Typography>
+              <List>
+                {(() => {
+                  const fields = changeRow.changed_fields?.length
+                    ? changeRow.changed_fields
+                    : Object.keys(changeRow.new_values || {});
+                  return fields.map((field) => {
+                    const prev =
+                      changeRow.previous_values?.[field] ??
+                      changeRow.previous_values;
+                    const next =
+                      changeRow.new_values?.[field] ?? changeRow.new_values;
+                    return (
+                      <ListItem key={field} divider alignItems='flex-start'>
+                        <ListItemText
+                          primary={
+                            <Box
+                              sx={{
+                                display: 'flex',
+                                gap: 1,
+                                alignItems: 'center',
+                              }}
+                            >
+                              <Chip label={field} size='small' />
+                              <Typography
+                                variant='caption'
+                                color='text.secondary'
+                              >
+                                {formatTimestamp(changeRow.created_at)}
+                              </Typography>
+                            </Box>
+                          }
+                          secondary={
+                            <Box>
+                              <Typography
+                                variant='caption'
+                                color='text.secondary'
+                              >
+                                Previous
+                              </Typography>
+                              <Box sx={{ mb: 1 }}>
+                                <ValuePreview value={prev} />
+                              </Box>
+                              <Typography
+                                variant='caption'
+                                color='text.secondary'
+                              >
+                                New
+                              </Typography>
+                              <Box>
+                                <ValuePreview value={next} />
+                              </Box>
+                            </Box>
+                          }
+                        />
+                      </ListItem>
+                    );
+                  });
+                })()}
+              </List>
+            </Box>
+          ) : null}
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setChangeOpen(false)} sx={{ borderRadius: 3 }}>
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
