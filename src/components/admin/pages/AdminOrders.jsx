@@ -74,6 +74,8 @@ export default function AdminOrders() {
     loading: orderWriteLoading,
   } = useSupabaseWrite('orders');
 
+  const { insertData: insertOrderEditLog, loading: orderEditWriteLoading } =
+    useSupabaseWrite('order_edit_logs');
   const { insertData: insertHistory, loading: historyWriteLoading } =
     useSupabaseWrite('order_status_history');
 
@@ -242,6 +244,18 @@ export default function AdminOrders() {
       return;
     }
 
+    const prevLatestMsg =
+      (latestMessages || []).find((m) => m.order_id === selectedOrder.id)
+        ?.message || '';
+    const previous = {
+      status: selectedOrder.status,
+      status_message: prevLatestMsg,
+    };
+    const next = {
+      status: statusSelection,
+      status_message: statusMessage.trim(),
+    };
+
     const { error: orderError } = await updateOrder(
       { id: selectedOrder.id },
       { status: statusSelection },
@@ -253,7 +267,27 @@ export default function AdminOrders() {
       return;
     }
 
-    // insert into order_status_history
+    // insert into order_edit_logs
+    const changed_fields = [];
+    if (previous.status !== next.status) changed_fields.push('status');
+    if (previous.status_message !== next.status_message)
+      changed_fields.push('status_message');
+    const { error: orderEditError } = await insertOrderEditLog({
+      order_id: selectedOrder.id,
+      actor_user_id: session?.user?.id,
+      changed_fields,
+      previous_values: previous,
+      new_values: next,
+      // optional: include message in summary-like field? For now, embed into new_values
+    });
+
+    if (orderEditError) {
+      console.error('Failed to save order edit log', orderEditError);
+      toast.error('Failed to save order edit log');
+      return;
+    }
+
+    // also insert into order_status_history for UI history/messages
     const { error: historyError } = await insertHistory({
       order_id: selectedOrder.id,
       status: statusSelection,
@@ -423,6 +457,7 @@ export default function AdminOrders() {
           loading={
             ordersLoading ||
             orderWriteLoading ||
+            orderEditWriteLoading ||
             historyWriteLoading ||
             messagesLoading
           }
@@ -446,7 +481,7 @@ export default function AdminOrders() {
         setStatusMessage={setStatusMessage}
         handleSaveStatus={handleSaveStatus}
         orderWriteLoading={orderWriteLoading}
-        historyWriteLoading={historyWriteLoading}
+        historyWriteLoading={orderEditWriteLoading || historyWriteLoading}
         historyLoading={historyLoading}
         historyError={historyError}
         orderHistory={orderHistory}
