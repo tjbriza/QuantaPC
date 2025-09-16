@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../../context/AuthContext';
 import { useSupabaseRead } from '../../../hooks/useSupabaseRead';
 import { Package, Truck, CheckCircle, Clock, XCircle } from 'lucide-react';
+import EmptyState from '../../ui/EmptyState';
 
 export default function Orders() {
   const { session } = useAuth();
@@ -99,7 +100,7 @@ export default function Orders() {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-lg'>Loading orders...</div>
+        <div className='text-base'>Loading orders...</div>
       </div>
     );
   }
@@ -107,7 +108,7 @@ export default function Orders() {
   if (error) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-red-600'>
+        <div className='text-red-600 text-base'>
           Error loading orders: {error.message}
         </div>
       </div>
@@ -140,16 +141,13 @@ export default function Orders() {
       </div>
 
       {!orders || orders.length === 0 ? (
-        <div className='text-center py-8 w-full'>
-          <Package className='w-16 h-16 text-gray-300 mx-auto mb-4' />
-          <p className='text-gray-500 mb-4'>No orders found.</p>
-          <a
-            href='/catalog'
-            className='bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700'
-          >
-            Start Shopping
-          </a>
-        </div>
+        <EmptyState
+          icon={Package}
+          title='No orders found'
+          description='Browse our catalog to place your first order.'
+          actionLabel='Start Shopping'
+          actionHref='/catalog'
+        />
       ) : filteredOrders?.length === 0 ? (
         <div className='text-center py-12 w-full'>
           <Package className='w-14 h-14 text-gray-300 mx-auto mb-4' />

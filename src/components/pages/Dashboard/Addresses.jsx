@@ -6,6 +6,7 @@ import { Plus } from 'lucide-react';
 import AddNewAddressForm from '../../ui/Dashboard/Addresses/AddNewAddressForm';
 import AddressItem from '../../ui/Dashboard/Addresses/AddressItem';
 import { useConfirmDialog } from '../../ui/ConfirmDialog';
+import EmptyState from '../../ui/EmptyState';
 
 // Main Addresses component
 export default function Addresses() {
@@ -88,7 +89,7 @@ export default function Addresses() {
     try {
       await updateData(
         { user_id: session?.user?.id, is_default: true },
-        { is_default: false }
+        { is_default: false },
       );
       await updateData({ id }, { is_default: true });
       window.location.reload();
@@ -100,7 +101,7 @@ export default function Addresses() {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-lg'>Loading addresses...</div>
+        <div className='text-base'>Loading addresses...</div>
       </div>
     );
   }
@@ -136,11 +137,12 @@ export default function Addresses() {
       )}
 
       {addresses?.length === 0 ? (
-        <div className='text-center py-8 w-full'>
-          <p className='text-gray-500 mb-4'>
-            No addresses found. Add your first address to get started.
-          </p>
-        </div>
+        <EmptyState
+          title='No addresses yet'
+          description='Add your first address to speed up checkout.'
+          actionLabel='Add New Address'
+          actionOnClick={() => setIsAddingNew(true)}
+        />
       ) : (
         <div className='space-y-6 w-full'>
           {addresses?.map((address) => (

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../../../hooks/useWishlist';
 import { useSupabaseCart } from '../../../hooks/useSupabaseCart';
 import { Heart, ShoppingCart, Trash2 } from 'lucide-react';
+import EmptyState from '../../ui/EmptyState';
 
 export default function Wishlist() {
   const navigate = useNavigate();
@@ -31,41 +32,38 @@ export default function Wishlist() {
   if (loading) {
     return (
       <div className='min-h-screen flex items-center justify-center'>
-        <div className='text-lg'>Loading wishlist...</div>
+        <div className='text-base'>Loading wishlist...</div>
       </div>
     );
   }
 
   if (wishlistItems.length === 0) {
     return (
-      <div className='min-h-[60vh] flex flex-col items-center justify-center text-center'>
-        <Heart className='w-16 h-16 text-gray-300 mb-4' />
-        <h2 className='text-2xl font-semibold text-gray-600 mb-2'>
-          Your wishlist is empty
-        </h2>
-        <p className='text-gray-500 mb-6'>
-          Save products you love by clicking the heart icon
-        </p>
-        <button
-          onClick={() => navigate('/catalog')}
-          className='bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors'
-        >
-          Browse Products
-        </button>
+      <div className='flex flex-col w-full mt-4 mb-16'>
+        <div className='flex justify-between items-center mb-6 w-full'>
+          <h1 className='text-3xl font-bold'>My Wishlist</h1>
+        </div>
+        <EmptyState
+          icon={Heart}
+          title='Your wishlist is empty'
+          description='Save products you love by clicking the heart icon'
+          actionLabel='Browse Products'
+          actionOnClick={() => navigate('/catalog')}
+        />
       </div>
     );
   }
 
   return (
-    <div className='container mx-auto px-4 py-6'>
-      <div className='flex justify-between items-center mb-6'>
+    <div className='flex flex-col w-full mt-4 mb-16'>
+      <div className='flex justify-between items-center mb-6 w-full'>
         <h1 className='text-3xl font-bold'>My Wishlist</h1>
         <span className='text-gray-600'>
           {wishlistItems.length} {wishlistItems.length === 1 ? 'item' : 'items'}
         </span>
       </div>
 
-      <div className='flex flex-col gap-3'>
+      <div className='flex flex-col gap-3 w-full px-4'>
         {wishlistItems.map((item) => {
           const product = item.products;
           return (
