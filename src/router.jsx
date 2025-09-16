@@ -7,6 +7,8 @@ import Dashboard from './components/pages/Dashboard';
 import Profile from './components/pages/Dashboard/Profile';
 import Orders from './components/pages/Dashboard/Orders';
 import OrderDetails from './components/pages/Dashboard/OrderDetails';
+import DashboardServices from './components/pages/Dashboard/Services';
+import ServiceDetails from './components/pages/Dashboard/ServiceDetails';
 import Addresses from './components/pages/Dashboard/Addresses';
 import Tracking from './components/pages/Dashboard/Tracking';
 import Wishlist from './components/pages/Dashboard/Wishlist';
@@ -15,6 +17,7 @@ import SignUp from './components/pages/SignUp';
 import Catalog from './components/pages/Catalog';
 import About from './components/pages/About';
 import Services from './components/pages/Services';
+import ServiceRequestForm from './components/pages/ServiceRequestForm';
 import CustomPc from './components/pages/CustomPc';
 import PrivateRoute from './components/PrivateRoute';
 import ProfileSetup from './components/pages/ProfileSetup';
@@ -23,6 +26,8 @@ import CartPage from './components/pages/CartPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import OrderFailed from './components/pages/OrderFail';
 import OrderSuccess from './components/pages/OrderSuccess';
+import ServicePaymentSuccess from './components/pages/ServicePaymentSuccess';
+import ServicePaymentFail from './components/pages/ServicePaymentFail';
 import ErrorPage from './components/pages/ErrorPage';
 import ResetPassword from './components/pages/ResetPassword';
 import ForgotPassword from './components/pages/ForgotPassword';
@@ -67,6 +72,7 @@ export const router = createBrowserRouter([
       { path: 'catalog', element: <Catalog /> },
       { path: 'about', element: <About /> },
       { path: 'services', element: <Services /> },
+      { path: 'services/request', element: <ServiceRequestForm /> },
       { path: 'custom-pc', element: <CustomPc /> },
       { path: 'product/:id', element: <ProductPage /> },
       {
@@ -94,6 +100,8 @@ export const router = createBrowserRouter([
           { path: 'profile', element: <Profile /> },
           { path: 'orders', element: <Orders /> },
           { path: 'orders/:orderNumber', element: <OrderDetails /> },
+          { path: 'services', element: <DashboardServices /> },
+          { path: 'services/:serviceNumber', element: <ServiceDetails /> },
           { path: 'addresses', element: <Addresses /> },
           { path: 'tracking', element: <Tracking /> },
           { path: 'wishlist', element: <Wishlist /> },
@@ -138,6 +146,15 @@ export const router = createBrowserRouter([
             <OrderFailed />
           </PrivateRoute>
         ),
+      },
+      // Service payment success/failure (public so customers from email invoice can view)
+      {
+        path: 'services/:serviceNumber/success',
+        element: <ServicePaymentSuccess />,
+      },
+      {
+        path: 'services/:serviceNumber/failed',
+        element: <ServicePaymentFail />,
       },
       { path: '*', element: <ErrorPage /> },
     ],
