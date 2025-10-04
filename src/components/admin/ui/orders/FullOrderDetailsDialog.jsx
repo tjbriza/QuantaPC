@@ -66,6 +66,16 @@ export default function FullOrderDetailsDialog({
                     {new Date(order.created_at).toLocaleString()}
                   </Typography>
                 </Grid>
+                {order.cancelled_at && (
+                  <Grid item xs={6} md={3}>
+                    <Typography variant='caption' color='text.secondary'>
+                      Cancelled At
+                    </Typography>
+                    <Typography variant='body2'>
+                      {new Date(order.cancelled_at).toLocaleString()}
+                    </Typography>
+                  </Grid>
+                )}
                 <Grid item xs={6} md={3}>
                   <Typography variant='caption' color='text.secondary'>
                     Paid At
@@ -116,6 +126,16 @@ export default function FullOrderDetailsDialog({
                     {order.customer_email || '—'}
                   </Typography>
                 </Grid>
+                {order.cancellation_reason && (
+                  <Grid item xs={12}>
+                    <Typography variant='caption' color='text.secondary'>
+                      Cancellation Reason
+                    </Typography>
+                    <Typography variant='body2'>
+                      {order.cancellation_reason}
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
             </Box>
             <Divider sx={{ my: 2 }} />

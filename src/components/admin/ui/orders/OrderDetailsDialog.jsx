@@ -65,6 +65,13 @@ export default function OrderDetailsDialog({
             <Typography variant='body2' sx={{ mb: 2 }}>
               Total: ₱{selectedOrder.total_amount}
             </Typography>
+            {selectedOrder.cancelled_at && (
+              <Typography variant='body2' sx={{ mb: 2, color: 'error.main' }}>
+                Cancelled at:{' '}
+                {new Date(selectedOrder.cancelled_at).toLocaleString()} –{' '}
+                {selectedOrder.cancellation_reason || 'No reason provided'}
+              </Typography>
+            )}
 
             <FormControl
               fullWidth

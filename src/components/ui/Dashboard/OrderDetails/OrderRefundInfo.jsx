@@ -1,21 +1,31 @@
 export default function OrderRefundInfo({ order }) {
-  if (order.status !== 'cancelled' && order.status !== 'expired') {
-    return null;
-  }
+  if (order.status !== 'cancelled' && order.status !== 'expired') return null;
+
+  const isPaid = !!order.paid_at;
+  const reason = order.cancellation_reason;
 
   return (
     <div className='text-right text-sm text-gray-600 mb-6'>
-      <div>
-        ₱ {order.total_amount?.toLocaleString()} was refunded to your{' '}
-        {order.payment_method || 'payment method'}
-      </div>
-      <div>
-        ({order.customer_email || 'account'}) on{' '}
-        {order.paid_at
-          ? new Date(order.paid_at).toLocaleDateString()
-          : new Date().toLocaleDateString()}
-        .
-      </div>
+      {order.status === 'expired' && (
+        <div>
+          This invoice expired and the order was cancelled automatically.
+        </div>
+      )}
+      {order.status === 'cancelled' && (
+        <div>
+          Order cancelled
+          {order.cancelled_at && (
+            <> on {new Date(order.cancelled_at).toLocaleDateString()}</>
+          )}
+          {reason && <> — {reason}</>}.
+        </div>
+      )}
+      {isPaid && (
+        <div className='mt-1'>
+          Payment was received; refund processing (if applicable) will be
+          handled separately.
+        </div>
+      )}
     </div>
   );
 }

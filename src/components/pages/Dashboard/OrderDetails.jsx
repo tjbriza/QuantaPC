@@ -18,7 +18,7 @@ export default function OrderDetails() {
     loading,
     error,
   } = useSupabaseRead('orders', {
-    select: `*, order_items(id, quantity, price_snapshot, products(id, name, image_url))`,
+    select: `id, order_number, user_id, total_amount, status, created_at, paid_at, payment_method, customer_email, subtotal, shipping_fee, expires_at, xendit_invoice_url, xendit_invoice_id, shipping_full_name, shipping_phone, shipping_address_line, shipping_city, shipping_province, shipping_postal_code, cancelled_at, cancellation_reason, order_items(id, quantity, price_snapshot, products(id, name, image_url))`,
     filter: { order_number: orderNumber, user_id: session?.user?.id },
     single: true,
     enabled: !!orderNumber && !!session?.user?.id,

@@ -86,6 +86,13 @@ alter table orders drop constraint if exists orders_status_check;
 alter table orders add constraint orders_status_check 
   check (status in ('pending', 'paid', 'failed', 'expired', 'cancelled', 'shipped', 'delivered'));
 
+-- cancellation / refund metadata (idempotent additions)
+alter table orders add column if not exists cancelled_at timestamptz;
+alter table orders add column if not exists cancellation_reason text;
+-- future refund workflow (not yet wired in UI)
+alter table orders add column if not exists refund_amount int;
+alter table orders add column if not exists refunded_at timestamptz;
+
 create table order_status_history (
   id uuid primary key default uuid_generate_v4(),
   order_id uuid not null references orders(id) on delete cascade,
@@ -275,3 +282,119 @@ create table if not exists order_edit_logs (
 
 create index if not exists idx_order_edit_logs_order on order_edit_logs(order_id, created_at desc);
 create index if not exists idx_order_edit_logs_actor on order_edit_logs(actor_user_id, created_at desc); 
+
+-- =====================================================================
+-- RPC: cancel_order
+-- Cancels an order (pending|paid) owned by the current user (auth.uid())
+-- or any order if the caller has role 'service_role' (admin backend) and
+-- restores product stock quantities (if they were decremented earlier)
+-- in a single transactional, idempotent operation.
+--
+-- Parameters:
+--   p_order          uuid      -- order id to cancel
+--   p_reason         text      -- optional reason (nullable)
+--   p_restore_stock  boolean   -- whether to add back stock (default true)
+--
+-- Behavior:
+--   * Validates ownership (unless elevated) and cancellable status
+--   * Updates orders.status -> cancelled, sets cancelled_at & cancellation_reason
+--   * Restores stock by incrementing products.stock_quantity by each order_items.quantity
+--     only when status was pending|paid and p_restore_stock = true
+--   * Inserts a row into order_status_history
+--   * Returns JSON summary: { success, order_id, previous_status, restored_items, message }
+--
+-- Idempotency:
+--   * If already cancelled, returns success=false with message
+--
+-- NOTE: Marked SECURITY DEFINER to allow stock restoration even if future RLS
+--       policies restrict direct updates. Limit exposure by granting EXECUTE
+--       only to authenticated / service roles.
+-- =====================================================================
+create or replace function cancel_order(
+  p_order uuid,
+  p_reason text default null,
+  p_restore_stock boolean default true
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_order record;
+  v_restored int := 0;
+  v_reason text;
+  v_is_admin boolean := (
+    exists (
+      select 1 from auth.jwt() as c
+      where coalesce((c.claims ->> 'role'), '') in ('service_role','admin')
+    )
+  );
+begin
+  if p_order is null then
+    raise exception 'p_order is required';
+  end if;
+
+  -- Lock the order row to avoid race with shipping / other transitions
+  select * into v_order from orders where id = p_order for update;
+  if not found then
+    return jsonb_build_object('success', false, 'message', 'Order not found');
+  end if;
+
+  -- Ownership / authorization check (skip if elevated)
+  if not v_is_admin and v_order.user_id <> v_uid then
+    return jsonb_build_object('success', false, 'message', 'Not authorized to cancel this order');
+  end if;
+
+  -- Already cancelled or terminal states
+  if v_order.status = 'cancelled' then
+    return jsonb_build_object('success', false, 'message', 'Order already cancelled');
+  end if;
+  if v_order.status in ('shipped','delivered') then
+    return jsonb_build_object('success', false, 'message', 'Order can no longer be cancelled');
+  end if;
+  if v_order.status not in ('pending','paid','failed','expired') then
+    return jsonb_build_object('success', false, 'message', 'Order not in cancellable state');
+  end if;
+
+  v_reason := coalesce(nullif(trim(p_reason), ''), 'User requested cancellation');
+
+  -- Update order
+  update orders
+     set status = 'cancelled',
+         cancelled_at = now(),
+         cancellation_reason = v_reason
+   where id = p_order;
+
+  -- Restore stock only if it was an active order (pending|paid) and flag true
+  if p_restore_stock and v_order.status in ('pending','paid') then
+    with upd as (
+      update products p
+         set stock_quantity = p.stock_quantity + oi.quantity
+        from order_items oi
+       where oi.order_id = p_order
+         and oi.product_id = p.id
+      returning oi.quantity
+    )
+    select coalesce(sum(quantity),0) into v_restored from upd;
+  end if;
+
+  -- Insert history entry
+  insert into order_status_history(order_id, status, message, created_by)
+  values (p_order, 'cancelled', v_reason, v_uid);
+
+  return jsonb_build_object(
+    'success', true,
+    'order_id', p_order,
+    'previous_status', v_order.status,
+    'restored_items', v_restored,
+    'message', 'Order cancelled successfully'
+  );
+exception when others then
+  return jsonb_build_object('success', false, 'message', SQLERRM);
+end;
+$$;
+
+-- Grant execute to authenticated users (adjust as needed)
+grant execute on function cancel_order(uuid, text, boolean) to authenticated;
