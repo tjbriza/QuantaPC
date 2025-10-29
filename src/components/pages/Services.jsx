@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import { CalendarCog, Handshake, Cpu } from 'lucide-react';
 
 export default function Services() {
   const navigate = useNavigate();
+  const { session } = useAuth();
 
   // Load services from DB (utilize schema)
   const { data: services, loading } = useSupabaseRead('services', {
@@ -66,6 +68,20 @@ export default function Services() {
             book repair services, we deliver technology straight to
             you—reliable, flexible, and on your terms.
           </p>
+          {!session && (
+            <div className='mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg max-w-2xl mx-auto'>
+              <p className='text-sm text-blue-800 mb-3'>
+                <strong>Login Required:</strong> Please log in to access service
+                requests. Service options are disabled until you authenticate.
+              </p>
+              <button
+                onClick={() => navigate('/login')}
+                className='px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors'
+              >
+                Login / Register
+              </button>
+            </div>
+          )}
         </header>
 
         <section className='grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-3'>
@@ -75,27 +91,48 @@ export default function Services() {
             const description = loading
               ? 'Please wait while we load services.'
               : card.description;
+
+            const isClickable = !loading && session;
+
             return (
-              <button
+              <div
                 key={loading ? idx : card.key}
-                type='button'
-                onClick={() => !loading && navigate(card.to)}
-                className='text-left rounded-2xl border border-slate-200 bg-white/80 hover:bg-white shadow-sm hover:shadow-md transition-all p-5 sm:p-6 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                className={`text-left rounded-2xl border border-slate-200 bg-white/80 shadow-sm transition-all p-5 sm:p-6 ${
+                  isClickable
+                    ? 'hover:bg-white hover:shadow-md cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500'
+                    : 'cursor-not-allowed opacity-75'
+                }`}
+                onClick={() => isClickable && navigate(card.to)}
+                role={isClickable ? 'button' : undefined}
+                tabIndex={isClickable ? 0 : -1}
+                onKeyDown={(e) => {
+                  if (isClickable && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault();
+                    navigate(card.to);
+                  }
+                }}
               >
                 <div className='flex items-start gap-4'>
                   <div className='shrink-0 rounded-xl bg-slate-800 text-white p-3'>
                     <Icon className='w-6 h-6' />
                   </div>
-                  <div>
-                    <h3 className='text-lg sm:text-xl font-semibold text-slate-900'>
-                      {title}
-                    </h3>
+                  <div className='flex-1'>
+                    <div className='flex items-center justify-between'>
+                      <h3 className='text-lg sm:text-xl font-semibold text-slate-900'>
+                        {title}
+                      </h3>
+                      {!session && !loading && (
+                        <span className='text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full'>
+                          Login Required
+                        </span>
+                      )}
+                    </div>
                     <p className='mt-2 text-sm text-slate-600 leading-relaxed'>
                       {description}
                     </p>
                   </div>
                 </div>
-              </button>
+              </div>
             );
           })}
         </section>

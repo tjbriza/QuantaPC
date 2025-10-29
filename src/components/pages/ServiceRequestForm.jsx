@@ -16,6 +16,15 @@ export default function ServiceRequestForm() {
   const serviceKey = (query.get('service') || '').trim();
   const { session } = useAuth();
 
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (session === null) {
+      // Not authenticated, redirect to login with return URL
+      const returnUrl = `/services/request?service=${serviceKey}`;
+      navigate(`/login?redirect=${encodeURIComponent(returnUrl)}`);
+    }
+  }, [session, navigate, serviceKey]);
+
   // Load the service by key
   const { data: service, loading: serviceLoading } = useSupabaseRead(
     'services',
@@ -23,7 +32,7 @@ export default function ServiceRequestForm() {
       select: 'id, key, name, description',
       filter: { key: serviceKey || 'repairs_upgrades' },
       single: true,
-      enabled: !!serviceKey,
+      enabled: !!serviceKey && !!session,
     },
   );
 
@@ -51,6 +60,10 @@ export default function ServiceRequestForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!service?.id) return;
+    if (!session?.user?.id) {
+      console.error('User not authenticated');
+      return;
+    }
     if (
       !contactName.trim() ||
       !contactEmail.trim() ||
@@ -61,7 +74,7 @@ export default function ServiceRequestForm() {
     setSubmitting(true);
     try {
       const basePayload = {
-        user_id: session?.user?.id || null,
+        user_id: session.user.id, // Required - no longer allow null
         service_id: service.id,
         contact_name: contactName.trim(),
         contact_email: contactEmail.trim(),
@@ -107,6 +120,42 @@ export default function ServiceRequestForm() {
       : serviceKey === 'technical_support'
         ? 'Technical Support'
         : 'Repairs & Upgrades');
+
+  // Show loading while checking authentication
+  if (session === undefined) {
+    return (
+      <div className='min-h-screen w-full py-32'>
+        <div className='max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-center'>
+          <h1 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-6'>
+            Loading...
+          </h1>
+          <p className='text-slate-600'>Checking authentication status...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (redirect should handle this)
+  if (!session) {
+    return (
+      <div className='min-h-screen w-full py-32'>
+        <div className='max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 text-center'>
+          <h1 className='text-2xl sm:text-3xl font-bold text-slate-800 mb-6'>
+            Authentication Required
+          </h1>
+          <p className='text-slate-600 mb-6'>
+            You need to be logged in to submit service requests.
+          </p>
+          <button
+            onClick={() => navigate('/login')}
+            className='px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700'
+          >
+            Go to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='min-h-screen w-full py-32'>

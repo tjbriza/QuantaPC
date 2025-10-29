@@ -51,6 +51,7 @@ create table products (
   category_id uuid not null references categories(id) on delete cascade,
   brand text,
   image_url text,
+  is_disabled boolean not null default false,
   created_at timestamp with time zone default now()
 );
 
@@ -188,8 +189,8 @@ create table if not exists technicians (
 create table if not exists service_requests (
   id uuid primary key default uuid_generate_v4(),
 
-  -- who requested (nullable to allow guest submissions)
-  user_id uuid references auth.users(id) on delete set null,
+  -- who requested (required - users must be logged in)
+  user_id uuid not null references auth.users(id) on delete cascade,
 
   -- which service
   service_id uuid not null references services(id) on delete restrict,

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useSupabaseRead } from '../../hooks/useSupabaseRead';
+import { useCatalogProducts } from '../../hooks/useCatalogProducts';
 import ProductGrid from '../ui/ProductCatalog/ProductGrid.jsx';
 import CategorySection from '../ui/CategorySection.jsx';
 import ProductFilter from '../ui/ProductCatalog/ProductFilter.jsx';
@@ -14,6 +15,13 @@ export default function Catalog() {
 
   const searchParams = new URLSearchParams(location.search);
   const searchQuery = searchParams.get('search')?.trim() || '';
+
+  // Filter state
+  const [filters, setFilters] = useState({
+    categories: [],
+    priceMin: '',
+    priceMax: '',
+  });
 
   const title = searchQuery
     ? `Search results for: ${searchQuery}`
@@ -35,30 +43,19 @@ export default function Catalog() {
   const [page, setPage] = useState(initialPage); // 1-based
   const pageSize = 12;
 
+  // Use the custom catalog products hook
   const {
-    data: products,
+    products,
     count: productsCount,
-    error: productError,
     loading: productLoading,
-  } = useSupabaseRead(
-    'products',
-    searchQuery
-      ? {
-          filter: {
-            or: `name.ilike.%${searchQuery}%,description.ilike.%${searchQuery}%`,
-          },
-          page,
-          pageSize,
-          withCount: true,
-          order: { column: 'created_at', ascending: false },
-        }
-      : {
-          page,
-          pageSize,
-          withCount: true,
-          order: { column: 'created_at', ascending: false },
-        },
-  );
+    error: productError,
+  } = useCatalogProducts(filters, searchQuery, page, pageSize);
+
+  // Handle filter changes from ProductFilter component
+  const handleFiltersChange = (newFilters) => {
+    setFilters(newFilters);
+    setPage(1); // Reset to first page when filters change
+  };
 
   let categorizedProducts = [];
   if (searchQuery) {
@@ -112,7 +109,10 @@ export default function Catalog() {
           <div className='flex px-4 md:px-8'>
             {/* Sidebar filter */}
             <div className='hidden lg:flex lg:flex-col lg:w-64 xl:w-72 lg:flex-shrink-0'>
-              <ProductFilter />
+              <ProductFilter
+                onFiltersChange={handleFiltersChange}
+                currentFilters={filters}
+              />
             </div>
 
             {/* Product list */}
