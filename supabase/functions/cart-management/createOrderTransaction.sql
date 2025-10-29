@@ -91,9 +91,11 @@ begin
       (v_item->>'product_price')::int
     );
 
-    -- update product stock (reserve inventory)
+    -- update product stock (reserve inventory) and auto-disable if stock becomes 0
     update products 
-    set stock_quantity = stock_quantity - (v_item->>'quantity')::int
+    set 
+        stock_quantity = stock_quantity - (v_item->>'quantity')::int,
+        is_disabled = case when (stock_quantity - (v_item->>'quantity')::int) = 0 then true else is_disabled end
     where id = (v_item->>'product_id')::uuid;
   end loop;
 

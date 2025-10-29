@@ -39,9 +39,11 @@ begin
         return json_build_object('success', false, 'message', 'Insufficient stock');
     end if;
 
-    --update stock
+    --update stock and auto-disable if stock becomes 0
     update products
-    set stock_quantity = v_new_stock
+    set 
+        stock_quantity = v_new_stock,
+        is_disabled = case when v_new_stock = 0 then true else is_disabled end
     where id = p_product_id;
 
     return json_build_object('success', true, 'old_stock', v_current_stock, 'new_stock', v_new_stock);

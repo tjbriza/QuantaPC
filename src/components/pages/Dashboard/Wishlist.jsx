@@ -14,6 +14,12 @@ export default function Wishlist() {
   };
 
   const handleAddToCart = async (product) => {
+    // Check if product is unavailable before trying to add to cart
+    const isUnavailable = product.is_disabled || product.stock_quantity <= 0;
+    if (isUnavailable) {
+      return; // Don't attempt to add unavailable products
+    }
+
     const result = await addToCart(product.id, 1);
     if (result.success) {
       // remove from wishlist after adding to cart
@@ -113,12 +119,14 @@ export default function Wishlist() {
                 <div className='flex gap-2'>
                   <button
                     onClick={() => handleAddToCart(product)}
-                    disabled={product.stock_quantity <= 0}
+                    disabled={
+                      product.is_disabled || product.stock_quantity <= 0
+                    }
                     className='flex-1 bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer'
                   >
                     <ShoppingCart className='w-4 h-4' />
-                    {product.stock_quantity <= 0
-                      ? 'Out of Stock'
+                    {product.is_disabled || product.stock_quantity <= 0
+                      ? 'Product Unavailable'
                       : 'Add to Cart'}
                   </button>
 

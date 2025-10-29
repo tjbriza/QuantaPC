@@ -145,7 +145,10 @@ export const AuthContextProvider = ({ children }) => {
       .eq('id', data.user.id)
       .single();
 
-    if (profileError || profile?.role !== 'admin') {
+    if (
+      profileError ||
+      (profile?.role !== 'admin' && profile?.role !== 'superadmin')
+    ) {
       await signOut();
       return {
         success: false,

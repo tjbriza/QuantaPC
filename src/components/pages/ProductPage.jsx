@@ -38,6 +38,9 @@ export default function ProductPage() {
   const [productQuantity, setProductQuantity] = useState(1);
   const scrollRef = useRef(null);
 
+  // Check if product is unavailable (either disabled or out of stock)
+  const isUnavailable = product?.is_disabled || product?.stock_quantity <= 0;
+
   const scrollLeft = () => {
     if (scrollRef.current) {
       scrollRef.current.scrollBy({ left: -400, behavior: 'smooth' });
@@ -51,7 +54,7 @@ export default function ProductPage() {
   };
 
   function handleAddToCart(quantity = 1) {
-    if (product) {
+    if (product && !isUnavailable) {
       addToCart(product.id, quantity);
       navigate('/cart', { replace: true });
     }
@@ -81,14 +84,26 @@ export default function ProductPage() {
               currency: 'PHP',
             })}
           </p>
-          <p className='text-gray-600'>Stocks Left: {product.stock_quantity}</p>
+          <p className='text-gray-600'>
+            Stocks Left: {product.stock_quantity}
+            {isUnavailable && (
+              <span className='text-red-600 font-semibold ml-2'>
+                - Product Unavailable
+              </span>
+            )}
+          </p>
           <p className='text-gray-600'>{product.description}</p>
           <div className='flex gap-4'>
             <button
               onClick={() => handleAddToCart(productQuantity)}
-              className=' w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer'
+              disabled={isUnavailable}
+              className={`w-full px-6 py-2 rounded-lg transition-colors cursor-pointer ${
+                isUnavailable
+                  ? 'bg-gray-400 text-white cursor-not-allowed'
+                  : 'bg-blue-500 text-white hover:bg-blue-600'
+              }`}
             >
-              Add to Cart
+              {isUnavailable ? 'Product Unavailable' : 'Add to Cart'}
             </button>
 
             <HeartButton productId={product.id} />
@@ -100,7 +115,8 @@ export default function ProductPage() {
               min='1'
               max={product.stock_quantity}
               defaultValue='1'
-              className='border border-gray-300 rounded-lg px-4 py-2 w-20'
+              disabled={isUnavailable}
+              className='border border-gray-300 rounded-lg px-4 py-2 w-20 disabled:bg-gray-100 disabled:cursor-not-allowed'
               onChange={(e) => setProductQuantity(Number(e.target.value))}
             />
           </div>

@@ -6,6 +6,7 @@ declare
     v_cart_id uuid;
     v_existing_quantity int;
     v_stock int;
+    v_disabled boolean;
     v_final_quantity int;
 begin
     -- reject bad input
@@ -13,8 +14,8 @@ begin
         raise exception 'Quantity must be greater than zero';
     end if;
     
-    --get product stock
-    select stock_quantity into v_stock
+    --get product stock and disabled status
+    select stock_quantity, is_disabled into v_stock, v_disabled
     from products
     where id = p_product_id;
 
@@ -24,6 +25,11 @@ begin
 
     if v_stock <= 0 then
         return json_build_object('success', false, 'message', 'Product is out of stock');
+    end if;
+
+    -- check if product is disabled
+    if v_disabled then
+        return json_build_object('success', false, 'message', 'Product is unavailable');
     end if;
 
     --get/create cart

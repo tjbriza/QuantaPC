@@ -15,6 +15,9 @@ export default function ProductCard({ product }) {
   const price = Number(product.price || 0);
   const inCart = cartItems?.some((i) => i.product_id === product.id);
 
+  // Check if product is unavailable (either disabled or out of stock)
+  const isUnavailable = product.is_disabled || product.stock_quantity <= 0;
+
   function handleNavigate() {
     navigate(`/product/${product.id}`, { state: { product } });
   }
@@ -25,6 +28,9 @@ export default function ProductCard({ product }) {
     if (!session) {
       navigate('/login');
       return;
+    }
+    if (isUnavailable) {
+      return; // Do not add to cart if product is unavailable
     }
     if (!inCart && !addingToCart) {
       await addToCart(product.id, 1);
@@ -78,22 +84,26 @@ export default function ProductCard({ product }) {
         <div className='flex items-center gap-3'>
           <button
             onClick={handleAddToCart}
-            disabled={inCart || addingToCart}
+            disabled={inCart || addingToCart || isUnavailable}
             className={`flex-1 flex items-center justify-center gap-2 rounded-xl px-4 py-3 transition-colors cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
               inCart
                 ? 'bg-[#343A4F] text-white'
-                : session
-                  ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
-                  : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
+                : isUnavailable
+                  ? 'bg-gray-400 text-white'
+                  : session
+                    ? 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
+                    : 'bg-gray-100 hover:bg-gray-200 text-gray-900 border border-gray-300'
             }`}
           >
-            {!inCart && <ShoppingCart className='w-5 h-5' />}
+            {!inCart && !isUnavailable && <ShoppingCart className='w-5 h-5' />}
             <span className='text-sm font-semibold'>
-              {session
-                ? inCart
-                  ? 'IN CART'
-                  : 'ADD TO CART'
-                : 'LOGIN TO ADD TO CART'}
+              {isUnavailable
+                ? 'PRODUCT UNAVAILABLE'
+                : session
+                  ? inCart
+                    ? 'IN CART'
+                    : 'ADD TO CART'
+                  : 'LOGIN TO ADD TO CART'}
             </span>
           </button>
 
