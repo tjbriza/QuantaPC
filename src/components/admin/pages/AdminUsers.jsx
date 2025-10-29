@@ -12,6 +12,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Chip,
+  Typography,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { useToast } from '../../../context/ToastContext';
@@ -20,9 +22,11 @@ import { useSupabaseWrite } from '../../../hooks/useSupabaseWrite';
 import { supabase } from '../../../supabaseClient';
 import { useAuth } from '../../../context/AuthContext';
 import { useUsernameCheck } from '../../../hooks/useCheckUsername';
+import { useUserRole } from '../../../hooks/useUserRole';
+import { useRoleManagement } from '../../../hooks/useRoleManagement';
 import UsersFilters from '../ui/users/UsersFilters';
 
-const ROLE_OPTIONS = ['admin', 'user'];
+const ROLE_OPTIONS = ['user', 'admin', 'superadmin'];
 
 export default function AdminUsers() {
   const [page, setPage] = useState(0);
@@ -138,6 +142,8 @@ export default function AdminUsers() {
   const { updateData, loading: updateLoading } = useSupabaseWrite('profiles');
   const { toast } = useToast();
   const { session } = useAuth();
+  const { canModifyRoles, isSuperAdmin } = useUserRole();
+  const { updateUserRole, isUpdating } = useRoleManagement();
 
   // edit dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -165,7 +171,7 @@ export default function AdminUsers() {
     setDialogOpen(true);
   };
   const closeDialog = () => {
-    if (updateLoading) return;
+    if (updateLoading || isUpdating) return;
     setDialogOpen(false);
     setActiveUser(null);
     clearUsernameStatus();
@@ -174,28 +180,51 @@ export default function AdminUsers() {
     if (!activeUser) return;
     const trimmedUser = (usernameInput || '').trim();
     if (!trimmedUser || usernameChecking || usernameTaken) return;
+
     const updates = {
       name_first: firstNameEdit.trim(),
       name_last: lastNameEdit.trim(),
       username: trimmedUser,
-      role: roleEdit,
     };
+
     const before = {
       name_first: activeUser.name_first || '',
       name_last: activeUser.name_last || '',
       username: activeUser.username || '',
       role: activeUser.role || 'user',
     };
+
+    const roleChanged = roleEdit !== before.role;
+
+    // Handle role change separately if it changed and user has permission
+    if (roleChanged) {
+      if (!canModifyRoles) {
+        toast.error('You do not have permission to modify user roles');
+        return;
+      }
+
+      const roleResult = await updateUserRole(activeUser.id, roleEdit);
+      if (!roleResult.success) {
+        return; // Error already shown by hook
+      }
+    }
+
+    // Update other fields
     const { error, data } = await updateData({ id: activeUser.id }, updates);
     if (error) {
       toast.error('Save failed');
       return;
     }
 
-    // compute fields that changed
+    // compute fields that changed (excluding role which was handled separately)
     const changedFields = Object.keys(updates).filter(
       (key) => String(before[key]) !== String(updates[key]),
     );
+
+    // Add role to changed fields if it was changed
+    if (roleChanged) {
+      changedFields.push('role');
+    }
 
     // Only log if at least one field changed & we have actor session
     if (changedFields.length > 0 && session?.user?.id) {
@@ -210,7 +239,7 @@ export default function AdminUsers() {
             return acc;
           }, {}),
           new_values: changedFields.reduce((acc, k) => {
-            acc[k] = updates[k];
+            acc[k] = roleChanged && k === 'role' ? roleEdit : updates[k];
             return acc;
           }, {}),
         };
@@ -239,7 +268,28 @@ export default function AdminUsers() {
       { field: 'name_last', headerName: 'Last name', width: 150 },
       { field: 'username', headerName: 'Username', width: 150 },
       { field: 'email', headerName: 'Email', width: 220 },
-      { field: 'role', headerName: 'Role', width: 120 },
+      {
+        field: 'role',
+        headerName: 'Role',
+        width: 140,
+        renderCell: (params) => {
+          const role = params.value;
+          const color =
+            role === 'superadmin'
+              ? 'error'
+              : role === 'admin'
+                ? 'warning'
+                : 'default';
+          return (
+            <Chip
+              label={role}
+              color={color}
+              size='small'
+              variant={role === 'superadmin' ? 'filled' : 'outlined'}
+            />
+          );
+        },
+      },
       { field: 'auth_created_at', headerName: 'Created At', width: 180 },
       { field: 'last_sign_in_at', headerName: 'Last Sign In', width: 180 },
       {
@@ -248,31 +298,43 @@ export default function AdminUsers() {
         width: 140,
         sortable: false,
         filterable: false,
-        renderCell: (params) => (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              height: '100%',
-            }}
-          >
-            <Button
-              size='small'
-              variant='contained'
-              onClick={(e) => {
-                e.stopPropagation();
-                openEdit(params.row);
+        renderCell: (params) => {
+          const canEditThisUser =
+            canModifyRoles ||
+            (params.row.role !== 'admin' && params.row.role !== 'superadmin');
+
+          return (
+            <Box
+              sx={{
+                display: 'flex',
+                gap: 1,
+                alignItems: 'center',
+                height: '100%',
               }}
-              sx={{ borderRadius: 3 }}
             >
-              Edit
-            </Button>
-          </Box>
-        ),
+              <Button
+                size='small'
+                variant='contained'
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEdit(params.row);
+                }}
+                disabled={!canEditThisUser}
+                sx={{ borderRadius: 3 }}
+                title={
+                  !canEditThisUser
+                    ? 'Only superadmin can edit admin/superadmin users'
+                    : ''
+                }
+              >
+                Edit
+              </Button>
+            </Box>
+          );
+        },
       },
     ],
-    [],
+    [canModifyRoles],
   );
 
   const displayRows = rows;
@@ -413,34 +475,45 @@ export default function AdminUsers() {
                         : ' '
               }
             />
-            <FormControl
-              fullWidth
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  borderRadius: 4,
-                },
-              }}
-            >
-              <InputLabel id='role-label'>Role</InputLabel>
-              <Select
-                labelId='role-label'
-                label='Role'
-                value={roleEdit}
-                onChange={(e) => setRoleEdit(e.target.value)}
+            {canModifyRoles ? (
+              <FormControl
+                fullWidth
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 4,
+                  },
+                }}
               >
-                {ROLE_OPTIONS.map((r) => (
-                  <MenuItem key={r} value={r}>
-                    {r}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                <InputLabel id='role-label'>Role</InputLabel>
+                <Select
+                  labelId='role-label'
+                  label='Role'
+                  value={roleEdit}
+                  onChange={(e) => setRoleEdit(e.target.value)}
+                >
+                  {ROLE_OPTIONS.map((r) => (
+                    <MenuItem key={r} value={r}>
+                      {r}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            ) : (
+              <Box>
+                <Typography variant='body2' color='text.secondary' gutterBottom>
+                  Current Role: <strong>{activeUser?.role || 'user'}</strong>
+                </Typography>
+                <Typography variant='caption' color='warning.main'>
+                  Only superadmin users can modify roles
+                </Typography>
+              </Box>
+            )}
           </Stack>
         </DialogContent>
         <DialogActions>
           <Button
             onClick={closeDialog}
-            disabled={updateLoading}
+            disabled={updateLoading || isUpdating}
             sx={{ borderRadius: 2 }}
           >
             Cancel
@@ -451,6 +524,7 @@ export default function AdminUsers() {
             sx={{ borderRadius: 2 }}
             disabled={
               updateLoading ||
+              isUpdating ||
               usernameChecking ||
               usernameTaken ||
               !usernameInput.trim()

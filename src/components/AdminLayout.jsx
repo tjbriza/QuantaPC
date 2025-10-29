@@ -35,7 +35,10 @@ export default function AdminLayout() {
           .eq('id', session.user.id)
           .single();
 
-        if (error || profile?.role !== 'admin') {
+        if (
+          error ||
+          (profile?.role !== 'admin' && profile?.role !== 'superadmin')
+        ) {
           setIsAdmin(false);
         } else {
           setIsAdmin(true);

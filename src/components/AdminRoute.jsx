@@ -23,7 +23,10 @@ export default function AdminRoute({ children }) {
           .eq('id', session.user.id)
           .single();
 
-        if (error || profile?.role !== 'admin') {
+        if (
+          error ||
+          (profile?.role !== 'admin' && profile?.role !== 'superadmin')
+        ) {
           await supabase.auth.signOut();
           setIsAdmin(false);
         } else {
