@@ -17,6 +17,7 @@ import {
   ListItemText,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../ui/common/AdminGridToolbar';
 import { useAdminAuditLogs } from '../../../hooks/useAdminAuditLogs';
 import { RefreshCw } from 'lucide-react';
 
@@ -199,6 +200,12 @@ export default function AdminLogs() {
             pagination: { paginationModel: { pageSize: 10, page: 0 } },
           }}
           pageSizeOptions={[10]}
+          slots={{ toolbar: AdminGridToolbar }}
+          sx={{
+            flex: 1,
+            '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+            '& .MuiDataGrid-main': { minHeight: 80 },
+          }}
         />
       </Box>
 

@@ -7,6 +7,7 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../common/AdminGridToolbar';
 
 export default function CategorySection({
   categories,
@@ -94,6 +95,12 @@ export default function CategorySection({
             pageSizeOptions={[]}
             checkboxSelection={false}
             getRowId={(r) => r.id}
+            slots={{ toolbar: AdminGridToolbar }}
+            slotProps={{ toolbar: { showQuickFilter: true } }}
+            sx={{
+              '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+              '& .MuiDataGrid-main': { minHeight: 80 },
+            }}
           />
         </div>
       )}

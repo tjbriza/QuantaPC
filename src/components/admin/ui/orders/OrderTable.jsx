@@ -1,4 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../common/AdminGridToolbar';
 
 /**
  * OrderTable
@@ -59,9 +60,12 @@ export default function OrderTable({
         }}
         pageSizeOptions={[10, 25, 50]}
         disableRowSelectionOnClick
+        slots={{ toolbar: AdminGridToolbar }}
+        slotProps={{ toolbar: { showQuickFilter: true } }}
         sx={{
           flex: 1,
-          '& .MuiDataGrid-toolbarContainer': { gap: 1 },
+          '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+          '& .MuiDataGrid-main': { minHeight: 80 },
         }}
       />
     </div>

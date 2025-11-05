@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Button, Stack } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../common/AdminGridToolbar';
 
 const baseColumns = [
   { field: 'id', headerName: 'ID', width: 220, editable: false },
@@ -158,10 +159,15 @@ export default function ProductDataGrid({
         getRowClassName={(params) =>
           params.row.is_disabled ? 'product-disabled' : ''
         }
+        slots={{ toolbar: AdminGridToolbar }}
+        slotProps={{ toolbar: { showQuickFilter: true } }}
         sx={{
+          flex: 1,
           '& .MuiDataGrid-root': {
             border: 'none',
           },
+          '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+          '& .MuiDataGrid-main': { minHeight: 80 },
           '& .MuiDataGrid-cell': {
             borderBottom: '1px solid #e0e0e0',
           },

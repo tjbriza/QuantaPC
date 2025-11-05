@@ -1,4 +1,5 @@
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../common/AdminGridToolbar';
 
 export default function ServicesTable({
   rows,
@@ -51,7 +52,13 @@ export default function ServicesTable({
         }}
         pageSizeOptions={[10, 25, 50]}
         disableRowSelectionOnClick
-        sx={{ flex: 1 }}
+        slots={{ toolbar: AdminGridToolbar }}
+        slotProps={{ toolbar: { showQuickFilter: true } }}
+        sx={{
+          flex: 1,
+          '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+          '& .MuiDataGrid-main': { minHeight: 80 },
+        }}
       />
     </div>
   );

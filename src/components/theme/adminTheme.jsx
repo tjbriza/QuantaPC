@@ -68,6 +68,17 @@ const theme = createTheme({
           '& .MuiDataGrid-cell:focus': {
             outline: 'none',
           },
+          // Ensure the toolbar remains visible and content has breathing room
+          '& .MuiDataGrid-toolbarContainer': {
+            padding: 8,
+          },
+          // When there are no columns/rows, keep some vertical space so actions remain accessible
+          '& .MuiDataGrid-main': {
+            minHeight: 80,
+          },
+          '& .MuiDataGrid-overlay': {
+            padding: 16,
+          },
         },
       },
     },

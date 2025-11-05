@@ -16,6 +16,7 @@ import {
   Typography,
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
+import AdminGridToolbar from '../ui/common/AdminGridToolbar';
 import { useToast } from '../../../context/ToastContext';
 import { usePaginatedUsers } from '../../../hooks/usePaginatedUsers';
 import { useSupabaseWrite } from '../../../hooks/useSupabaseWrite';
@@ -404,10 +405,15 @@ export default function AdminUsers() {
           getRowId={(row) => row.id}
           checkboxSelection={false}
           disableRowSelectionOnClick
+          slots={{ toolbar: AdminGridToolbar }}
+          slotProps={{ toolbar: { showQuickFilter: true } }}
           sx={{
+            flex: 1,
             '& .MuiDataGrid-root': {
               border: 'none',
             },
+            '& .MuiDataGrid-toolbarContainer': { gap: 1, p: 1 },
+            '& .MuiDataGrid-main': { minHeight: 80 },
             '& .MuiDataGrid-cell': {
               borderBottom: '1px solid #e0e0e0',
             },
