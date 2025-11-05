@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSupabaseRead } from '../../../hooks/useSupabaseRead';
+import { supabase } from '../../../supabaseClient';
 
 export default function ProductFilter({
   onFiltersChange,
@@ -16,6 +17,12 @@ export default function ProductFilter({
   // Track if filters have changed since last apply
   const [hasChanges, setHasChanges] = useState(false);
   const [validationError, setValidationError] = useState('');
+  // Hard upper bound to match Postgres int4 (integer) max to avoid overflow server errors
+  const HARD_MAX_PRICE = 2147483647; // 2,147,483,647
+
+  // Available price bounds from the catalog (lowest and highest product price)
+  const [availableMinPrice, setAvailableMinPrice] = useState('');
+  const [availableMaxPrice, setAvailableMaxPrice] = useState('');
 
   // Check if current price range is valid
   const isPriceRangeValid = () => {
@@ -33,6 +40,50 @@ export default function ProductFilter({
     setHasChanges(false);
     setValidationError('');
   }, [currentFilters]);
+
+  // Fetch global available min/max price once (or when component mounts)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        // Fetch minimum price
+        const { data: minRow, error: minErr } = await supabase
+          .from('products')
+          .select('price')
+          .order('price', { ascending: true, nullsFirst: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (minErr) throw minErr;
+
+        // Fetch maximum price
+        const { data: maxRow, error: maxErr } = await supabase
+          .from('products')
+          .select('price')
+          .order('price', { ascending: false, nullsFirst: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (maxErr) throw maxErr;
+
+        if (!cancelled) {
+          const min = Number(minRow?.price ?? '');
+          const max = Number(maxRow?.price ?? '');
+          setAvailableMinPrice(Number.isFinite(min) ? String(min) : '');
+          setAvailableMaxPrice(Number.isFinite(max) ? String(max) : '');
+        }
+      } catch (e) {
+        if (!cancelled) {
+          // If fetching fails, just leave placeholders empty
+          setAvailableMinPrice('');
+          setAvailableMaxPrice('');
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Fetch categories from database
   const {
@@ -55,49 +106,46 @@ export default function ProductFilter({
 
   // Handle price range changes
   const handlePriceChange = (field, value) => {
-    // Allow only numbers and empty string, convert "0000" to "0"
-    if (value === '' || (!isNaN(value) && Number(value) >= 0)) {
-      // Convert value to number and back to string to handle cases like "0000" -> "0"
-      const normalizedValue = value === '' ? '' : String(Number(value));
-
-      let newMin = localPriceMin;
-      let newMax = localPriceMax;
-
-      if (field === 'min') {
-        newMin = normalizedValue;
-        // Check if min value exceeds current max
-        if (
-          localPriceMax &&
-          normalizedValue &&
-          Number(normalizedValue) > Number(localPriceMax)
-        ) {
-          setValidationError('Minimum price cannot exceed maximum price');
-          return;
+    // Accept only digits and empty string, cap at 13 digits
+    let normalizedValue = '';
+    if (value !== '') {
+      const digitsOnly = (value.match(/\d+/g)?.join('') || '').slice(0, 13);
+      if (digitsOnly.length > 0) {
+        const num = Number(digitsOnly);
+        if (!Number.isFinite(num) || num < 0) {
+          return; // ignore invalid
         }
-        setLocalPriceMin(normalizedValue);
-      } else {
-        newMax = normalizedValue;
-        // Check if max value is less than current min
-        if (
-          localPriceMin &&
-          normalizedValue &&
-          Number(normalizedValue) < Number(localPriceMin)
-        ) {
-          setValidationError('Maximum price cannot be less than minimum price');
-          return;
-        }
-        setLocalPriceMax(normalizedValue);
+        // Clamp to DB-safe maximum to prevent server errors on apply
+        const clamped = Math.min(num, HARD_MAX_PRICE);
+        // Convert back to string to collapse leading zeros
+        normalizedValue = String(clamped);
       }
-
-      // Clear validation error if range is now valid
-      if (newMin && newMax && Number(newMin) <= Number(newMax)) {
-        setValidationError('');
-      } else if (!newMin || !newMax) {
-        setValidationError('');
-      }
-
-      setHasChanges(true);
     }
+
+    let newMin = localPriceMin;
+    let newMax = localPriceMax;
+
+    if (field === 'min') {
+      newMin = normalizedValue;
+      setLocalPriceMin(normalizedValue);
+    } else {
+      newMax = normalizedValue;
+      setLocalPriceMax(normalizedValue);
+    }
+
+    // Allow transient invalid states: set an error message but don't block typing
+    if (newMin && newMax) {
+      if (Number(newMin) > Number(newMax)) {
+        setValidationError('Minimum price cannot exceed maximum price');
+      } else {
+        setValidationError('');
+      }
+    } else {
+      // If either side is empty, no validation error
+      setValidationError('');
+    }
+
+    setHasChanges(true);
   };
 
   // Apply filters function
@@ -195,6 +243,24 @@ export default function ProductFilter({
           <h3 className='font-bold text-[1.5rem] text-black mb-1.5 lg:mb-2 cursor-default'>
             PRICE RANGE
           </h3>
+          {(availableMinPrice || availableMaxPrice) && (
+            <div className='text-gray-600 text-[1rem] mb-1 cursor-default'>
+              Available:{' '}
+              {availableMinPrice
+                ? Number(availableMinPrice).toLocaleString('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP',
+                  })
+                : '—'}{' '}
+              –{' '}
+              {availableMaxPrice
+                ? Number(availableMaxPrice).toLocaleString('en-PH', {
+                    style: 'currency',
+                    currency: 'PHP',
+                  })
+                : '—'}
+            </div>
+          )}
           <div className='space-y-1.5 lg:space-y-2'>
             <div>
               <label className='text-black text-[1.25rem] mb-1 block'>
@@ -202,7 +268,8 @@ export default function ProductFilter({
               </label>
               <input
                 type='text'
-                placeholder='0'
+                placeholder={availableMinPrice || '0'}
+                maxLength={10}
                 value={localPriceMin}
                 onChange={(e) => handlePriceChange('min', e.target.value)}
                 className={`w-full max-w-[160px] px-3 py-2 border rounded-full text-[1.25rem] focus:outline-none transition-colors ${
@@ -218,7 +285,8 @@ export default function ProductFilter({
               </label>
               <input
                 type='text'
-                placeholder='999999'
+                placeholder={availableMaxPrice || '999999'}
+                maxLength={10}
                 value={localPriceMax}
                 onChange={(e) => handlePriceChange('max', e.target.value)}
                 className={`w-full max-w-[160px] px-3 py-2 border rounded-full text-[1.25rem] focus:outline-none transition-colors ${

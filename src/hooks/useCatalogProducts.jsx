@@ -72,21 +72,22 @@ export function useCatalogProducts(
           query = query.in('category_id', filters.categories);
         }
 
-        // Apply price range filters
-        if (filters.priceMin && !isNaN(Number(filters.priceMin))) {
+        // Apply price range filters (pass as string to avoid JS number coercion/precision issues)
+        const isDigits = (v) => typeof v === 'string' && /^\d+$/.test(v);
+        if (filters.priceMin && isDigits(String(filters.priceMin))) {
           console.log(
             'useCatalogProducts: Applying price min filter:',
             filters.priceMin,
           );
-          query = query.gte('price', Number(filters.priceMin));
+          query = query.gte('price', String(filters.priceMin));
         }
 
-        if (filters.priceMax && !isNaN(Number(filters.priceMax))) {
+        if (filters.priceMax && isDigits(String(filters.priceMax))) {
           console.log(
             'useCatalogProducts: Applying price max filter:',
             filters.priceMax,
           );
-          query = query.lte('price', Number(filters.priceMax));
+          query = query.lte('price', String(filters.priceMax));
         }
 
         // Apply default sorting

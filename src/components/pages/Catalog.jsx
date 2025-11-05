@@ -51,6 +51,11 @@ export default function Catalog() {
     error: productError,
   } = useCatalogProducts(filters, searchQuery, page, pageSize);
 
+  const hasFilters =
+    (filters.categories && filters.categories.length > 0) ||
+    (filters.priceMin && String(filters.priceMin).trim() !== '') ||
+    (filters.priceMax && String(filters.priceMax).trim() !== '');
+
   // Handle filter changes from ProductFilter component
   const handleFiltersChange = (newFilters) => {
     setFilters(newFilters);
@@ -149,6 +154,11 @@ export default function Catalog() {
                 {searchQuery && products.length === 0 && (
                   <div className='text-center text-gray-500 mt-8'>
                     No products found for "{searchQuery}".
+                  </div>
+                )}
+                {!searchQuery && hasFilters && products.length === 0 && (
+                  <div className='text-center text-gray-500 mt-8'>
+                    No products found
                   </div>
                 )}
               </div>
